@@ -1,4 +1,4 @@
-module auth
+module "github.com/M1steryO/RelocatorEvents/auth"
 
 go 1.24.0
 

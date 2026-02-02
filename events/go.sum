@@ -8,8 +8,6 @@ github.com/AlecAivazis/survey/v2 v2.3.7/go.mod h1:xUTIdE4KCOIjsBAE1JYsUPoCqYdZ1r
 github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1 h1:UQHMgLO+TxOElx5B5HZ4hJQsoJ/PvUvKRhJHDQXO8P8=
 github.com/Azure/go-ansiterm v0.0.0-20210617225240-d185dfc1b5a1/go.mod h1:xomTg63KZ2rFqZQzSB4Vz2SUXa1BpHTVz9L5PTmPC4E=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
-github.com/M1steryO/platform_common v0.0.0-20250908100315-155b42a7641b h1:ooZkn4IpdRvKF9Yx7miDTKypR43cyNxANnsDBWjHghs=
-github.com/M1steryO/platform_common v0.0.0-20250908100315-155b42a7641b/go.mod h1:sY5taDuxCRvhPTf/pFEqShY+rHvH6VG8UM/ATXoB1aI=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2 h1:RJRGxQmBiuthNbuXj7MN7C2NStL45Ckfo89CXkOc+qY=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2/go.mod h1:sY5taDuxCRvhPTf/pFEqShY+rHvH6VG8UM/ATXoB1aI=
 github.com/Masterminds/semver/v3 v3.1.1/go.mod h1:VPu/7SZ7ePZ3QOrcuXROw5FAcLl4a0cBrbBpGY/8hQs=
