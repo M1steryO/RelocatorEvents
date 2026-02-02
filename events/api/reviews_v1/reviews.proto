@@ -1,0 +1,84 @@
+syntax = "proto3";
+
+package reviews_v1;
+
+option go_package = "GolandProjects/RelocatorEvents/events/pkg/reviews_v1;reviews_v1";
+
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+import "google/protobuf/timestamp.proto";
+
+
+service Reviews_v1{
+
+  rpc ListReviews(ListReviewsRequest) returns (ListReviewsResponse){
+    option (google.api.http) = {
+      get: "/reviews/v1";
+    };
+  };
+  rpc CreateReview(CreateReviewRequest) returns (CreateReviewResponse){
+    option (google.api.http) = {
+      post: "/reviews/v1"
+      body: "*"
+    };
+  };
+}
+
+message ListReviewsRequest {
+  int64 event_id = 1 [(validate.rules).int64.gt = 0];
+
+}
+
+message ListReviewsResponse{
+  repeated Review reviews = 1;
+}
+
+enum MediaType {
+  MEDIA_TYPE_UNKNOWN = 0;
+  MEDIA_TYPE_IMAGE = 1;
+  MEDIA_TYPE_VIDEO = 2;
+}
+
+message MediaAttachment {
+  //  string storage_key = 1 [(validate.rules).string.uri = true];
+  string storage_key = 1;
+  MediaType type = 2 [(validate.rules).enum.defined_only = true];
+}
+
+message Review {
+  int32 grade = 1 [
+    (validate.rules).int32 = {
+      gte: 0,
+      lte: 10
+    }
+  ];
+  string advantages = 2 [
+    (validate.rules).string = {
+      max_len: 200
+    }
+  ];
+  string disadvantages = 3 [
+    (validate.rules).string = {
+      max_len: 200
+    }
+  ];
+  string text = 4 [
+    (validate.rules).string = {
+      min_len: 1,
+      max_len: 200
+    }
+  ];
+
+  repeated MediaAttachment media = 5 [(validate.rules).repeated.max_items = 3];
+
+  int64 author_id = 6;
+  google.protobuf.Timestamp created_at = 7;
+}
+
+message CreateReviewRequest {
+  int64 event_id = 1 [(validate.rules).int64.gt = 0];
+  Review review = 2 [(validate.rules).message.required = true];
+}
+
+message CreateReviewResponse {
+}

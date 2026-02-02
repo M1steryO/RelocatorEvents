@@ -1,0 +1,105 @@
+syntax = "proto3";
+
+package user_v1;
+
+
+
+option go_package = "GolandProjects/MicroservicesEducation/MyProject/auth/pkg/user_v1;user_v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+import "google/api/annotations.proto";
+import "validate/validate.proto";
+
+
+service UserV1 {
+  rpc Create(CreateRequest) returns (CreateResponse){
+    option (google.api.http) = {
+        post: "/user/v1/create"
+      body: "*"
+    };
+  };
+  rpc Get(GetRequest) returns (GetResponse){
+    option (google.api.http) = {
+      get: "/user/v1"
+    };
+  };
+  rpc Update(UpdateRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      patch: "/user/v1"
+      body: "*"
+    };
+  };
+  rpc Delete(DeleteRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      delete: "/user/v1"
+    };
+  };
+}
+
+enum Role{
+  USER = 0;
+  ADMIN = 1;
+}
+
+
+message User {
+  int64 id = 1;
+  UserInfo info = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+}
+
+message UserInfo {
+  string name = 1;
+  string email = 2;
+
+  google.protobuf.Int64Value telegram_id = 3;
+  string telegram_username = 4;
+
+  string country = 5;
+  string city = 6;
+
+  repeated Interest interests = 7;
+}
+
+message Interest {
+  string code = 2;
+  string title = 3;
+}
+
+message UpdateUserInfo {
+  google.protobuf.StringValue name = 1;
+  google.protobuf.StringValue email = 2;
+}
+
+message CreateRequest {
+  UserInfo info = 1;
+  string password = 2;
+  string password_confirm = 3;
+  string telegramToken = 4 [json_name = "telegram_token"];
+}
+
+message CreateResponse {
+  int64 id = 1;
+  string refresh_token = 2;
+  string access_token = 3;
+}
+
+message GetRequest {
+  int64 id = 1;
+}
+
+message GetResponse {
+  User user = 1;
+}
+
+message UpdateRequest {
+  int64 id = 1;
+  UpdateUserInfo info = 2;
+}
+
+message DeleteRequest {
+  int64 id = 1;
+}

@@ -1,0 +1,115 @@
+syntax = "proto3";
+
+package events_v1;
+
+option go_package = "GolandProjects/RelocatorEvents/events/pkg/events_v1;events_v1";
+
+import "google/protobuf/timestamp.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/wrappers.proto";
+
+
+service Event_V1{
+  rpc GetEvent(GetRequest) returns (GetResponse){
+    option (google.api.http) = {
+      get: "/events/v1/{id}";
+    };
+  };
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse){
+    option (google.api.http) = {
+      get: "/events/v1/list";
+    };
+  };
+}
+
+
+message GetRequest {
+  int64 id = 1;
+}
+
+message GetResponse {
+  Event event = 1;
+}
+
+enum EVENT_TYPE{
+  offline = 0;
+  online = 1;
+}
+
+message EventAddress{
+  google.protobuf.StringValue venue_name = 1 [json_name = "venue_name"];
+  string full_address = 2;
+
+  string country = 3;
+  string city = 5;
+  google.protobuf.StringValue district = 6;
+  google.protobuf.StringValue postal_code = 7 [json_name = "postal_code"];
+
+  google.protobuf.FloatValue latitude = 8;
+  google.protobuf.FloatValue longitude = 9;
+}
+
+message Event {
+  int64 id = 1 [json_name = "id"];
+  string title = 2 [json_name = "title"];
+  google.protobuf.StringValue description = 3 [json_name = "description"];
+  string link = 4 [json_name = "link"];
+
+  google.protobuf.FloatValue rating = 5 [json_name = "rating"];
+  google.protobuf.Int32Value reviews_count = 6 [json_name = "reviews_count"];
+  google.protobuf.Int32Value ratings_count = 7 [json_name = "ratings_count"];
+  google.protobuf.Int32Value min_age = 8 [json_name = "min_age"];
+  google.protobuf.Int32Value seats_available = 9 [json_name = "seats_available"];
+
+  EVENT_TYPE eventType = 10 [json_name = "event_type"];
+
+  google.protobuf.Int32Value min_price = 11 [json_name = "min_price"];
+
+  google.protobuf.Timestamp starts_at = 12 [json_name = "starts_at"];
+
+  google.protobuf.StringValue image_url = 13 [json_name = "image_url"];
+
+  optional EventAddress address = 14 [json_name = "address"];
+
+  google.protobuf.Timestamp created_at = 15 [json_name = "created_at"];
+  google.protobuf.Timestamp updated_at = 16 [json_name = "updated_at"];
+
+  google.protobuf.StringValue currency = 17 [json_name = "currency"];
+
+}
+
+message ListEventsRequest {
+  google.protobuf.StringValue q = 1 [json_name = "q"];
+  google.protobuf.StringValue sort = 2 [json_name = "sort"];
+
+  google.protobuf.StringValue city = 3 [json_name = "city"];
+  google.protobuf.StringValue district = 4 [json_name = "district"];
+
+  google.protobuf.Int32Value min_price = 5 [json_name = "min_price"];
+  google.protobuf.Int32Value max_price = 6 [json_name = "max_price"];
+
+  google.protobuf.StringValue event_date = 7 [json_name = "event_date"];
+  optional EVENT_TYPE event_type = 8 [json_name = "event_type"];
+
+  repeated string category = 9 [json_name = "category"];
+
+  google.protobuf.Int64Value limit = 10 [json_name = "limit"];
+  google.protobuf.Int64Value last_id = 11 [json_name = "last_id"];
+}
+
+message EventCategory {
+  string title = 1 [json_name = "title"];
+  string code = 2 [json_name = "code"];
+}
+
+message FiltersValues {
+  google.protobuf.Int32Value min_price = 1 [json_name = "min_price"];
+  google.protobuf.Int32Value max_price = 2 [json_name = "max_price"];
+  repeated string cities = 3 [json_name = "cities"];
+  repeated EventCategory categories = 4 [json_name = "categories"];
+
+}
+message ListEventsResponse {
+  repeated Event data = 1 [json_name = "data"];
+  FiltersValues filters = 2  [json_name = "filters"];
+}

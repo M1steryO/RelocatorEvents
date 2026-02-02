@@ -1,0 +1,25 @@
+syntax = "proto3";
+
+package access_v1;
+
+
+option go_package = "GolandProjects/MicroservicesEducation/MyProject/auth/pkg/access_v1;access_v1";
+
+import "google/api/annotations.proto";
+
+service AccessV1{
+  rpc Check(CheckRequest) returns (CheckResponse){
+    option (google.api.http) = {
+      get: "/access/v1/check"
+    };
+  };
+}
+
+
+message CheckRequest{
+    
+}
+
+message CheckResponse {
+  int64 userId = 1 [json_name = "id"];
+}

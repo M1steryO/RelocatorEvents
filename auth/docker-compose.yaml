@@ -1,0 +1,40 @@
+volumes:
+  postgres_volume:
+  prometheus_data:
+  grafana_data:
+
+
+services:
+  pg:
+    image: postgres:14-alpine3.17
+    environment:
+      - "POSTGRES_DB=${PG_DATABASE_NAME}"
+      - "POSTGRES_USER=${PG_USER}"
+      - "POSTGRES_PASSWORD=${PG_PASSWORD}"
+    ports:
+      - "${PG_PORT}:5432"
+    volumes:
+      - postgres_volume:/var/lib/postgresql/data
+  migrator:
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+    restart: on-failure
+    environment:
+      DB_HOST: db
+
+  prometheus:
+    image: prom/prometheus:v2.37.9
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./alerts.yml:/etc/prometheus/alerts.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana-oss:10.0.3
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana_data:/var/lib/grafana
