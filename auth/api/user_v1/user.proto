@@ -15,7 +15,7 @@ import "google/api/annotations.proto";
 service UserV1 {
   rpc Create(CreateRequest) returns (CreateResponse){
     option (google.api.http) = {
-        post: "/user/v1/create"
+      post: "/user/v1/create"
       body: "*"
     };
   };
@@ -24,6 +24,8 @@ service UserV1 {
       get: "/user/v1"
     };
   };
+  rpc GetUserByTelegramId(GetUserByTelegramIdRequest) returns (GetUserByTelegramIdResponse);
+
   rpc Update(UpdateRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       patch: "/user/v1"
@@ -101,4 +103,12 @@ message UpdateRequest {
 
 message DeleteRequest {
   int64 id = 1;
+}
+
+message GetUserByTelegramIdRequest{
+  int64 telegram_id = 1;
+}
+
+message GetUserByTelegramIdResponse{
+  User user = 1;
 }

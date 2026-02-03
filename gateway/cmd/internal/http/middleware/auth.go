@@ -2,7 +2,11 @@ package middleware
 
 import (
 	"context"
+	"errors"
+	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/utils/telegram"
+	"google.golang.org/grpc/metadata"
 	"net/http"
+	"time"
 
 	clients "github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/client/grpc"
 )
@@ -19,10 +23,39 @@ func UserIDFromContext(ctx context.Context) (int64, bool) {
 
 type AuthMiddleware struct {
 	auth clients.AuthServiceClient
+	user clients.UserServiceClient
+	telegramAuth *telegram.TelegramAuthenticator
 }
 
-func NewAuthMiddleware(auth clients.AuthServiceClient) *AuthMiddleware {
-	return &AuthMiddleware{auth: auth}
+func NewAuthMiddleware(auth clients.AuthServiceClient, telegramAuth *telegram.TelegramAuthenticator) *AuthMiddleware {
+	return &AuthMiddleware{auth: auth, telegramAuth: telegramAuth}
+}
+
+
+const refreshTokenExpiration = 60 * time.Minute
+const refreshTokenSecretKey = "W4/X+LLjehdxptt4YgGFCvMpq5ewptpZZYRHY6A72g0="
+const accessTokenSecretKey = "W4/X+LLjehdxptt4YgGFCvMpq5ewptpZZYRHY6A72g01"
+const accessTokenExpiration = 10 * time.Minute
+
+func (m *AuthMiddleware) checkTelegramInitData(ctx context.Context, initData string) (int64, error) {
+
+	clearData, err := m.telegramAuth.Validate(initData, 500*time.Hour)
+	if err != nil {
+		return 0, err
+	}
+	if clearData.User == nil {
+		return 0, errors.New("user-data is not provided")
+	}
+	telegramId := clearData.User.ID
+	user, err := m.user.GetUserByTelegramId(ctx, telegramId)
+	if err != nil {
+		return 0, err
+	}
+	err = setTokens(ctx, user.ID, "user")
+	if err != nil {
+		return 0, err
+	}
+	return user.ID, nil
 }
 
 func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
@@ -31,7 +64,20 @@ func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 		cookie := r.Header.Get("Cookie")
 		tg := r.Header.Get("X-Telegram-Init-Data")
 
-		res, err := m.auth.Check(r.Context(), authorization, cookie, tg)
+
+		if authorization == ""{
+			if cookie == "" {
+				if tg == "" {
+					w.WriteHeader(http.StatusUnauthorized)
+					return
+				}
+
+
+			}
+		}
+
+
+		res, err := m.auth.
 		if err != nil {
 			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return

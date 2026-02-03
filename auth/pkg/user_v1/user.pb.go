@@ -647,6 +647,94 @@ func (x *DeleteRequest) GetId() int64 {
 	return 0
 }
 
+type GetUserByTelegramIdRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	TelegramId    int64                  `protobuf:"varint,1,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserByTelegramIdRequest) Reset() {
+	*x = GetUserByTelegramIdRequest{}
+	mi := &file_user_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserByTelegramIdRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserByTelegramIdRequest) ProtoMessage() {}
+
+func (x *GetUserByTelegramIdRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserByTelegramIdRequest.ProtoReflect.Descriptor instead.
+func (*GetUserByTelegramIdRequest) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *GetUserByTelegramIdRequest) GetTelegramId() int64 {
+	if x != nil {
+		return x.TelegramId
+	}
+	return 0
+}
+
+type GetUserByTelegramIdResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetUserByTelegramIdResponse) Reset() {
+	*x = GetUserByTelegramIdResponse{}
+	mi := &file_user_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetUserByTelegramIdResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetUserByTelegramIdResponse) ProtoMessage() {}
+
+func (x *GetUserByTelegramIdResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_user_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetUserByTelegramIdResponse.ProtoReflect.Descriptor instead.
+func (*GetUserByTelegramIdResponse) Descriptor() ([]byte, []int) {
+	return file_user_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *GetUserByTelegramIdResponse) GetUser() *User {
+	if x != nil {
+		return x.User
+	}
+	return nil
+}
+
 var File_user_proto protoreflect.FileDescriptor
 
 const file_user_proto_rawDesc = "" +
@@ -693,14 +781,20 @@ const file_user_proto_rawDesc = "" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12+\n" +
 	"\x04info\x18\x02 \x01(\v2\x17.user_v1.UpdateUserInfoR\x04info\"\x1f\n" +
 	"\rDeleteRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id*\x1b\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"=\n" +
+	"\x1aGetUserByTelegramIdRequest\x12\x1f\n" +
+	"\vtelegram_id\x18\x01 \x01(\x03R\n" +
+	"telegramId\"@\n" +
+	"\x1bGetUserByTelegramIdResponse\x12!\n" +
+	"\x04user\x18\x01 \x01(\v2\r.user_v1.UserR\x04user*\x1b\n" +
 	"\x04Role\x12\b\n" +
 	"\x04USER\x10\x00\x12\t\n" +
-	"\x05ADMIN\x10\x012\xbe\x02\n" +
+	"\x05ADMIN\x10\x012\xa0\x03\n" +
 	"\x06UserV1\x12U\n" +
 	"\x06Create\x12\x16.user_v1.CreateRequest\x1a\x17.user_v1.CreateResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/user/v1/create\x12B\n" +
 	"\x03Get\x12\x13.user_v1.GetRequest\x1a\x14.user_v1.GetResponse\"\x10\x82\xd3\xe4\x93\x02\n" +
-	"\x12\b/user/v1\x12M\n" +
+	"\x12\b/user/v1\x12`\n" +
+	"\x13GetUserByTelegramId\x12#.user_v1.GetUserByTelegramIdRequest\x1a$.user_v1.GetUserByTelegramIdResponse\x12M\n" +
 	"\x06Update\x12\x16.user_v1.UpdateRequest\x1a\x16.google.protobuf.Empty\"\x13\x82\xd3\xe4\x93\x02\r:\x01*2\b/user/v1\x12J\n" +
 	"\x06Delete\x12\x16.user_v1.DeleteRequest\x1a\x16.google.protobuf.Empty\"\x10\x82\xd3\xe4\x93\x02\n" +
 	"*\b/user/v1BJZHGolandProjects/MicroservicesEducation/MyProject/auth/pkg/user_v1;user_v1b\x06proto3"
@@ -718,48 +812,53 @@ func file_user_proto_rawDescGZIP() []byte {
 }
 
 var file_user_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 10)
+var file_user_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
 var file_user_proto_goTypes = []any{
-	(Role)(0),                      // 0: user_v1.Role
-	(*User)(nil),                   // 1: user_v1.User
-	(*UserInfo)(nil),               // 2: user_v1.UserInfo
-	(*Interest)(nil),               // 3: user_v1.Interest
-	(*UpdateUserInfo)(nil),         // 4: user_v1.UpdateUserInfo
-	(*CreateRequest)(nil),          // 5: user_v1.CreateRequest
-	(*CreateResponse)(nil),         // 6: user_v1.CreateResponse
-	(*GetRequest)(nil),             // 7: user_v1.GetRequest
-	(*GetResponse)(nil),            // 8: user_v1.GetResponse
-	(*UpdateRequest)(nil),          // 9: user_v1.UpdateRequest
-	(*DeleteRequest)(nil),          // 10: user_v1.DeleteRequest
-	(*timestamppb.Timestamp)(nil),  // 11: google.protobuf.Timestamp
-	(*wrapperspb.Int64Value)(nil),  // 12: google.protobuf.Int64Value
-	(*wrapperspb.StringValue)(nil), // 13: google.protobuf.StringValue
-	(*emptypb.Empty)(nil),          // 14: google.protobuf.Empty
+	(Role)(0),                           // 0: user_v1.Role
+	(*User)(nil),                        // 1: user_v1.User
+	(*UserInfo)(nil),                    // 2: user_v1.UserInfo
+	(*Interest)(nil),                    // 3: user_v1.Interest
+	(*UpdateUserInfo)(nil),              // 4: user_v1.UpdateUserInfo
+	(*CreateRequest)(nil),               // 5: user_v1.CreateRequest
+	(*CreateResponse)(nil),              // 6: user_v1.CreateResponse
+	(*GetRequest)(nil),                  // 7: user_v1.GetRequest
+	(*GetResponse)(nil),                 // 8: user_v1.GetResponse
+	(*UpdateRequest)(nil),               // 9: user_v1.UpdateRequest
+	(*DeleteRequest)(nil),               // 10: user_v1.DeleteRequest
+	(*GetUserByTelegramIdRequest)(nil),  // 11: user_v1.GetUserByTelegramIdRequest
+	(*GetUserByTelegramIdResponse)(nil), // 12: user_v1.GetUserByTelegramIdResponse
+	(*timestamppb.Timestamp)(nil),       // 13: google.protobuf.Timestamp
+	(*wrapperspb.Int64Value)(nil),       // 14: google.protobuf.Int64Value
+	(*wrapperspb.StringValue)(nil),      // 15: google.protobuf.StringValue
+	(*emptypb.Empty)(nil),               // 16: google.protobuf.Empty
 }
 var file_user_proto_depIdxs = []int32{
 	2,  // 0: user_v1.User.info:type_name -> user_v1.UserInfo
-	11, // 1: user_v1.User.created_at:type_name -> google.protobuf.Timestamp
-	11, // 2: user_v1.User.updated_at:type_name -> google.protobuf.Timestamp
-	12, // 3: user_v1.UserInfo.telegram_id:type_name -> google.protobuf.Int64Value
+	13, // 1: user_v1.User.created_at:type_name -> google.protobuf.Timestamp
+	13, // 2: user_v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	14, // 3: user_v1.UserInfo.telegram_id:type_name -> google.protobuf.Int64Value
 	3,  // 4: user_v1.UserInfo.interests:type_name -> user_v1.Interest
-	13, // 5: user_v1.UpdateUserInfo.name:type_name -> google.protobuf.StringValue
-	13, // 6: user_v1.UpdateUserInfo.email:type_name -> google.protobuf.StringValue
+	15, // 5: user_v1.UpdateUserInfo.name:type_name -> google.protobuf.StringValue
+	15, // 6: user_v1.UpdateUserInfo.email:type_name -> google.protobuf.StringValue
 	2,  // 7: user_v1.CreateRequest.info:type_name -> user_v1.UserInfo
 	1,  // 8: user_v1.GetResponse.user:type_name -> user_v1.User
 	4,  // 9: user_v1.UpdateRequest.info:type_name -> user_v1.UpdateUserInfo
-	5,  // 10: user_v1.UserV1.Create:input_type -> user_v1.CreateRequest
-	7,  // 11: user_v1.UserV1.Get:input_type -> user_v1.GetRequest
-	9,  // 12: user_v1.UserV1.Update:input_type -> user_v1.UpdateRequest
-	10, // 13: user_v1.UserV1.Delete:input_type -> user_v1.DeleteRequest
-	6,  // 14: user_v1.UserV1.Create:output_type -> user_v1.CreateResponse
-	8,  // 15: user_v1.UserV1.Get:output_type -> user_v1.GetResponse
-	14, // 16: user_v1.UserV1.Update:output_type -> google.protobuf.Empty
-	14, // 17: user_v1.UserV1.Delete:output_type -> google.protobuf.Empty
-	14, // [14:18] is the sub-list for method output_type
-	10, // [10:14] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	1,  // 10: user_v1.GetUserByTelegramIdResponse.user:type_name -> user_v1.User
+	5,  // 11: user_v1.UserV1.Create:input_type -> user_v1.CreateRequest
+	7,  // 12: user_v1.UserV1.Get:input_type -> user_v1.GetRequest
+	11, // 13: user_v1.UserV1.GetUserByTelegramId:input_type -> user_v1.GetUserByTelegramIdRequest
+	9,  // 14: user_v1.UserV1.Update:input_type -> user_v1.UpdateRequest
+	10, // 15: user_v1.UserV1.Delete:input_type -> user_v1.DeleteRequest
+	6,  // 16: user_v1.UserV1.Create:output_type -> user_v1.CreateResponse
+	8,  // 17: user_v1.UserV1.Get:output_type -> user_v1.GetResponse
+	12, // 18: user_v1.UserV1.GetUserByTelegramId:output_type -> user_v1.GetUserByTelegramIdResponse
+	16, // 19: user_v1.UserV1.Update:output_type -> google.protobuf.Empty
+	16, // 20: user_v1.UserV1.Delete:output_type -> google.protobuf.Empty
+	16, // [16:21] is the sub-list for method output_type
+	11, // [11:16] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_user_proto_init() }
@@ -773,7 +872,7 @@ func file_user_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_proto_rawDesc), len(file_user_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   10,
+			NumMessages:   12,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

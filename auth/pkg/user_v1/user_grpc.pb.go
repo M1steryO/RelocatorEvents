@@ -20,10 +20,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	UserV1_Create_FullMethodName = "/user_v1.UserV1/Create"
-	UserV1_Get_FullMethodName    = "/user_v1.UserV1/Get"
-	UserV1_Update_FullMethodName = "/user_v1.UserV1/Update"
-	UserV1_Delete_FullMethodName = "/user_v1.UserV1/Delete"
+	UserV1_Create_FullMethodName              = "/user_v1.UserV1/Create"
+	UserV1_Get_FullMethodName                 = "/user_v1.UserV1/Get"
+	UserV1_GetUserByTelegramId_FullMethodName = "/user_v1.UserV1/GetUserByTelegramId"
+	UserV1_Update_FullMethodName              = "/user_v1.UserV1/Update"
+	UserV1_Delete_FullMethodName              = "/user_v1.UserV1/Delete"
 )
 
 // UserV1Client is the client API for UserV1 service.
@@ -32,6 +33,7 @@ const (
 type UserV1Client interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
+	GetUserByTelegramId(ctx context.Context, in *GetUserByTelegramIdRequest, opts ...grpc.CallOption) (*GetUserByTelegramIdResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -64,6 +66,16 @@ func (c *userV1Client) Get(ctx context.Context, in *GetRequest, opts ...grpc.Cal
 	return out, nil
 }
 
+func (c *userV1Client) GetUserByTelegramId(ctx context.Context, in *GetUserByTelegramIdRequest, opts ...grpc.CallOption) (*GetUserByTelegramIdResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserByTelegramIdResponse)
+	err := c.cc.Invoke(ctx, UserV1_GetUserByTelegramId_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userV1Client) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -90,6 +102,7 @@ func (c *userV1Client) Delete(ctx context.Context, in *DeleteRequest, opts ...gr
 type UserV1Server interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	Get(context.Context, *GetRequest) (*GetResponse, error)
+	GetUserByTelegramId(context.Context, *GetUserByTelegramIdRequest) (*GetUserByTelegramIdResponse, error)
 	Update(context.Context, *UpdateRequest) (*emptypb.Empty, error)
 	Delete(context.Context, *DeleteRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserV1Server()
@@ -107,6 +120,9 @@ func (UnimplementedUserV1Server) Create(context.Context, *CreateRequest) (*Creat
 }
 func (UnimplementedUserV1Server) Get(context.Context, *GetRequest) (*GetResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Get not implemented")
+}
+func (UnimplementedUserV1Server) GetUserByTelegramId(context.Context, *GetUserByTelegramIdRequest) (*GetUserByTelegramIdResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByTelegramId not implemented")
 }
 func (UnimplementedUserV1Server) Update(context.Context, *UpdateRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
@@ -171,6 +187,24 @@ func _UserV1_Get_Handler(srv interface{}, ctx context.Context, dec func(interfac
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserV1_GetUserByTelegramId_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByTelegramIdRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserV1Server).GetUserByTelegramId(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserV1_GetUserByTelegramId_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserV1Server).GetUserByTelegramId(ctx, req.(*GetUserByTelegramIdRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserV1_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRequest)
 	if err := dec(in); err != nil {
@@ -221,6 +255,10 @@ var UserV1_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Get",
 			Handler:    _UserV1_Get_Handler,
+		},
+		{
+			MethodName: "GetUserByTelegramId",
+			Handler:    _UserV1_GetUserByTelegramId_Handler,
 		},
 		{
 			MethodName: "Update",

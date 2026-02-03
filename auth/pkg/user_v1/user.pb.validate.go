@@ -1357,3 +1357,239 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = DeleteRequestValidationError{}
+
+// Validate checks the field values on GetUserByTelegramIdRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetUserByTelegramIdRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUserByTelegramIdRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUserByTelegramIdRequestMultiError, or nil if none found.
+func (m *GetUserByTelegramIdRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserByTelegramIdRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for TelegramId
+
+	if len(errors) > 0 {
+		return GetUserByTelegramIdRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserByTelegramIdRequestMultiError is an error wrapping multiple
+// validation errors returned by GetUserByTelegramIdRequest.ValidateAll() if
+// the designated constraints aren't met.
+type GetUserByTelegramIdRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserByTelegramIdRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserByTelegramIdRequestMultiError) AllErrors() []error { return m }
+
+// GetUserByTelegramIdRequestValidationError is the validation error returned
+// by GetUserByTelegramIdRequest.Validate if the designated constraints aren't met.
+type GetUserByTelegramIdRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserByTelegramIdRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserByTelegramIdRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserByTelegramIdRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserByTelegramIdRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserByTelegramIdRequestValidationError) ErrorName() string {
+	return "GetUserByTelegramIdRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserByTelegramIdRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserByTelegramIdRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserByTelegramIdRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserByTelegramIdRequestValidationError{}
+
+// Validate checks the field values on GetUserByTelegramIdResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *GetUserByTelegramIdResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on GetUserByTelegramIdResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// GetUserByTelegramIdResponseMultiError, or nil if none found.
+func (m *GetUserByTelegramIdResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *GetUserByTelegramIdResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if all {
+		switch v := interface{}(m.GetUser()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, GetUserByTelegramIdResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, GetUserByTelegramIdResponseValidationError{
+					field:  "User",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetUser()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return GetUserByTelegramIdResponseValidationError{
+				field:  "User",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
+	if len(errors) > 0 {
+		return GetUserByTelegramIdResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// GetUserByTelegramIdResponseMultiError is an error wrapping multiple
+// validation errors returned by GetUserByTelegramIdResponse.ValidateAll() if
+// the designated constraints aren't met.
+type GetUserByTelegramIdResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m GetUserByTelegramIdResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m GetUserByTelegramIdResponseMultiError) AllErrors() []error { return m }
+
+// GetUserByTelegramIdResponseValidationError is the validation error returned
+// by GetUserByTelegramIdResponse.Validate if the designated constraints
+// aren't met.
+type GetUserByTelegramIdResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e GetUserByTelegramIdResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e GetUserByTelegramIdResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e GetUserByTelegramIdResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e GetUserByTelegramIdResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e GetUserByTelegramIdResponseValidationError) ErrorName() string {
+	return "GetUserByTelegramIdResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e GetUserByTelegramIdResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sGetUserByTelegramIdResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = GetUserByTelegramIdResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = GetUserByTelegramIdResponseValidationError{}
