@@ -1,10 +1,10 @@
 package auth
 
 import (
-	authModel "auth/internal/service/user/model/auth"
-	jwtUtils "auth/internal/utils/jwt"
-	descAuth "auth/pkg/auth_v1"
 	"context"
+	authModel "github.com/M1steryO/RelocatorEvents/auth/internal/service/user/model/auth"
+	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/utils/jwt"
+	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )

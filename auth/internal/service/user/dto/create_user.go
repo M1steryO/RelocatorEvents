@@ -1,7 +1,7 @@
 package dto
 
 import (
-	repoModel "auth/internal/repository/user/model"
+	repoModel "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user/model"
 )
 
 type CreateUser struct {

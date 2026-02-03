@@ -1,9 +1,9 @@
 package user
 
 import (
-	"auth/internal/service/user/dto"
 	"context"
 	"errors"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/service/user/dto"
 	"golang.org/x/crypto/bcrypt"
 )
 

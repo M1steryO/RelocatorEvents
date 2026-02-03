@@ -107,7 +107,7 @@ func (s *repo) CreateEventAddress(ctx context.Context, event *domain.EventAddres
 	return id, nil
 }
 
-func (s *repo) GetList(ctx context.Context, params *domain.SearchParams) ([]*domain.Event, error) {
+func (s *repo) GetList(ctx context.Context, params *domain.SearchParams, country string) ([]*domain.Event, error) {
 	events := make([]*repoModel.Event, 0)
 
 	var filters []interface{}
@@ -185,6 +185,12 @@ func (s *repo) GetList(ctx context.Context, params *domain.SearchParams) ([]*dom
 			idx++
 		}
 
+		if country != "" {
+			conditions = append(conditions, fmt.Sprintf("ea.country = $%d", idx))
+			filters = append(filters, country)
+			idx++
+		}
+
 		if len(conditions) > 0 {
 			q.Query += " WHERE " + strings.Join(conditions, " AND ")
 		}
@@ -230,12 +236,12 @@ func (s *repo) GetFiltersData(ctx context.Context, userCountry string) (*domain.
        			COALESCE(jsonb_agg(
                         DISTINCT jsonb_build_object(
                        'code', ca.code,
-                       'title', ca.title)), '[]'::jsonb) AS categories
+                       'title', ca.title)) FILTER (WHERE ca.id IS NOT NULL), '[]'::jsonb) AS categories
 				from events e
-				join event_address ea on e.address_id = e.id
-				join event_categories ec on e.id = ec.event_id
-				join categories ca on ec.category_id = ca.id
-				where ea.country = $1
+				left join event_address ea on e.address_id = ea.id
+				left join event_categories ec on e.id = ec.event_id
+				left join categories ca on ec.category_id = ca.id
+				where ea.country = $1 and ea.city != ''
 				`,
 	}
 	err := s.db.DB().ScanOneContext(ctx, data, q, userCountry)

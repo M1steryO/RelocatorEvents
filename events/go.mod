@@ -1,8 +1,9 @@
 module events
 
-go 1.24.3
+go 1.25.4
 
 require (
+	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260202152021-fdaecf76364d
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/confluentinc/confluent-kafka-go/v2 v2.13.0
 	github.com/envoyproxy/protoc-gen-validate v1.2.1

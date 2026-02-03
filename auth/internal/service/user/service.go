@@ -1,8 +1,8 @@
 package user
 
 import (
-	"auth/internal/repository"
-	"auth/internal/service"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/repository"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/service"
 	"github.com/M1steryO/platform_common/pkg/db"
 )
 

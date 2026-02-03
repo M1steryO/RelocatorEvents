@@ -1,8 +1,8 @@
 package user
 
 import (
-	domain "auth/internal/domain/user"
 	"context"
+	domain "github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
 )
 
 func (s *serv) Get(ctx context.Context, id int64) (*domain.User, error) {

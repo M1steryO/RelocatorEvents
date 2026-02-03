@@ -1,17 +1,20 @@
 package access
 
 import (
-	"auth/internal/service"
-	descAccess "auth/pkg/access_v1"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/service"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/telegram"
+	descAccess "github.com/M1steryO/RelocatorEvents/auth/pkg/access_v1"
 )
 
 type Implementation struct {
 	descAccess.UnimplementedAccessV1Server
-	service service.UserService
+	service      service.UserService
+	telegramAuth *telegram.TelegramAuthenticator
 }
 
-func NewImplementation(service service.UserService) *Implementation {
+func NewImplementation(service service.UserService, telegramAuth *telegram.TelegramAuthenticator) *Implementation {
 	return &Implementation{
-		service: service,
+		service:      service,
+		telegramAuth: telegramAuth,
 	}
 }

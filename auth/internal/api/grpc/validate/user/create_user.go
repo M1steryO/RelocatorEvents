@@ -1,9 +1,9 @@
 package create_user
 
 import (
-	desc "auth/pkg/user_v1"
 	"context"
 	"errors"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"github.com/M1steryO/platform_common/pkg/sys/validate"
 	"math/rand"
 )

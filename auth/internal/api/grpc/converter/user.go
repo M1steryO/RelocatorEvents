@@ -1,9 +1,9 @@
 package converter
 
 import (
-	"auth/internal/domain/user"
-	"auth/internal/service/user/dto"
-	desc "auth/pkg/user_v1"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/service/user/dto"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )

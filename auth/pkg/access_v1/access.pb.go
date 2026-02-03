@@ -23,9 +23,10 @@ const (
 )
 
 type CheckRequest struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	EndpointAddress string                 `protobuf:"bytes,1,opt,name=endpoint_address,json=endpointAddress,proto3" json:"endpoint_address,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *CheckRequest) Reset() {
@@ -58,9 +59,16 @@ func (*CheckRequest) Descriptor() ([]byte, []int) {
 	return file_access_proto_rawDescGZIP(), []int{0}
 }
 
+func (x *CheckRequest) GetEndpointAddress() string {
+	if x != nil {
+		return x.EndpointAddress
+	}
+	return ""
+}
+
 type CheckResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	UserId        int64                  `protobuf:"varint,1,opt,name=userId,json=id,proto3" json:"userId,omitempty"`
+	UserId        int64                  `protobuf:"varint,1,opt,name=user_id,json=id,proto3" json:"user_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -106,10 +114,11 @@ var File_access_proto protoreflect.FileDescriptor
 
 const file_access_proto_rawDesc = "" +
 	"\n" +
-	"\faccess.proto\x12\taccess_v1\x1a\x1cgoogle/api/annotations.proto\"\x0e\n" +
-	"\fCheckRequest\"#\n" +
-	"\rCheckResponse\x12\x12\n" +
-	"\x06userId\x18\x01 \x01(\x03R\x02id2`\n" +
+	"\faccess.proto\x12\taccess_v1\x1a\x1cgoogle/api/annotations.proto\"9\n" +
+	"\fCheckRequest\x12)\n" +
+	"\x10endpoint_address\x18\x01 \x01(\tR\x0fendpointAddress\"$\n" +
+	"\rCheckResponse\x12\x13\n" +
+	"\auser_id\x18\x01 \x01(\x03R\x02id2`\n" +
 	"\bAccessV1\x12T\n" +
 	"\x05Check\x12\x17.access_v1.CheckRequest\x1a\x18.access_v1.CheckResponse\"\x18\x82\xd3\xe4\x93\x02\x12\x12\x10/access/v1/checkBNZLGolandProjects/MicroservicesEducation/MyProject/auth/pkg/access_v1;access_v1b\x06proto3"
 

@@ -1,8 +1,8 @@
 package interceptor
 
 import (
-	"auth/internal/metric"
 	"context"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/metric"
 	"google.golang.org/grpc"
 	"time"
 )

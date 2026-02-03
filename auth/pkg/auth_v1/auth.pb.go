@@ -76,7 +76,8 @@ func (x *LoginRequest) GetPassword() string {
 
 type LoginResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	RefreshToken  string                 `protobuf:"bytes,1,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
+	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -109,6 +110,13 @@ func (x *LoginResponse) ProtoReflect() protoreflect.Message {
 // Deprecated: Use LoginResponse.ProtoReflect.Descriptor instead.
 func (*LoginResponse) Descriptor() ([]byte, []int) {
 	return file_auth_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *LoginResponse) GetAccessToken() string {
+	if x != nil {
+		return x.AccessToken
+	}
+	return ""
 }
 
 func (x *LoginResponse) GetRefreshToken() string {
@@ -253,6 +261,7 @@ func (x *GetAccessTokenRequest) GetRefreshToken() string {
 type GetAccessTokenResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	AccessToken   string                 `protobuf:"bytes,1,opt,name=access_token,json=accessToken,proto3" json:"access_token,omitempty"`
+	RefreshToken  string                 `protobuf:"bytes,2,opt,name=refresh_token,json=refreshToken,proto3" json:"refresh_token,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -294,6 +303,13 @@ func (x *GetAccessTokenResponse) GetAccessToken() string {
 	return ""
 }
 
+func (x *GetAccessTokenResponse) GetRefreshToken() string {
+	if x != nil {
+		return x.RefreshToken
+	}
+	return ""
+}
+
 var File_auth_proto protoreflect.FileDescriptor
 
 const file_auth_proto_rawDesc = "" +
@@ -302,17 +318,19 @@ const file_auth_proto_rawDesc = "" +
 	"auth.proto\x12\aauth_v1\x1a\x1cgoogle/api/annotations.proto\"@\n" +
 	"\fLoginRequest\x12\x14\n" +
 	"\x05email\x18\x01 \x01(\tR\x05email\x12\x1a\n" +
-	"\bpassword\x18\x02 \x01(\tR\bpassword\"4\n" +
-	"\rLoginResponse\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"D\n" +
+	"\bpassword\x18\x02 \x01(\tR\bpassword\"W\n" +
+	"\rLoginResponse\x12!\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken\"D\n" +
 	"\x16GetRefreshTokenRequest\x12*\n" +
 	"\x11old_refresh_token\x18\x01 \x01(\tR\x0foldRefreshToken\">\n" +
 	"\x17GetRefreshTokenResponse\x12#\n" +
 	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"<\n" +
 	"\x15GetAccessTokenRequest\x12#\n" +
-	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\";\n" +
+	"\rrefresh_token\x18\x01 \x01(\tR\frefreshToken\"`\n" +
 	"\x16GetAccessTokenResponse\x12!\n" +
-	"\faccess_token\x18\x01 \x01(\tR\vaccessToken2\xb0\x02\n" +
+	"\faccess_token\x18\x01 \x01(\tR\vaccessToken\x12#\n" +
+	"\rrefresh_token\x18\x02 \x01(\tR\frefreshToken2\xb0\x02\n" +
 	"\x06AuthV1\x126\n" +
 	"\x05Login\x12\x15.auth_v1.LoginRequest\x1a\x16.auth_v1.LoginResponse\x12x\n" +
 	"\x0fGetRefreshToken\x12\x1f.auth_v1.GetRefreshTokenRequest\x1a .auth_v1.GetRefreshTokenResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/auth/v1/get-refresh-token\x12t\n" +

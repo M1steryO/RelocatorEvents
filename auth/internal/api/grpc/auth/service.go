@@ -1,8 +1,8 @@
 package auth
 
 import (
-	"auth/internal/service"
-	descAuth "auth/pkg/auth_v1"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/service"
+	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
 )
 
 type Implementation struct {

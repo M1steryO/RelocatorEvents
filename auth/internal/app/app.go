@@ -1,16 +1,16 @@
 package app
 
 import (
-	"auth/internal/config"
-	"auth/internal/interceptor"
-	"auth/internal/logger"
-	"auth/internal/metric"
-	"auth/internal/utils/rate_limiter"
-	descAccess "auth/pkg/access_v1"
-	descAuth "auth/pkg/auth_v1"
-	desc "auth/pkg/user_v1"
 	"context"
 	"flag"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/config"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/interceptor"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/metric"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/rate_limiter"
+	descAccess "github.com/M1steryO/RelocatorEvents/auth/pkg/access_v1"
+	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -173,7 +173,7 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 
 	authHeaderMatcher := func(key string) (string, bool) {
 		switch strings.ToLower(key) {
-		case "cookie", "set-cookie", "authorization":
+		case "cookie", "set-cookie", "authorization", "x-telegram-init-data":
 			return key, true
 		}
 		return runtime.DefaultHeaderMatcher(key)
@@ -205,10 +205,9 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 		// CORS заголовки
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")
 		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-		w.Header().Set("Access-Control-Allow-Headers", "Content-Type, Authorization")
 		w.Header().Set("Access-Control-Allow-Credentials", "true")
 		w.Header().Set("Access-Control-Allow-Headers",
-			"Content-Type, Authorization, Cookie")
+			"Content-Type, Authorization, Cookie, X-Telegram-Init-Data")
 		w.Header().Set("Access-Control-Expose-Headers", "Authorization, Set-Cookie")
 
 		if r.Method == http.MethodOptions {

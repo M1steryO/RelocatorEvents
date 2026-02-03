@@ -1,8 +1,8 @@
 package user
 
 import (
-	"auth/internal/service"
-	desc "auth/pkg/user_v1"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/service"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 )
 
 type Implementation struct {

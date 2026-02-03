@@ -1,15 +1,15 @@
 package user
 
 import (
-	"auth/internal/api/grpc/converter"
-	create_user "auth/internal/api/grpc/validate/user"
-	"auth/internal/logger"
-	"auth/internal/repository/user"
-	authModel "auth/internal/service/user/model/auth"
-	jwtUtils "auth/internal/utils/jwt"
-	desc "auth/pkg/user_v1"
 	"context"
 	"errors"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/converter"
+	create_user "github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/validate/user"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/repository/user"
+	authModel "github.com/M1steryO/RelocatorEvents/auth/internal/service/user/model/auth"
+	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/utils/jwt"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"github.com/M1steryO/platform_common/pkg/sys"
 	"github.com/M1steryO/platform_common/pkg/sys/codes"
 	"github.com/M1steryO/platform_common/pkg/sys/validate"

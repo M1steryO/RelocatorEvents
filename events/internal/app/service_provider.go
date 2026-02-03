@@ -4,6 +4,9 @@ import (
 	"context"
 	"events/internal/api/grpc/events"
 	"events/internal/api/grpc/reviews"
+	grpcClients "events/internal/client/grpc"
+	"events/internal/client/grpc/auth"
+	"events/internal/client/grpc/users"
 	"events/internal/config"
 	eventsConsumer "events/internal/consumer/kafka/events"
 	"events/internal/repository"
@@ -12,23 +15,33 @@ import (
 	"events/internal/service"
 	serv "events/internal/service/events"
 	reviewsServ "events/internal/service/reviews"
+	"github.com/M1steryO/RelocatorEvents/auth/pkg/access_v1"
+	"github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	dbclient "github.com/M1steryO/platform_common/pkg/db"
 	"github.com/M1steryO/platform_common/pkg/db/pg"
 	"github.com/M1steryO/platform_common/pkg/db/transaction"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"log"
 )
 
 type serviceProvider struct {
-	dbConfig     config.DBConfig
-	grpcConfig   config.GRPCConfig
-	httpConfig   config.HTTPConfig
-	loggerConfig config.LoggerConfig
-	promConfig   config.PromConfig
-	kafkaConfig  config.KafkaConfig
+	dbConfig          config.DBConfig
+	grpcConfig        config.GRPCConfig
+	httpConfig        config.HTTPConfig
+	loggerConfig      config.LoggerConfig
+	promConfig        config.PromConfig
+	kafkaConfig       config.KafkaConfig
+	authServiceConfig config.AuthServiceConfig
 
 	eventRepository  repository.EventRepository
 	reviewRepository repository.ReviewRepository
+
+	authServiceClient grpcClients.AuthServiceClient
+	userServiceClient grpcClients.UserServiceClient
 
 	dbClient  dbclient.Client
 	txManager dbclient.TxManager
@@ -153,6 +166,7 @@ func (s *serviceProvider) EventService(ctx context.Context) service.EventService
 		s.eventService = serv.NewEventService(
 			s.EventRepository(ctx),
 			s.TxManager(ctx),
+			s.UserServiceClient(),
 		)
 	}
 
@@ -200,4 +214,42 @@ func (s *serviceProvider) EventsHandler(ctx context.Context) *eventsConsumer.Eve
 		s.eventsHandler = eventsConsumer.NewEventsHandler(s.EventService(ctx))
 	}
 	return s.eventsHandler
+}
+
+func (s *serviceProvider) AuthServiceConfig() config.AuthServiceConfig {
+	if s.authServiceConfig == nil {
+		cfg, err := config.NewAuthServiceConfig()
+		if err != nil {
+			log.Fatalf("failed to get auth service config: %s", err.Error())
+		}
+		s.authServiceConfig = cfg
+	}
+	return s.authServiceConfig
+}
+func (s *serviceProvider) AuthServiceClient() grpcClients.AuthServiceClient {
+	if s.authServiceClient == nil {
+		conn, err := grpc.NewClient(
+			s.AuthServiceConfig().GetAddress(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())))
+		if err != nil {
+			log.Fatalf("failed to connect to auth service: %s", err.Error())
+		}
+		s.authServiceClient = auth.NewAuthServiceClient(access_v1.NewAccessV1Client(conn))
+	}
+	return s.authServiceClient
+}
+
+func (s *serviceProvider) UserServiceClient() grpcClients.UserServiceClient {
+	if s.userServiceClient == nil {
+		conn, err := grpc.NewClient(
+			s.AuthServiceConfig().GetAddress(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())))
+		if err != nil {
+			log.Fatalf("failed to connect to auth service: %s", err.Error())
+		}
+		s.userServiceClient = users.NewUserServiceClient(user_v1.NewUserV1Client(conn))
+	}
+	return s.userServiceClient
 }

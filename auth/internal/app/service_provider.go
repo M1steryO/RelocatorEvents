@@ -1,15 +1,16 @@
 package app
 
 import (
-	"auth/internal/api/grpc/access"
-	"auth/internal/api/grpc/auth"
-	"auth/internal/api/grpc/user"
-	"auth/internal/config"
-	"auth/internal/repository"
-	db "auth/internal/repository/user"
-	"auth/internal/service"
-	serv "auth/internal/service/user"
 	"context"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/access"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/auth"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/user"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/config"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/repository"
+	db "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/service"
+	serv "github.com/M1steryO/RelocatorEvents/auth/internal/service/user"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/telegram"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	dbclient "github.com/M1steryO/platform_common/pkg/db"
 	"github.com/M1steryO/platform_common/pkg/db/pg"
@@ -18,11 +19,12 @@ import (
 )
 
 type serviceProvider struct {
-	dbConfig     config.DBConfig
-	grpcConfig   config.GRPCConfig
-	httpConfig   config.HTTPConfig
-	loggerConfig config.LoggerConfig
-	promConfig   config.PromConfig
+	dbConfig       config.DBConfig
+	grpcConfig     config.GRPCConfig
+	httpConfig     config.HTTPConfig
+	loggerConfig   config.LoggerConfig
+	promConfig     config.PromConfig
+	telegramConfig config.TelegramConfig
 
 	userRepository repository.UserRepository
 	dbClient       dbclient.Client
@@ -37,6 +39,16 @@ type serviceProvider struct {
 
 func newServiceProvider() *serviceProvider {
 	return &serviceProvider{}
+}
+func (s *serviceProvider) TelegramConfig() config.TelegramConfig {
+	if s.telegramConfig == nil {
+		cfg, err := config.NewTelegramConfig()
+		if err != nil {
+			log.Fatalf("failed to load telegram config: %s", err.Error())
+		}
+		s.telegramConfig = cfg
+	}
+	return s.telegramConfig
 }
 
 func (s *serviceProvider) LoggerConfig() config.LoggerConfig {
@@ -158,7 +170,9 @@ func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.Implementation {
 
 func (s *serviceProvider) AccessImpl(ctx context.Context) *access.Implementation {
 	if s.accessImpl == nil {
-		s.accessImpl = access.NewImplementation(s.UserService(ctx))
+		secret := telegram.GenerateSecretKey(s.TelegramConfig().Token())
+		telegramAuth := telegram.NewTelegramAuthenticator(secret)
+		s.accessImpl = access.NewImplementation(s.UserService(ctx), telegramAuth)
 	}
 	return s.accessImpl
 }

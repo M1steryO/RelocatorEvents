@@ -17,9 +17,9 @@ service AccessV1{
 
 
 message CheckRequest{
-    
+  string endpoint_address = 1;
 }
 
 message CheckResponse {
-  int64 userId = 1 [json_name = "id"];
+  int64 user_id = 1 [json_name = "id"];
 }

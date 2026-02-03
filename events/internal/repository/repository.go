@@ -9,7 +9,7 @@ import (
 type EventRepository interface {
 	Get(ctx context.Context, id int64) (*domainEvents.Event, error)
 	Create(ctx context.Context, event *domainEvents.Event, addressId int64) (int64, error)
-	GetList(ctx context.Context, params *domainEvents.SearchParams) ([]*domainEvents.Event, error)
+	GetList(ctx context.Context, params *domainEvents.SearchParams, country string) ([]*domainEvents.Event, error)
 	GetFiltersData(ctx context.Context, userCountry string) (*domainEvents.FiltersData, error)
 	UpdateRating(ctx context.Context, eventId int64, grade int) error
 	CreateEventAddress(ctx context.Context, event *domainEvents.EventAddress) (int64, error)

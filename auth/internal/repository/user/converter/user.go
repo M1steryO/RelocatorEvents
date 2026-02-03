@@ -1,8 +1,8 @@
 package converter
 
 import (
-	"auth/internal/domain/user"
-	modelRepo "auth/internal/repository/user/model"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
+	modelRepo "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user/model"
 	"time"
 )
 

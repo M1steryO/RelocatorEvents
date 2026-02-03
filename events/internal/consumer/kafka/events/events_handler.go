@@ -18,6 +18,7 @@ func (e *EventsHandler) Handle(ctx context.Context, msg []byte, _ kafka.TopicPar
 	}
 
 	ev := converters.ToDomainEvent(event)
+	
 	id, err := e.service.Create(ctx, ev)
 	if err != nil {
 		logger.Error("Error creating event: ", err.Error())

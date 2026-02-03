@@ -1,8 +1,8 @@
 package interceptor
 
 import (
-	"auth/internal/utils/rate_limiter"
 	"context"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/rate_limiter"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"

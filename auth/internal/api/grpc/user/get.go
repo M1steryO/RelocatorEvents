@@ -1,12 +1,12 @@
 package user
 
 import (
-	"auth/internal/api/grpc/converter"
-	"auth/internal/logger"
-	userRepo "auth/internal/repository/user"
-	desc "auth/pkg/user_v1"
 	"context"
 	"errors"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/converter"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
+	userRepo "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log/slog"
