@@ -9,6 +9,9 @@ import "google/api/annotations.proto";
 
 service AuthV1{
   rpc Login(LoginRequest) returns (LoginResponse);
+
+  rpc TelegramLogin(TelegramLoginRequest) returns (TelegramLoginReponse);
+
   rpc GetRefreshToken(GetRefreshTokenRequest) returns (GetRefreshTokenResponse){
     option (google.api.http) = {
       get: "/auth/v1/get-refresh-token"
@@ -29,6 +32,15 @@ message LoginRequest{
 }
 
 message LoginResponse{
+  string access_token = 1;
+  string refresh_token = 2;
+}
+
+message TelegramLoginRequest{
+  int64 telegram_id = 1;
+}
+
+message TelegramLoginReponse{
   string access_token = 1;
   string refresh_token = 2;
 }

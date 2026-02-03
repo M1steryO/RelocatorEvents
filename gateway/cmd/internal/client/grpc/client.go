@@ -3,6 +3,7 @@ package grpc
 import (
 	"context"
 	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/domain/auth"
+	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/domain/user"
 )
 
 type AuthServiceClient interface {
@@ -11,5 +12,5 @@ type AuthServiceClient interface {
 }
 
 type UserServiceClient interface {
-	GetUserCountry(context.Context, int64) (string, error)
+	GetUserByTelegramId(ctx context.Context, telegramId int64) (*user.User, error)
 }

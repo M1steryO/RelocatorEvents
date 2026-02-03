@@ -20,6 +20,7 @@ const _ = grpc.SupportPackageIsVersion9
 
 const (
 	AuthV1_Login_FullMethodName           = "/auth_v1.AuthV1/Login"
+	AuthV1_TelegramLogin_FullMethodName   = "/auth_v1.AuthV1/TelegramLogin"
 	AuthV1_GetRefreshToken_FullMethodName = "/auth_v1.AuthV1/GetRefreshToken"
 	AuthV1_GetAccessToken_FullMethodName  = "/auth_v1.AuthV1/GetAccessToken"
 )
@@ -29,6 +30,7 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuthV1Client interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
+	TelegramLogin(ctx context.Context, in *TelegramLoginRequest, opts ...grpc.CallOption) (*TelegramLoginReponse, error)
 	GetRefreshToken(ctx context.Context, in *GetRefreshTokenRequest, opts ...grpc.CallOption) (*GetRefreshTokenResponse, error)
 	GetAccessToken(ctx context.Context, in *GetAccessTokenRequest, opts ...grpc.CallOption) (*GetAccessTokenResponse, error)
 }
@@ -45,6 +47,16 @@ func (c *authV1Client) Login(ctx context.Context, in *LoginRequest, opts ...grpc
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(LoginResponse)
 	err := c.cc.Invoke(ctx, AuthV1_Login_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *authV1Client) TelegramLogin(ctx context.Context, in *TelegramLoginRequest, opts ...grpc.CallOption) (*TelegramLoginReponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(TelegramLoginReponse)
+	err := c.cc.Invoke(ctx, AuthV1_TelegramLogin_FullMethodName, in, out, cOpts...)
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +88,7 @@ func (c *authV1Client) GetAccessToken(ctx context.Context, in *GetAccessTokenReq
 // for forward compatibility.
 type AuthV1Server interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
+	TelegramLogin(context.Context, *TelegramLoginRequest) (*TelegramLoginReponse, error)
 	GetRefreshToken(context.Context, *GetRefreshTokenRequest) (*GetRefreshTokenResponse, error)
 	GetAccessToken(context.Context, *GetAccessTokenRequest) (*GetAccessTokenResponse, error)
 	mustEmbedUnimplementedAuthV1Server()
@@ -90,6 +103,9 @@ type UnimplementedAuthV1Server struct{}
 
 func (UnimplementedAuthV1Server) Login(context.Context, *LoginRequest) (*LoginResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+}
+func (UnimplementedAuthV1Server) TelegramLogin(context.Context, *TelegramLoginRequest) (*TelegramLoginReponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method TelegramLogin not implemented")
 }
 func (UnimplementedAuthV1Server) GetRefreshToken(context.Context, *GetRefreshTokenRequest) (*GetRefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRefreshToken not implemented")
@@ -132,6 +148,24 @@ func _AuthV1_Login_Handler(srv interface{}, ctx context.Context, dec func(interf
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(AuthV1Server).Login(ctx, req.(*LoginRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuthV1_TelegramLogin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(TelegramLoginRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthV1Server).TelegramLogin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthV1_TelegramLogin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthV1Server).TelegramLogin(ctx, req.(*TelegramLoginRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -182,6 +216,10 @@ var AuthV1_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Login",
 			Handler:    _AuthV1_Login_Handler,
+		},
+		{
+			MethodName: "TelegramLogin",
+			Handler:    _AuthV1_TelegramLogin_Handler,
 		},
 		{
 			MethodName: "GetRefreshToken",
