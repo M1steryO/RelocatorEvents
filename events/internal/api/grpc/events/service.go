@@ -1,8 +1,8 @@
 package events
 
 import (
-	"events/internal/service"
-	desc "events/pkg/events_v1"
+	"github.com/M1steryO/RelocatorEvents/events/internal/service"
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
 )
 
 type EventsImplementation struct {

@@ -2,9 +2,9 @@ package events
 
 import (
 	"context"
-	converter "events/internal/api/grpc/converters/events"
-	"events/internal/core/logger"
-	desc "events/pkg/events_v1"
+	converter "github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/converters/events"
+	"github.com/M1steryO/RelocatorEvents/events/internal/core/logger"
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
 	"github.com/M1steryO/platform_common/pkg/sys"
 	"github.com/M1steryO/platform_common/pkg/sys/codes"
 	"log/slog"

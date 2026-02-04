@@ -1,9 +1,9 @@
 package events
 
 import (
-	grpcClients "events/internal/client/grpc"
-	"events/internal/repository"
-	"events/internal/service"
+	grpcClients "github.com/M1steryO/RelocatorEvents/events/internal/client/grpc"
+	"github.com/M1steryO/RelocatorEvents/events/internal/repository"
+	"github.com/M1steryO/RelocatorEvents/events/internal/service"
 	"github.com/M1steryO/platform_common/pkg/db"
 )
 

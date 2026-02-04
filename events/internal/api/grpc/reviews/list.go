@@ -2,8 +2,8 @@ package reviews
 
 import (
 	"context"
-	converters "events/internal/api/grpc/converters/reviews"
-	desc "events/pkg/reviews_v1"
+	converters "github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/converters/reviews"
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
 )
 
 func (impl *ReviewsImplementation) ListReviews(ctx context.Context, req *desc.ListReviewsRequest) (*desc.ListReviewsResponse, error) {

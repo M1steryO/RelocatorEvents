@@ -2,8 +2,8 @@ package service
 
 import (
 	"context"
-	domainEvents "events/internal/domain/events"
-	domainReviews "events/internal/domain/reviews"
+	domainEvents "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
+	domainReviews "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
 )
 
 type EventService interface {

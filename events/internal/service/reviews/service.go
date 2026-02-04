@@ -1,7 +1,7 @@
 package reviews
 
 import (
-	"events/internal/repository"
+	"github.com/M1steryO/RelocatorEvents/events/internal/repository"
 	"github.com/M1steryO/platform_common/pkg/db"
 )
 

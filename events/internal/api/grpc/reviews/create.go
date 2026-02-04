@@ -2,8 +2,8 @@ package reviews
 
 import (
 	"context"
-	converter "events/internal/api/grpc/converters/reviews"
-	desc "events/pkg/reviews_v1"
+	converter "github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/converters/reviews"
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
 )
 
 func (impl *ReviewsImplementation) CreateReview(ctx context.Context, req *desc.CreateReviewRequest) (*desc.CreateReviewResponse, error) {
@@ -15,7 +15,7 @@ func (impl *ReviewsImplementation) CreateReview(ctx context.Context, req *desc.C
 	//if !ok {
 	//	return nil, errors.New("missing userId")
 	//}
-	
+
 	_, err = impl.service.Create(ctx, req.EventId, review.AuthorId, review)
 	if err != nil {
 		return nil, err

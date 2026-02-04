@@ -3,8 +3,8 @@ package events
 import (
 	"context"
 	"encoding/json"
-	"events/internal/consumer/kafka/events/converters"
-	"events/internal/core/logger"
+	"github.com/M1steryO/RelocatorEvents/events/internal/consumer/kafka/events/converters"
+	"github.com/M1steryO/RelocatorEvents/events/internal/core/logger"
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 )
 
@@ -18,7 +18,7 @@ func (e *EventsHandler) Handle(ctx context.Context, msg []byte, _ kafka.TopicPar
 	}
 
 	ev := converters.ToDomainEvent(event)
-	
+
 	id, err := e.service.Create(ctx, ev)
 	if err != nil {
 		logger.Error("Error creating event: ", err.Error())

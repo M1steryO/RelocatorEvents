@@ -2,10 +2,10 @@ package events
 
 import (
 	"context"
-	domain "events/internal/domain/events"
-	"events/internal/repository/events/converters"
-	repoModel "events/internal/repository/events/model"
 	"fmt"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
+	"github.com/M1steryO/RelocatorEvents/events/internal/repository/events/converters"
+	repoModel "github.com/M1steryO/RelocatorEvents/events/internal/repository/events/model"
 	"github.com/M1steryO/platform_common/pkg/db"
 	"github.com/jackc/pgx/v4"
 	"github.com/pkg/errors"

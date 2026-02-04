@@ -2,8 +2,8 @@ package converters
 
 import (
 	"database/sql"
-	domain "events/internal/domain/events"
-	repoModel "events/internal/repository/events/model"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
+	repoModel "github.com/M1steryO/RelocatorEvents/events/internal/repository/events/model"
 	"time"
 )
 

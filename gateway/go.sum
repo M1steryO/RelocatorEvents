@@ -1,5 +1,7 @@
 github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260203140136-96f43d45397a h1:LU+uQGesxwztJMrebp87bz7kh5D62rmEZrpp5ye8QDg=
 github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260203140136-96f43d45397a/go.mod h1:YNZYQKhEownnaZcj+m1eGY+gVxs7D/CbCIn6lhrfV4A=
+github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260204152241-a6707f1e5c95 h1:WmOv0N7xQtkNDb+krGrcv6e8xnoDVnxIGltBHrCyWl0=
+github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260204152241-a6707f1e5c95/go.mod h1:gMrcJ+0d1qOAlSKJ5BXvc6a/17DW2ohHnkcJGk39scc=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2 h1:RJRGxQmBiuthNbuXj7MN7C2NStL45Ckfo89CXkOc+qY=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2/go.mod h1:sY5taDuxCRvhPTf/pFEqShY+rHvH6VG8UM/ATXoB1aI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

@@ -3,7 +3,7 @@ package events
 import (
 	"context"
 	"errors"
-	domain "events/internal/domain/events"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 )
 
 func (s *serv) GetList(ctx context.Context, params *domain.SearchParams) (*domain.EventsList, error) {

@@ -1,9 +1,9 @@
 package reviews
 
 import (
-	domain "events/internal/domain/reviews"
-	desc "events/pkg/reviews_v1"
 	"fmt"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
 

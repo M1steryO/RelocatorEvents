@@ -2,7 +2,7 @@ package events
 
 import (
 	"context"
-	domain "events/internal/domain/events"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 )
 
 func (s *serv) Create(ctx context.Context, event *domain.Event) (int64, error) {

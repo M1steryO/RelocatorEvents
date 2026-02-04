@@ -2,9 +2,9 @@ package reviews
 
 import (
 	"context"
-	domain "events/internal/domain/reviews"
-	"events/internal/repository/reviews/converters"
 	"fmt"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
+	"github.com/M1steryO/RelocatorEvents/events/internal/repository/reviews/converters"
 	"github.com/M1steryO/platform_common/pkg/db"
 	"github.com/jackc/pgconn"
 	"github.com/pkg/errors"

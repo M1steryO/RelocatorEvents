@@ -3,8 +3,8 @@ package reviews
 import (
 	"context"
 	"errors"
-	"events/internal/core/logger"
-	domain "events/internal/domain/reviews"
+	"github.com/M1steryO/RelocatorEvents/events/internal/core/logger"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
 	"log/slog"
 )
 

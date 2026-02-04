@@ -75,14 +75,16 @@ func (i *Implementation) handleTelegram(ctx context.Context, initData string) (*
 }
 
 func (i *Implementation) handleJWT(_ context.Context, accessToken, refreshToken string) (*desc.CheckResponse, error) {
-	claims, err := jwtUtils.VerifyToken(accessToken, i.jwtConfig.AccessSecret())
-	if err == nil {
-		return &desc.CheckResponse{UserId: claims.Id}, nil
-	}
+	if accessToken != "" {
+		claims, err := jwtUtils.VerifyToken(accessToken, i.jwtConfig.AccessSecret())
+		if err == nil {
+			return &desc.CheckResponse{UserId: claims.Id}, nil
+		}
 
-	if !errors.Is(err, jwt.ErrTokenExpired) {
-		logger.Error("failed to verify token", "err", err.Error())
-		return nil, status.Error(codes.Unauthenticated, "invalid access token")
+		if !errors.Is(err, jwt.ErrTokenExpired) {
+			logger.Error("failed to verify token", "err", err.Error())
+			return nil, status.Error(codes.Unauthenticated, "invalid access token")
+		}
 	}
 
 	refreshClaims, err := jwtUtils.VerifyToken(refreshToken, i.jwtConfig.RefreshSecret())
@@ -114,7 +116,7 @@ func (i *Implementation) Check(ctx context.Context, req *desc.CheckRequest) (*de
 
 	accessToken := req.GetAccessToken()
 	refreshToken := req.GetRefreshToken()
-	if accessToken != "" && refreshToken != "" {
+	if refreshToken != "" {
 		return i.handleJWT(ctx, accessToken, refreshToken)
 	}
 

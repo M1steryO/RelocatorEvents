@@ -1,8 +1,8 @@
 package converters
 
 import (
-	domain "events/internal/domain/reviews"
-	"events/internal/repository/reviews/model"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
+	"github.com/M1steryO/RelocatorEvents/events/internal/repository/reviews/model"
 	"strings"
 )
 

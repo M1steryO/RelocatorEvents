@@ -4,7 +4,7 @@ import (
 	"context"
 	clients "github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/domain/auth"
-	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/utils/telegram"
+	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/logger"
 	"net/http"
 	"strings"
 )
@@ -21,12 +21,6 @@ type AuthMiddleware struct {
 
 func NewAuthMiddleware(auth clients.AuthServiceClient) *AuthMiddleware {
 	return &AuthMiddleware{auth: auth}
-}
-
-type authResponse struct {
-	userId       int64
-	refreshToken string
-	accessToken  string
 }
 
 func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
@@ -48,32 +42,32 @@ func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 
 		if strings.HasPrefix(authHeader, tokenPrefix) || refreshCookie != "" || tg != "" {
 			accessToken := strings.TrimPrefix(authHeader, tokenPrefix)
-
-			resp, err = m.auth.Check(ctx, accessToken, refreshCookie, tg) // <-- ты это можешь сделать одним методом
+			resp, err = m.auth.Check(ctx, accessToken, refreshCookie, tg)
 		} else {
+			logger.Info("credentials not found")
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		if err != nil || resp == nil || resp.userId == 0 {
+		if err != nil || resp == nil || resp.UserId == 0 {
+			logger.Info("invalid tokens", "err", err.Error())
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		if resp.refreshToken != "" {
-			setRefreshCookie(w, resp.refreshToken)
+		if resp.RefreshToken != "" {
+			setRefreshCookie(w, resp.RefreshToken)
 		}
-		if resp.accessToken != "" {
-			w.Header().Set("Authorization", tokenPrefix+resp.accessToken)
+		if resp.AccessToken != "" {
+			w.Header().Set("Authorization", tokenPrefix+resp.AccessToken)
 		}
 
-		ctx = context.WithValue(ctx, ctxUserIdKey, resp.userId)
+		ctx = context.WithValue(ctx, ctxUserIdKey, resp.UserId)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
 }
 
 func setRefreshCookie(w http.ResponseWriter, token string) {
-	secure := true
 	sameSite := http.SameSiteNoneMode
 
 	c := &http.Cookie{
@@ -81,7 +75,7 @@ func setRefreshCookie(w http.ResponseWriter, token string) {
 		Value:    token,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   secure,
+		Secure:   true,
 		SameSite: sameSite,
 	}
 	http.SetCookie(w, c)

@@ -2,7 +2,7 @@ package interceptor
 
 import (
 	"context"
-	"events/internal/metric"
+	"github.com/M1steryO/RelocatorEvents/events/internal/metric"
 	"google.golang.org/grpc"
 	"time"
 )

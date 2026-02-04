@@ -2,7 +2,7 @@ package reviews
 
 import (
 	"context"
-	domainReviews "events/internal/domain/reviews"
+	domainReviews "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
 )
 
 func (s *serv) List(ctx context.Context, eventId int64) ([]*domainReviews.Review, error) {

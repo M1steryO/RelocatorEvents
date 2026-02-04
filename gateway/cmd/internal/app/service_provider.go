@@ -1,7 +1,7 @@
 package app
 
 import (
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/access_v1"
+	"github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
 	"github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	grpcClients "github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/client/grpc/auth"
@@ -80,7 +80,7 @@ func (s *serviceProvider) AuthServiceClient() grpcClients.AuthServiceClient {
 		if err != nil {
 			log.Fatalf("failed to connect to auth service: %s", err.Error())
 		}
-		s.authServiceClient = auth.NewAuthServiceClient(access_v1.NewAccessV1Client(conn))
+		s.authServiceClient = auth.NewAuthServiceClient(auth_v1.NewAuthV1Client(conn))
 	}
 	return s.authServiceClient
 }

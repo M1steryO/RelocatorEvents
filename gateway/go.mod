@@ -3,7 +3,7 @@ module github.com/M1steryO/RelocatorEvents/gateway
 go 1.25.6
 
 require (
-	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260203140136-96f43d45397a
+	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260204152241-a6707f1e5c95
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/fatih/color v1.18.0
 	github.com/go-chi/chi/v5 v5.2.4

@@ -1,6 +1,6 @@
 package events
 
-import "events/internal/service"
+import "github.com/M1steryO/RelocatorEvents/events/internal/service"
 
 type EventsHandler struct {
 	service service.EventService

@@ -2,8 +2,8 @@ package events
 
 import (
 	"context"
-	"events/internal/core/logger"
-	domain "events/internal/domain/events"
+	"github.com/M1steryO/RelocatorEvents/events/internal/core/logger"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 	"log/slog"
 )
 

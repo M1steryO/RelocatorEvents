@@ -1,4 +1,4 @@
-module events
+module github.com/M1steryO/RelocatorEvents/events
 
 go 1.25.4
 

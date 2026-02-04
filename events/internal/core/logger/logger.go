@@ -1,7 +1,7 @@
 package logger
 
 import (
-	"events/internal/core/utils/logger/handlers/slogpretty"
+	"github.com/M1steryO/RelocatorEvents/events/internal/core/utils/logger/handlers/slogpretty"
 	"log/slog"
 	"os"
 )

@@ -95,15 +95,21 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 
 	cors := middleware.NewCORS(a.serviceProvider.HTTPConfig().AllowedOrigins())
 
-	r := router.NewRouter(router.Deps{
-		CORS: cors,
-		Auth: a.serviceProvider.AuthServiceClient(),
+	r, err := router.NewRouter(ctx, router.Deps{
+		CORS:    cors,
+		Auth:    a.serviceProvider.AuthServiceClient(),
+		AuthCfg: a.serviceProvider.AuthServiceConfig(),
 	})
+
+	if err != nil {
+		return err
+	}
 
 	a.httpServer = &http.Server{
 		Addr:    a.serviceProvider.HTTPConfig().Address(),
 		Handler: r,
 	}
+
 	return nil
 }
 

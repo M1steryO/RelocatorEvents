@@ -1,7 +1,7 @@
 package converters
 
 import (
-	domain "events/internal/domain/events"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 	"strings"
 	"time"
 )
@@ -35,7 +35,7 @@ func ToDomainEvent(src Event) *domain.Event {
 	}
 
 	pricePtr = &price
-	
+
 	ev := &domain.Event{
 		Title:       strings.TrimSpace(src.Title),
 		Description: strPtrOrNil(src.Description),
