@@ -4,8 +4,8 @@ import (
 	"context"
 	"errors"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/converter"
+	domain "github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
-	userRepo "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user"
 	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -22,7 +22,7 @@ func (i *Implementation) GetUserByTelegramId(ctx context.Context, req *desc.GetU
 	user, err := i.service.GetByTelegramId(ctx, req.GetTelegramId())
 
 	if err != nil {
-		if errors.Is(err, userRepo.ErrUserNotFound) {
+		if errors.Is(err, domain.ErrUserNotFound) {
 			return nil, status.Errorf(codes.NotFound, "user not found")
 		}
 		return nil, err

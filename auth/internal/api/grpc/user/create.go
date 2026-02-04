@@ -5,8 +5,8 @@ import (
 	"errors"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/converter"
 	create_user "github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/validate/user"
+	domain "github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/repository/user"
 	authModel "github.com/M1steryO/RelocatorEvents/auth/internal/service/user/model/auth"
 	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/utils/jwt"
 	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
@@ -36,7 +36,7 @@ func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*
 
 	id, err := i.service.Create(ctx, converter.ToCreateUserDtoInfoFromApi(req, &telegramId))
 	if err != nil {
-		if errors.Is(err, user.ErrUserExists) {
+		if errors.Is(err, domain.ErrUserExists) {
 			return nil, sys.NewCommonError("user already exists", codes.AlreadyExists)
 		}
 		return nil, err

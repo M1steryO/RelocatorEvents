@@ -3,7 +3,7 @@ package auth
 import (
 	"context"
 	"errors"
-	userRepo "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user"
+	domain "github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
 	authModel "github.com/M1steryO/RelocatorEvents/auth/internal/service/user/model/auth"
 	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/utils/jwt"
 	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
@@ -16,7 +16,7 @@ func (i *Implementation) TelegramLogin(ctx context.Context, req *descAuth.Telegr
 
 	user, err := i.service.GetByTelegramId(ctx, req.GetTelegramId())
 	if err != nil {
-		if errors.Is(err, userRepo.ErrUserNotFound) {
+		if errors.Is(err, domain.ErrUserNotFound) {
 			return nil, status.Errorf(codes.NotFound, "user not found")
 		}
 		return nil, err
@@ -27,13 +27,13 @@ func (i *Implementation) TelegramLogin(ctx context.Context, req *descAuth.Telegr
 		Role: role,
 	}
 
-	refreshToken, err := jwtUtils.GenerateToken(userInfo, []byte(refreshTokenSecretKey), refreshTokenExpiration)
+	refreshToken, err := jwtUtils.GenerateToken(userInfo, i.jwtConfig.RefreshSecret(), i.jwtConfig.RefreshExpiration())
 
 	if err != nil {
 		return nil, errors.New("failed to generate token")
 	}
 
-	accessToken, err := jwtUtils.GenerateToken(userInfo, []byte(accessTokenSecretKey), accessTokenExpiration)
+	accessToken, err := jwtUtils.GenerateToken(userInfo, i.jwtConfig.AccessSecret(), i.jwtConfig.AccessExpiration())
 	if err != nil {
 		return nil, errors.New("failed to generate token")
 	}

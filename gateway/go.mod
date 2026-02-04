@@ -3,11 +3,11 @@ module github.com/M1steryO/RelocatorEvents/gateway
 go 1.25.6
 
 require (
-	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260203133802-f8658695e8e1
+	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260203140136-96f43d45397a
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
-	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.18.0
 	github.com/go-chi/chi/v5 v5.2.4
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/uuid v1.6.0
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645
 	github.com/joho/godotenv v1.5.1
@@ -18,6 +18,7 @@ require (
 )
 
 require (
+	github.com/dgrijalva/jwt-go v3.2.0+incompatible // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.7 // indirect
 	github.com/mattn/go-colorable v0.1.14 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect

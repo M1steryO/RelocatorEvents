@@ -2,97 +2,87 @@ package middleware
 
 import (
 	"context"
-	"errors"
-	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/utils/telegram"
-	"google.golang.org/grpc/metadata"
-	"net/http"
-	"time"
-
 	clients "github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/client/grpc"
+	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/domain/auth"
+	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/utils/telegram"
+	"net/http"
+	"strings"
 )
 
-type ctxKey int
-
-const ctxUserID ctxKey = iota
-
-func UserIDFromContext(ctx context.Context) (int64, bool) {
-	v := ctx.Value(ctxUserID)
-	id, ok := v.(int64)
-	return id, ok
-}
+const (
+	ctxUserIdKey = "userId"
+	tokenPrefix  = "Bearer "
+)
 
 type AuthMiddleware struct {
 	auth clients.AuthServiceClient
 	user clients.UserServiceClient
-	telegramAuth *telegram.TelegramAuthenticator
 }
 
-func NewAuthMiddleware(auth clients.AuthServiceClient, telegramAuth *telegram.TelegramAuthenticator) *AuthMiddleware {
-	return &AuthMiddleware{auth: auth, telegramAuth: telegramAuth}
+func NewAuthMiddleware(auth clients.AuthServiceClient) *AuthMiddleware {
+	return &AuthMiddleware{auth: auth}
 }
 
-
-const refreshTokenExpiration = 60 * time.Minute
-const refreshTokenSecretKey = "W4/X+LLjehdxptt4YgGFCvMpq5ewptpZZYRHY6A72g0="
-const accessTokenSecretKey = "W4/X+LLjehdxptt4YgGFCvMpq5ewptpZZYRHY6A72g01"
-const accessTokenExpiration = 10 * time.Minute
-
-func (m *AuthMiddleware) checkTelegramInitData(ctx context.Context, initData string) (int64, error) {
-
-	clearData, err := m.telegramAuth.Validate(initData, 500*time.Hour)
-	if err != nil {
-		return 0, err
-	}
-	if clearData.User == nil {
-		return 0, errors.New("user-data is not provided")
-	}
-	telegramId := clearData.User.ID
-	user, err := m.user.GetUserByTelegramId(ctx, telegramId)
-	if err != nil {
-		return 0, err
-	}
-	err = setTokens(ctx, user.ID, "user")
-	if err != nil {
-		return 0, err
-	}
-	return user.ID, nil
+type authResponse struct {
+	userId       int64
+	refreshToken string
+	accessToken  string
 }
 
 func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authorization := r.Header.Get("Authorization")
-		cookie := r.Header.Get("Cookie")
+		ctx := r.Context()
+
+		authHeader := r.Header.Get("Authorization")
 		tg := r.Header.Get("X-Telegram-Init-Data")
 
-
-		if authorization == ""{
-			if cookie == "" {
-				if tg == "" {
-					w.WriteHeader(http.StatusUnauthorized)
-					return
-				}
-
-
-			}
+		var refreshCookie string
+		if c, err := r.Cookie("refresh_token"); err == nil && c != nil {
+			refreshCookie = c.Value
 		}
 
+		var (
+			resp *auth.AuthData
+			err  error
+		)
 
-		res, err := m.auth.
-		if err != nil {
-			http.Error(w, "unauthorized", http.StatusUnauthorized)
+		if strings.HasPrefix(authHeader, tokenPrefix) || refreshCookie != "" || tg != "" {
+			accessToken := strings.TrimPrefix(authHeader, tokenPrefix)
+
+			resp, err = m.auth.Check(ctx, accessToken, refreshCookie, tg) // <-- ты это можешь сделать одним методом
+		} else {
+			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}
 
-		// Прокидываем обновлённые токены в ответ клиенту
-		for _, sc := range res.SetCookie {
-			w.Header().Add("Set-Cookie", sc)
-		}
-		// Обычно authorization один, но пусть будет add
-		for _, ah := range res.AuthHeader {
-			w.Header().Set("Authorization", ah)
+		if err != nil || resp == nil || resp.userId == 0 {
+			w.WriteHeader(http.StatusUnauthorized)
+			return
 		}
 
-		ctx := context.WithValue(r.Context(), ctxUserID, res.UserID)
+		if resp.refreshToken != "" {
+			setRefreshCookie(w, resp.refreshToken)
+		}
+		if resp.accessToken != "" {
+			w.Header().Set("Authorization", tokenPrefix+resp.accessToken)
+		}
+
+		ctx = context.WithValue(ctx, ctxUserIdKey, resp.userId)
 		next.ServeHTTP(w, r.WithContext(ctx))
 	})
+}
+
+func setRefreshCookie(w http.ResponseWriter, token string) {
+	secure := true
+	sameSite := http.SameSiteNoneMode
+
+	c := &http.Cookie{
+		Name:     "refresh_token",
+		Value:    token,
+		Path:     "/",
+		HttpOnly: true,
+		Secure:   secure,
+		SameSite: sameSite,
+	}
+	http.SetCookie(w, c)
 }

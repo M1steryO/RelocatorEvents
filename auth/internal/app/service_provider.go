@@ -25,6 +25,7 @@ type serviceProvider struct {
 	loggerConfig   config.LoggerConfig
 	promConfig     config.PromConfig
 	telegramConfig config.TelegramConfig
+	jwtConfig      config.JWTConfig
 
 	userRepository repository.UserRepository
 	dbClient       dbclient.Client
@@ -97,6 +98,17 @@ func (s *serviceProvider) PromConfig() config.PromConfig {
 	return s.promConfig
 }
 
+func (s *serviceProvider) JWTConfig() config.JWTConfig {
+	if s.jwtConfig == nil {
+		cfg, err := config.NewJWTConfig()
+		if err != nil {
+			log.Fatalf("failed to get jwt config: %s", err.Error())
+		}
+		s.jwtConfig = cfg
+	}
+	return s.jwtConfig
+}
+
 func (s *serviceProvider) DBCClient(ctx context.Context) dbclient.Client {
 	if s.dbClient == nil {
 		cl, err := pg.New(ctx, s.DBConfig().GetDSN())
@@ -163,16 +175,17 @@ func (s *serviceProvider) UserImpl(ctx context.Context) *user.Implementation {
 
 func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.Implementation {
 	if s.authImpl == nil {
-		s.authImpl = auth.NewImplementation(s.UserService(ctx))
+		secret := telegram.GenerateSecretKey(s.TelegramConfig().Token())
+		telegramAuth := telegram.NewTelegramAuthenticator(secret)
+
+		s.authImpl = auth.NewImplementation(s.UserService(ctx), telegramAuth, s.JWTConfig())
 	}
 	return s.authImpl
 }
 
 func (s *serviceProvider) AccessImpl(ctx context.Context) *access.Implementation {
 	if s.accessImpl == nil {
-		secret := telegram.GenerateSecretKey(s.TelegramConfig().Token())
-		telegramAuth := telegram.NewTelegramAuthenticator(secret)
-		s.accessImpl = access.NewImplementation(s.UserService(ctx), telegramAuth)
+		s.accessImpl = access.NewImplementation(s.UserService(ctx))
 	}
 	return s.accessImpl
 }

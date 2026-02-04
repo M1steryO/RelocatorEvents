@@ -6,14 +6,14 @@ import (
 	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/domain/auth"
 )
 
-func (c *authServiceClient) GetAccessToken(ctx context.Context, refreshToken string) (auth.AuthData, error) {
-	req := &auth_v1.GetAccessTokenRequest{
+func (c *authServiceClient) Check(ctx context.Context, accessToken, refreshToken, initData string) (auth.AuthData, error) {
+	req := &auth_v1.Chec{
 		RefreshToken: refreshToken,
 	}
 	resp, err := c.client.GetAccessToken(ctx, req)
 
 	if err != nil {
-		return auth.AuthData{}, err
+		return auth.TokenPair{}, err
 	}
 	return auth.AuthData{
 		AccessToken:  resp.AccessToken,

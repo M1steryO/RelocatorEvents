@@ -8,9 +8,9 @@ require (
 	github.com/M1steryO/platform_common v0.0.0-20250908100315-155b42a7641b
 	github.com/brianvoe/gofakeit/v7 v7.3.0
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
-	github.com/envoyproxy/protoc-gen-validate v1.2.1
 	github.com/fatih/color v1.18.0
 	github.com/gojuno/minimock/v3 v3.4.7
+	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/grpc-ecosystem/go-grpc-middleware v1.4.0
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.27.1
 	github.com/grpc-ecosystem/grpc-opentracing v0.0.0-20180507213350-8e809c8a8645

@@ -21,6 +21,7 @@ const _ = grpc.SupportPackageIsVersion9
 const (
 	AuthV1_Login_FullMethodName           = "/auth_v1.AuthV1/Login"
 	AuthV1_TelegramLogin_FullMethodName   = "/auth_v1.AuthV1/TelegramLogin"
+	AuthV1_Check_FullMethodName           = "/auth_v1.AuthV1/Check"
 	AuthV1_GetRefreshToken_FullMethodName = "/auth_v1.AuthV1/GetRefreshToken"
 	AuthV1_GetAccessToken_FullMethodName  = "/auth_v1.AuthV1/GetAccessToken"
 )
@@ -31,6 +32,7 @@ const (
 type AuthV1Client interface {
 	Login(ctx context.Context, in *LoginRequest, opts ...grpc.CallOption) (*LoginResponse, error)
 	TelegramLogin(ctx context.Context, in *TelegramLoginRequest, opts ...grpc.CallOption) (*TelegramLoginReponse, error)
+	Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error)
 	GetRefreshToken(ctx context.Context, in *GetRefreshTokenRequest, opts ...grpc.CallOption) (*GetRefreshTokenResponse, error)
 	GetAccessToken(ctx context.Context, in *GetAccessTokenRequest, opts ...grpc.CallOption) (*GetAccessTokenResponse, error)
 }
@@ -63,6 +65,16 @@ func (c *authV1Client) TelegramLogin(ctx context.Context, in *TelegramLoginReque
 	return out, nil
 }
 
+func (c *authV1Client) Check(ctx context.Context, in *CheckRequest, opts ...grpc.CallOption) (*CheckResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CheckResponse)
+	err := c.cc.Invoke(ctx, AuthV1_Check_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *authV1Client) GetRefreshToken(ctx context.Context, in *GetRefreshTokenRequest, opts ...grpc.CallOption) (*GetRefreshTokenResponse, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(GetRefreshTokenResponse)
@@ -89,6 +101,7 @@ func (c *authV1Client) GetAccessToken(ctx context.Context, in *GetAccessTokenReq
 type AuthV1Server interface {
 	Login(context.Context, *LoginRequest) (*LoginResponse, error)
 	TelegramLogin(context.Context, *TelegramLoginRequest) (*TelegramLoginReponse, error)
+	Check(context.Context, *CheckRequest) (*CheckResponse, error)
 	GetRefreshToken(context.Context, *GetRefreshTokenRequest) (*GetRefreshTokenResponse, error)
 	GetAccessToken(context.Context, *GetAccessTokenRequest) (*GetAccessTokenResponse, error)
 	mustEmbedUnimplementedAuthV1Server()
@@ -106,6 +119,9 @@ func (UnimplementedAuthV1Server) Login(context.Context, *LoginRequest) (*LoginRe
 }
 func (UnimplementedAuthV1Server) TelegramLogin(context.Context, *TelegramLoginRequest) (*TelegramLoginReponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method TelegramLogin not implemented")
+}
+func (UnimplementedAuthV1Server) Check(context.Context, *CheckRequest) (*CheckResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method Check not implemented")
 }
 func (UnimplementedAuthV1Server) GetRefreshToken(context.Context, *GetRefreshTokenRequest) (*GetRefreshTokenResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRefreshToken not implemented")
@@ -170,6 +186,24 @@ func _AuthV1_TelegramLogin_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AuthV1_Check_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CheckRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuthV1Server).Check(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuthV1_Check_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuthV1Server).Check(ctx, req.(*CheckRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AuthV1_GetRefreshToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRefreshTokenRequest)
 	if err := dec(in); err != nil {
@@ -220,6 +254,10 @@ var AuthV1_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "TelegramLogin",
 			Handler:    _AuthV1_TelegramLogin_Handler,
+		},
+		{
+			MethodName: "Check",
+			Handler:    _AuthV1_Check_Handler,
 		},
 		{
 			MethodName: "GetRefreshToken",

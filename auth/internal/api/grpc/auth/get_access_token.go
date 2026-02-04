@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	authModel "github.com/M1steryO/RelocatorEvents/auth/internal/service/user/model/auth"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/service/user/model/auth"
 	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/utils/jwt"
 	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
 	"google.golang.org/grpc/codes"
@@ -12,16 +12,16 @@ import (
 func (i *Implementation) GetAccessToken(ctx context.Context, req *descAuth.GetAccessTokenRequest) (*descAuth.GetAccessTokenResponse, error) {
 	claims, err := jwtUtils.VerifyToken(
 		req.GetRefreshToken(),
-		[]byte(refreshTokenSecretKey),
+		i.jwtConfig.RefreshSecret(),
 	)
 	if err != nil {
 		return nil, status.Errorf(codes.Aborted, "invalid refresh token")
 	}
-	accessToken, err := jwtUtils.GenerateToken(authModel.UserInfo{
+	accessToken, err := jwtUtils.GenerateToken(auth.UserInfo{
 		Id:   claims.Id,
 		Role: claims.Role,
-	}, []byte(accessTokenSecretKey),
-		accessTokenExpiration)
+	}, i.jwtConfig.AccessSecret(),
+		i.jwtConfig.AccessExpiration())
 	if err != nil {
 		return nil, err
 	}

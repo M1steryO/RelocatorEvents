@@ -13,11 +13,6 @@ import (
 	"github.com/lib/pq"
 )
 
-var (
-	ErrUserNotFound = errors.New("user not found")
-	ErrUserExists   = errors.New("user exists")
-)
-
 const constraintErrorCode = "23505"
 
 type repo struct {
@@ -43,7 +38,7 @@ func (s *repo) Get(ctx context.Context, id int64) (*modelDomain.User, error) {
 	err := s.db.DB().ScanOneContext(ctx, &user, q, id)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrUserNotFound
+			return nil, modelDomain.ErrUserNotFound
 		}
 		return nil, err
 	}
@@ -72,7 +67,7 @@ func (s *repo) GetByTelegramId(ctx context.Context, telegramId int64) (*modelDom
 	err := s.db.DB().ScanOneContext(ctx, &user, q, telegramId)
 	if err != nil {
 		if errors.Is(err, pgx.ErrNoRows) {
-			return nil, ErrUserNotFound
+			return nil, modelDomain.ErrUserNotFound
 		}
 		return nil, err
 	}
@@ -94,7 +89,7 @@ func (s *repo) Create(ctx context.Context, user *modelRepo.User) (int64, error) 
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
 			if pgErr.Code == constraintErrorCode {
-				return 0, ErrUserExists
+				return 0, modelDomain.ErrUserExists
 			}
 		}
 		return 0, err
