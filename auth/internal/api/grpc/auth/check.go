@@ -42,7 +42,7 @@ func (i *Implementation) issueTokens(userID int64, role string) (tokenPair, erro
 }
 
 func (i *Implementation) handleTelegram(ctx context.Context, initData string) (*desc.CheckResponse, error) {
-	clearData, err := i.telegramAuth.Validate(initData, 5*time.Minute)
+	clearData, err := i.telegramAuth.Validate(initData, 5000000*time.Minute)
 	if err != nil {
 		return nil, status.Error(codes.Unauthenticated, "invalid init data")
 	}

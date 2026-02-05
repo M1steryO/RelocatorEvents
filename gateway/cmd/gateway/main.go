@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/gateway/cmd/internal/app"
+	"github.com/M1steryO/RelocatorEvents/gateway/internal/app"
 	"log"
 )
 

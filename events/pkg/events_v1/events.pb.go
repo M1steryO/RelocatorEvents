@@ -443,6 +443,7 @@ type ListEventsRequest struct {
 	Category      []string                `protobuf:"bytes,9,rep,name=category,proto3" json:"category,omitempty"`
 	Limit         *wrapperspb.Int64Value  `protobuf:"bytes,10,opt,name=limit,proto3" json:"limit,omitempty"`
 	LastId        *wrapperspb.Int64Value  `protobuf:"bytes,11,opt,name=last_id,proto3" json:"last_id,omitempty"`
+	Offset        *wrapperspb.Int64Value  `protobuf:"bytes,12,opt,name=offset,proto3" json:"offset,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -550,6 +551,13 @@ func (x *ListEventsRequest) GetLimit() *wrapperspb.Int64Value {
 func (x *ListEventsRequest) GetLastId() *wrapperspb.Int64Value {
 	if x != nil {
 		return x.LastId
+	}
+	return nil
+}
+
+func (x *ListEventsRequest) GetOffset() *wrapperspb.Int64Value {
+	if x != nil {
+		return x.Offset
 	}
 	return nil
 }
@@ -772,7 +780,7 @@ const file_events_proto_rawDesc = "" +
 	"updated_at\x128\n" +
 	"\bcurrency\x18\x11 \x01(\v2\x1c.google.protobuf.StringValueR\bcurrencyB\n" +
 	"\n" +
-	"\b_address\"\xe2\x04\n" +
+	"\b_address\"\x97\x05\n" +
 	"\x11ListEventsRequest\x12*\n" +
 	"\x01q\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueR\x01q\x120\n" +
 	"\x04sort\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x04sort\x120\n" +
@@ -789,7 +797,8 @@ const file_events_proto_rawDesc = "" +
 	"\bcategory\x18\t \x03(\tR\bcategory\x121\n" +
 	"\x05limit\x18\n" +
 	" \x01(\v2\x1b.google.protobuf.Int64ValueR\x05limit\x125\n" +
-	"\alast_id\x18\v \x01(\v2\x1b.google.protobuf.Int64ValueR\alast_idB\r\n" +
+	"\alast_id\x18\v \x01(\v2\x1b.google.protobuf.Int64ValueR\alast_id\x123\n" +
+	"\x06offset\x18\f \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offsetB\r\n" +
 	"\v_event_type\"9\n" +
 	"\rEventCategory\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x12\n" +
@@ -875,20 +884,21 @@ var file_events_proto_depIdxs = []int32{
 	0,  // 27: events_v1.ListEventsRequest.event_type:type_name -> events_v1.EVENT_TYPE
 	13, // 28: events_v1.ListEventsRequest.limit:type_name -> google.protobuf.Int64Value
 	13, // 29: events_v1.ListEventsRequest.last_id:type_name -> google.protobuf.Int64Value
-	11, // 30: events_v1.FiltersValues.min_price:type_name -> google.protobuf.Int32Value
-	11, // 31: events_v1.FiltersValues.max_price:type_name -> google.protobuf.Int32Value
-	6,  // 32: events_v1.FiltersValues.categories:type_name -> events_v1.EventCategory
-	4,  // 33: events_v1.ListEventsResponse.data:type_name -> events_v1.Event
-	7,  // 34: events_v1.ListEventsResponse.filters:type_name -> events_v1.FiltersValues
-	1,  // 35: events_v1.Event_V1.GetEvent:input_type -> events_v1.GetRequest
-	5,  // 36: events_v1.Event_V1.ListEvents:input_type -> events_v1.ListEventsRequest
-	2,  // 37: events_v1.Event_V1.GetEvent:output_type -> events_v1.GetResponse
-	8,  // 38: events_v1.Event_V1.ListEvents:output_type -> events_v1.ListEventsResponse
-	37, // [37:39] is the sub-list for method output_type
-	35, // [35:37] is the sub-list for method input_type
-	35, // [35:35] is the sub-list for extension type_name
-	35, // [35:35] is the sub-list for extension extendee
-	0,  // [0:35] is the sub-list for field type_name
+	13, // 30: events_v1.ListEventsRequest.offset:type_name -> google.protobuf.Int64Value
+	11, // 31: events_v1.FiltersValues.min_price:type_name -> google.protobuf.Int32Value
+	11, // 32: events_v1.FiltersValues.max_price:type_name -> google.protobuf.Int32Value
+	6,  // 33: events_v1.FiltersValues.categories:type_name -> events_v1.EventCategory
+	4,  // 34: events_v1.ListEventsResponse.data:type_name -> events_v1.Event
+	7,  // 35: events_v1.ListEventsResponse.filters:type_name -> events_v1.FiltersValues
+	1,  // 36: events_v1.Event_V1.GetEvent:input_type -> events_v1.GetRequest
+	5,  // 37: events_v1.Event_V1.ListEvents:input_type -> events_v1.ListEventsRequest
+	2,  // 38: events_v1.Event_V1.GetEvent:output_type -> events_v1.GetResponse
+	8,  // 39: events_v1.Event_V1.ListEvents:output_type -> events_v1.ListEventsResponse
+	38, // [38:40] is the sub-list for method output_type
+	36, // [36:38] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_events_proto_init() }

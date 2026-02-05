@@ -1,30 +1,13 @@
 package converters
 
 import (
+	"github.com/M1steryO/RelocatorEvents/events/internal/consumer/kafka/events/models"
 	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 	"strings"
 	"time"
 )
 
-type Event struct {
-	Link        string    `json:"link"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Country     string    `json:"country"`
-	Category    string    `json:"category"`
-	StartsAt    time.Time `json:"starts_at"`
-	Venue       string    `json:"venue"`
-	City        string    `json:"city"`
-	Price       *float64  `json:"price"`
-	Currency    string    `json:"currency"`
-	Age         *int      `json:"age"` // nullable
-	Address     string    `json:"address"`
-	Longitude   float64   `json:"longitude"`
-	Latitude    float64   `json:"latitude"`
-	ImgURL      string    `json:"img_url"`
-}
-
-func ToDomainEvent(src Event) *domain.Event {
+func ToDomainEvent(src models.Event) *domain.Event {
 	now := time.Now()
 
 	var price int32
@@ -42,7 +25,7 @@ func ToDomainEvent(src Event) *domain.Event {
 		Link:        strings.TrimSpace(src.Link),
 
 		MinAge:   int32PtrFromIntPtr(src.Age),
-		Type:     domain.EventTypeOffline, // из этого DTO online/offline не определить — считаем offline по умолчанию
+		Type:     domain.EventTypeOffline,
 		MinPrice: pricePtr,
 		Currency: strPtrOrNil(src.Currency),
 
@@ -56,7 +39,6 @@ func ToDomainEvent(src Event) *domain.Event {
 			Country: strings.TrimSpace(src.Country),
 			City:    strings.TrimSpace(src.City),
 
-			// District/PostalCode в DTO нет
 			Latitude:  float64Ptr(src.Latitude),
 			Longitude: float64Ptr(src.Longitude),
 
@@ -66,7 +48,6 @@ func ToDomainEvent(src Event) *domain.Event {
 		CreatedAt: now,
 	}
 
-	// Rating/ReviewsCount/RatingsCount/SeatsAvailable/UpdatedAt/Id — не приходят из DTO, остаются nil/0
 	return ev
 }
 

@@ -8,7 +8,7 @@ import (
 
 type EventService interface {
 	Get(ctx context.Context, id int64) (*domainEvents.Event, error)
-	Create(ctx context.Context, event *domainEvents.Event) (int64, error)
+	Create(ctx context.Context, event *domainEvents.Event, category string) (int64, error)
 	GetList(ctx context.Context, params *domainEvents.SearchParams) (*domainEvents.EventsList, error)
 }
 

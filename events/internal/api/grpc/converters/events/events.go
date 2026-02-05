@@ -113,6 +113,7 @@ func SearchParamsToDomainFromApi(params *desc.ListEventsRequest) *domain.SearchP
 
 		Limit:  common.ToInt64FromInt64Value(params.Limit),
 		LastID: common.ToInt64FromInt64Value(params.LastId),
+		Offset: common.ToInt64FromInt64Value(params.Offset),
 	}
 }
 

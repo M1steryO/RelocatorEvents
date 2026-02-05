@@ -3,6 +3,7 @@ package events
 import (
 	"context"
 	"fmt"
+	"github.com/M1steryO/RelocatorEvents/events/internal/core/logger"
 	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 	"github.com/M1steryO/RelocatorEvents/events/internal/repository/events/converters"
 	repoModel "github.com/M1steryO/RelocatorEvents/events/internal/repository/events/model"
@@ -106,7 +107,26 @@ func (s *repo) CreateEventAddress(ctx context.Context, event *domain.EventAddres
 
 	return id, nil
 }
+func (s *repo) CreateEventCategory(ctx context.Context, eventId int64, categoryCode string) error {
+	q := db.Query{
+		Title: "event_repository.CreateEventCategory",
+		Query: `INSERT INTO event_categories (event_id, category_id)
+				SELECT $1, c.id
+				FROM categories c
+				WHERE c.code = $2
+				ON CONFLICT (event_id, category_id) DO NOTHING;`,
+	}
 
+	rows, err := s.db.DB().ExecContext(ctx, q, eventId, categoryCode)
+	if err != nil {
+		return errors.Wrap(err, q.Title)
+	}
+
+	if rows.RowsAffected() == 0 {
+		logger.Warn("event category not found")
+	}
+	return nil
+}
 func (s *repo) GetList(ctx context.Context, params *domain.SearchParams, country string) ([]*domain.Event, error) {
 	events := make([]*repoModel.Event, 0)
 
@@ -197,21 +217,27 @@ func (s *repo) GetList(ctx context.Context, params *domain.SearchParams, country
 		if params.Sort != nil {
 			switch *params.Sort {
 			case "popular":
-				q.Query += " ORDER BY id"
+				q.Query += " ORDER BY e.id"
 				break
 			case "rating":
-				q.Query += " ORDER BY rating"
+				q.Query += " ORDER BY e.rating"
 				break
 			case "price_asc":
-				q.Query += " ORDER BY min_price"
+				q.Query += " ORDER BY e.min_price"
 				break
 			case "price_desc":
-				q.Query += " ORDER BY min_price DESC"
+				q.Query += " ORDER BY e.min_price DESC"
 				break
 			case "new":
-				q.Query += " ORDER BY created_at DESC"
+				q.Query += " ORDER BY e.created_at DESC"
 			}
 		}
+		if params.Offset != nil {
+			q.Query += fmt.Sprintf(" OFFSET $%d", idx)
+			filters = append(filters, *params.Offset)
+
+		}
+
 		if params.Limit != nil {
 			q.Query += fmt.Sprintf(" LIMIT $%d", idx)
 			filters = append(filters, *params.Limit)
@@ -219,6 +245,7 @@ func (s *repo) GetList(ctx context.Context, params *domain.SearchParams, country
 		}
 
 	}
+
 	err := s.db.DB().ScanAllContext(ctx, &events, q, filters...)
 
 	if err != nil {

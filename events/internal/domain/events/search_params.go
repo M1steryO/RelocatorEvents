@@ -82,4 +82,5 @@ type SearchParams struct {
 
 	Limit  *int64
 	LastID *int64
+	Offset *int64
 }

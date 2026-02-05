@@ -13,6 +13,7 @@ type EventRepository interface {
 	GetFiltersData(ctx context.Context, userCountry string) (*domainEvents.FiltersData, error)
 	UpdateRating(ctx context.Context, eventId int64, grade int) error
 	CreateEventAddress(ctx context.Context, event *domainEvents.EventAddress) (int64, error)
+	CreateEventCategory(ctx context.Context, eventId int64, categoryCode string) error
 }
 
 type ReviewRepository interface {
