@@ -2,6 +2,7 @@ package reviews
 
 import (
 	"context"
+	"github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
 	"github.com/M1steryO/RelocatorEvents/events/internal/repository/reviews/converters"
 	"github.com/M1steryO/platform_common/pkg/db"
@@ -23,14 +24,24 @@ func (r *repo) Create(ctx context.Context, eventId int64, authorId int64, review
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {
-			if derr := converters.PgErrorToDomain(pgErr); derr != nil {
-				return 0, errors.Wrapf(derr, "%s: %s", q.Title, pgErr.Message)
-			}
-			return 0, errors.Wrap(pgErr, q.Title)
-		}
+			switch pgErr.Code {
+			case "23503": // foreign_key_violation
 
-		wrapped := errors.Wrap(err, q.Title)
-		return 0, wrapped
+				if pgErr.ConstraintName == "reviews_event_id_fkey" {
+					return 0, errors.Wrap(
+						events.ErrEventNotFound,
+						q.Title,
+					)
+				}
+				return 0, errors.Wrap(pgErr, q.Title)
+
+			default:
+				if derr := converters.PgErrorToDomain(pgErr); derr != nil {
+					return 0, errors.Wrapf(derr, "%s: %s", q.Title, pgErr.Message)
+				}
+				return 0, errors.Wrap(pgErr, q.Title)
+			}
+		}
 	}
 
 	return reviewId, nil

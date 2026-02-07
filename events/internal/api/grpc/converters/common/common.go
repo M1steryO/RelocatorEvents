@@ -54,3 +54,12 @@ func ToFloatValueFromFloat64(num *float64) *wrapperspb.FloatValue {
 		Value: float32(*num),
 	}
 }
+
+func ToFloatFromFloat64(num *float64) *wrapperspb.FloatValue {
+	if num == nil {
+		return nil
+	}
+	return &wrapperspb.FloatValue{
+		Value: float32(*num),
+	}
+}

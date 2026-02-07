@@ -12,6 +12,8 @@ func (impl *ReviewsImplementation) ListReviews(ctx context.Context, req *desc.Li
 		return nil, err
 	}
 	return &desc.ListReviewsResponse{
-		Reviews: converters.ReviewsToProto(list),
+		Rating:       list.EventRating,
+		ReviewsCount: list.ReviewsCount,
+		Reviews:      converters.ReviewsToProto(list.Reviews),
 	}, nil
 }

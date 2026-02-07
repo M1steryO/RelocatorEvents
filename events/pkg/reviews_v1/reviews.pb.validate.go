@@ -204,6 +204,10 @@ func (m *ListReviewsResponse) validate(all bool) error {
 
 	}
 
+	// no validation rules for Rating
+
+	// no validation rules for ReviewsCount
+
 	if len(errors) > 0 {
 		return ListReviewsResponseMultiError(errors)
 	}

@@ -120,6 +120,8 @@ func (x *ListReviewsRequest) GetEventId() int64 {
 type ListReviewsResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Reviews       []*Review              `protobuf:"bytes,1,rep,name=reviews,proto3" json:"reviews,omitempty"`
+	Rating        float32                `protobuf:"fixed32,2,opt,name=rating,proto3" json:"rating,omitempty"`
+	ReviewsCount  int32                  `protobuf:"varint,3,opt,name=reviews_count,proto3" json:"reviews_count,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -159,6 +161,20 @@ func (x *ListReviewsResponse) GetReviews() []*Review {
 		return x.Reviews
 	}
 	return nil
+}
+
+func (x *ListReviewsResponse) GetRating() float32 {
+	if x != nil {
+		return x.Rating
+	}
+	return 0
+}
+
+func (x *ListReviewsResponse) GetReviewsCount() int32 {
+	if x != nil {
+		return x.ReviewsCount
+	}
+	return 0
 }
 
 type MediaAttachment struct {
@@ -401,9 +417,11 @@ const file_reviews_proto_rawDesc = "" +
 	"\rreviews.proto\x12\n" +
 	"reviews_v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"8\n" +
 	"\x12ListReviewsRequest\x12\"\n" +
-	"\bevent_id\x18\x01 \x01(\x03B\a\xfaB\x04\"\x02 \x00R\aeventId\"C\n" +
+	"\bevent_id\x18\x01 \x01(\x03B\a\xfaB\x04\"\x02 \x00R\aeventId\"\x81\x01\n" +
 	"\x13ListReviewsResponse\x12,\n" +
-	"\areviews\x18\x01 \x03(\v2\x12.reviews_v1.ReviewR\areviews\"g\n" +
+	"\areviews\x18\x01 \x03(\v2\x12.reviews_v1.ReviewR\areviews\x12\x16\n" +
+	"\x06rating\x18\x02 \x01(\x02R\x06rating\x12$\n" +
+	"\rreviews_count\x18\x03 \x01(\x05R\rreviews_count\"g\n" +
 	"\x0fMediaAttachment\x12\x1f\n" +
 	"\vstorage_key\x18\x01 \x01(\tR\n" +
 	"storageKey\x123\n" +

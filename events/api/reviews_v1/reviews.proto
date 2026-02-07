@@ -30,7 +30,10 @@ message ListReviewsRequest {
 }
 
 message ListReviewsResponse{
+
   repeated Review reviews = 1;
+  float rating = 2 [json_name = "rating"];
+  int32 reviews_count = 3 [json_name = "reviews_count"];
 }
 
 enum MediaType {

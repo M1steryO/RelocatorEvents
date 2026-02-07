@@ -4,6 +4,7 @@ import (
 	"context"
 	domainEvents "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 	domainReviews "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
+	"github.com/M1steryO/RelocatorEvents/events/internal/usecases/reviews"
 )
 
 type EventService interface {
@@ -14,5 +15,5 @@ type EventService interface {
 
 type ReviewService interface {
 	Create(ctx context.Context, eventId, authorId int64, review *domainReviews.Review) (int64, error)
-	List(ctx context.Context, eventId int64) ([]*domainReviews.Review, error)
+	List(ctx context.Context, eventId int64) (*reviews.ListReviewsResult, error)
 }

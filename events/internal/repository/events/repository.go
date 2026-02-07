@@ -235,13 +235,12 @@ func (s *repo) GetList(ctx context.Context, params *domain.SearchParams, country
 		if params.Offset != nil {
 			q.Query += fmt.Sprintf(" OFFSET $%d", idx)
 			filters = append(filters, *params.Offset)
-
+			idx++
 		}
 
 		if params.Limit != nil {
 			q.Query += fmt.Sprintf(" LIMIT $%d", idx)
 			filters = append(filters, *params.Limit)
-
 		}
 
 	}
