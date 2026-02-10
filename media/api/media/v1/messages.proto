@@ -1,0 +1,14 @@
+syntax = "proto3";
+
+package github.com.M1steryO.RelocatorEvents.media.api.v1;
+
+option go_package = "/pkg/api/events/v1;events";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+
+service MediaService{
+
+}
+

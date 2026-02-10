@@ -1,7 +1,7 @@
-github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260204152241-a6707f1e5c95 h1:WmOv0N7xQtkNDb+krGrcv6e8xnoDVnxIGltBHrCyWl0=
-github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260204152241-a6707f1e5c95/go.mod h1:gMrcJ+0d1qOAlSKJ5BXvc6a/17DW2ohHnkcJGk39scc=
-github.com/M1steryO/RelocatorEvents/events v0.0.0-20260205155523-c7d9c55e8bcc h1:EC+aq06RjgxUQvoQW2nqX9w8+kCncwdleD3Mn/3MLFU=
-github.com/M1steryO/RelocatorEvents/events v0.0.0-20260205155523-c7d9c55e8bcc/go.mod h1:BSMrC0FcrIxwcjpA/kmAySntVf5CdqduFj7NiJf8l94=
+github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260205155523-c7d9c55e8bcc h1:c+hDPp12Q8H6xSNkCN/ZG9a1eyqDbQ/czogkRWxGoZY=
+github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260205155523-c7d9c55e8bcc/go.mod h1:gMrcJ+0d1qOAlSKJ5BXvc6a/17DW2ohHnkcJGk39scc=
+github.com/M1steryO/RelocatorEvents/events v0.0.0-20260207124447-7d90b28ce748 h1:rS1wRb642smCe3l7tqknl8mA2htyy3A/Qcv/0ZzHUhs=
+github.com/M1steryO/RelocatorEvents/events v0.0.0-20260207124447-7d90b28ce748/go.mod h1:bNwmxuAvWmN1kbxHelBqHrEEMfBvDzONN5+LV4Me0uw=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2 h1:RJRGxQmBiuthNbuXj7MN7C2NStL45Ckfo89CXkOc+qY=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2/go.mod h1:sY5taDuxCRvhPTf/pFEqShY+rHvH6VG8UM/ATXoB1aI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
