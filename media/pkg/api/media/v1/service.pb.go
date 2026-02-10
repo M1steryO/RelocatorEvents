@@ -7,6 +7,7 @@
 package media
 
 import (
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	reflect "reflect"
@@ -24,9 +25,9 @@ var File_service_proto protoreflect.FileDescriptor
 
 const file_service_proto_rawDesc = "" +
 	"\n" +
-	"\rservice.proto\x120github.com.M1steryO.RelocatorEvents.media.api.v1\x1a\x0emessages.proto2\xc9\x01\n" +
-	"\fMediaService\x12\xb8\x01\n" +
-	"\x15GetReviewPresignedUrl\x12N.github.com.M1steryO.RelocatorEvents.media.api.v1.GetReviewPresignedUrlRequest\x1aO.github.com.M1steryO.RelocatorEvents.media.api.v1.GetReviewPresignedUrlResponseB\x19Z\x17/pkg/api/media/v1;mediab\x06proto3"
+	"\rservice.proto\x120github.com.M1steryO.RelocatorEvents.media.api.v1\x1a\x0emessages.proto\x1a\x1cgoogle/api/annotations.proto2\xdc\x01\n" +
+	"\fMediaService\x12\xcb\x01\n" +
+	"\x15GetReviewPresignedUrl\x12N.github.com.M1steryO.RelocatorEvents.media.api.v1.GetReviewPresignedUrlRequest\x1aO.github.com.M1steryO.RelocatorEvents.media.api.v1.GetReviewPresignedUrlResponse\"\x11\x82\xd3\xe4\x93\x02\v\x12\t/media/v1B\x19Z\x17/pkg/api/media/v1;mediab\x06proto3"
 
 var file_service_proto_goTypes = []any{
 	(*GetReviewPresignedUrlRequest)(nil),  // 0: github.com.M1steryO.RelocatorEvents.media.api.v1.GetReviewPresignedUrlRequest

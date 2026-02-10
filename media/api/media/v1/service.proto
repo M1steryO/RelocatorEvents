@@ -1,6 +1,7 @@
 syntax = "proto3";
 
 import "messages.proto";
+import "google/api/annotations.proto";
 
 package github.com.M1steryO.RelocatorEvents.media.api.v1;
 
@@ -8,5 +9,9 @@ option go_package = "/pkg/api/media/v1;media";
 
 
 service MediaService{
-  rpc GetReviewPresignedUrl(GetReviewPresignedUrlRequest) returns (GetReviewPresignedUrlResponse);
+  rpc GetReviewPresignedUrl(GetReviewPresignedUrlRequest) returns (GetReviewPresignedUrlResponse){
+    option (google.api.http) = {
+      get: "/media/v1",
+    };
+  };
 }

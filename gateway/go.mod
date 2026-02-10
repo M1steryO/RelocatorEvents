@@ -5,6 +5,7 @@ go 1.25.6
 require (
 	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260205155523-c7d9c55e8bcc
 	github.com/M1steryO/RelocatorEvents/events v0.0.0-20260207124447-7d90b28ce748
+	github.com/M1steryO/RelocatorEvents/media v0.0.0-20260210113220-8fcda6f12c79
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/fatih/color v1.18.0
 	github.com/go-chi/chi/v5 v5.2.4

@@ -6,6 +6,7 @@ import (
 	user "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	events "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
 	reviews "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
+	media "github.com/M1steryO/RelocatorEvents/media/pkg/api/media/v1"
 	grpcClients "github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/config"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/http/middleware"
@@ -70,6 +71,8 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 	if err := reviews.RegisterReviewsV1HandlerFromEndpoint(ctx, gw, deps.EventsCfg.GetAddress(), opts); err != nil {
 		return nil, err
 	}
+
+	if err := media.RegisterMEdia
 
 	r := chi.NewRouter()
 	r.Use(deps.CORS.Handler)
