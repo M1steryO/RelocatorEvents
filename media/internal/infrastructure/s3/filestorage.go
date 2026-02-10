@@ -1,20 +1,14 @@
-package filestorage
+package s3
 
 import (
 	"context"
 	"fmt"
+	"github.com/M1steryO/RelocatorEvents/media/internal/domain"
 	"github.com/minio/minio-go"
 	log "github.com/sirupsen/logrus"
-	"io"
 	"strings"
+	"time"
 )
-
-type UploadInput struct {
-	File        io.Reader
-	Name        string
-	Size        int64
-	ContentType string
-}
 
 type FileStorage struct {
 	client   *minio.Client
@@ -30,7 +24,7 @@ func NewFileStorage(client *minio.Client, bucket, endpoint string) *FileStorage 
 	}
 }
 
-func (fs *FileStorage) Upload(ctx context.Context, input UploadInput) (string, error) {
+func (fs *FileStorage) Upload(ctx context.Context, input domain.UploadInput) (string, error) {
 	opts := minio.PutObjectOptions{
 		ContentType:  input.ContentType,
 		UserMetadata: map[string]string{"x-amz-acl": "public-read"},
@@ -49,4 +43,15 @@ func (fs *FileStorage) Upload(ctx context.Context, input UploadInput) (string, e
 func (fs *FileStorage) generateFileURL(fileName string) string {
 	endpoint := strings.Replace(fs.endpoint, "localstack", "localhost", -1)
 	return fmt.Sprintf("http://%s/%s/%s", endpoint, fs.bucket, fileName)
+}
+
+func (fs *FileStorage) GetPresignedUrl(_ context.Context, objectName string) (*domain.PresignedOutput, error) {
+	url, err := fs.client.PresignedPutObject(fs.bucket, objectName, time.Minute*10)
+	if err != nil {
+		return nil, err
+	}
+	return &domain.PresignedOutput{
+		Url:       url.String(),
+		ObjectKey: objectName,
+	}, nil
 }

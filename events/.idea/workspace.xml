@@ -5,21 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c4034ee0-1925-4e7c-940a-ae94c4873697" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/dataSources.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/dataSources.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/sqldialects.xml" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/api/reviews_v1/reviews.proto" beforeDir="false" afterPath="$PROJECT_DIR$/api/reviews_v1/reviews.proto" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/go.mod" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/go.sum" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/api/grpc/converters/common/common.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/api/grpc/converters/common/common.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/api/grpc/reviews/create.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/api/grpc/reviews/create.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/api/grpc/reviews/list.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/api/grpc/reviews/list.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/repository/events/repository.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/repository/events/repository.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/repository/reviews/create.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/repository/reviews/create.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/service/reviews/list.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/service/reviews/list.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/internal/service/service.go" beforeDir="false" afterPath="$PROJECT_DIR$/internal/service/service.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/reviews_v1/reviews.pb.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/reviews_v1/reviews.pb.go" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pkg/reviews_v1/reviews.pb.validate.go" beforeDir="false" afterPath="$PROJECT_DIR$/pkg/reviews_v1/reviews.pb.validate.go" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../gateway/go.mod" beforeDir="false" afterPath="$PROJECT_DIR$/../gateway/go.mod" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/../gateway/go.sum" beforeDir="false" afterPath="$PROJECT_DIR$/../gateway/go.sum" afterDir="false" />
     </list>
@@ -63,7 +49,7 @@
   "keyToString": {
     "DefaultGoTemplateProperty": "Go File",
     "Go Build.go build github.com/M1steryO/RelocatorEvents/events/cmd/events.executor": "Run",
-    "Go Build.run app.executor": "Debug",
+    "Go Build.run app.executor": "Run",
     "Makefile Target.generate.executor": "Run",
     "Makefile Target.local-migration-up.executor": "Run",
     "RunOnceActivity.ShowReadmeOnStart": "true",

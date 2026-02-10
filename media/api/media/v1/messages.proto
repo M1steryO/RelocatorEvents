@@ -2,13 +2,16 @@ syntax = "proto3";
 
 package github.com.M1steryO.RelocatorEvents.media.api.v1;
 
-option go_package = "/pkg/api/events/v1;events";
+option go_package = "/pkg/api/media/v1;media";
 
-import "google/protobuf/timestamp.proto";
-import "google/protobuf/wrappers.proto";
-
-
-service MediaService{
-
+message GetReviewPresignedUrlRequest{
+  string object_name = 1;
+  int64 review_id = 2;
 }
+
+message GetReviewPresignedUrlResponse{
+  string presigned_url = 1;
+  string object_key = 2;
+}
+
 

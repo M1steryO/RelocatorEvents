@@ -1,0 +1,12 @@
+syntax = "proto3";
+
+import "messages.proto";
+
+package github.com.M1steryO.RelocatorEvents.media.api.v1;
+
+option go_package = "/pkg/api/media/v1;media";
+
+
+service MediaService{
+  rpc GetReviewPresignedUrl(GetReviewPresignedUrlRequest) returns (GetReviewPresignedUrlResponse);
+}
