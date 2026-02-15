@@ -14,7 +14,6 @@ import (
 	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
 	"github.com/opentracing/opentracing-go"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sony/gobreaker"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -74,14 +73,6 @@ func (a *App) Run() error {
 	//	}
 	//}()
 
-	go func() {
-		defer wg.Done()
-		err := a.runPrometheus()
-		if err != nil {
-			log.Fatal("failed to run prometheus server: ", err)
-		}
-	}()
-
 	//go func() {
 	//	defer wg.Done()
 	//	ctx := context.Background()
@@ -102,7 +93,6 @@ func (a *App) initDeps(ctx context.Context) error {
 		a.initConfig,
 		a.initServiceProvider,
 		a.initGRPCServer,
-		a.initPrometheus,
 		//a.initKafkaConsumer,
 		metric.Init,
 	}
@@ -173,7 +163,6 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 	reflection.Register(a.grpcServer)
 
 	media.RegisterMediaServiceServer(a.grpcServer, a.serviceProvider.MediaImpl())
-
 	return nil
 }
 
@@ -190,28 +179,6 @@ func (a *App) runGRPCServer() error {
 		return err
 	}
 
-	return nil
-}
-
-func (a *App) initPrometheus(ctx context.Context) error {
-	mux := http.NewServeMux()
-	mux.Handle("/metrics", promhttp.Handler())
-
-	prometheusServer := http.Server{
-		Addr:    a.serviceProvider.PromConfig().Address(),
-		Handler: mux,
-	}
-	a.promServer = &prometheusServer
-	return nil
-
-}
-
-func (a *App) runPrometheus() error {
-	log.Printf("Prometheus server is running on %s", a.serviceProvider.PromConfig().Address())
-	err := a.promServer.ListenAndServe()
-	if err != nil {
-		return err
-	}
 	return nil
 }
 

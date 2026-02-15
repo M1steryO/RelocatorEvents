@@ -117,6 +117,7 @@ func (x *GetRequest) GetId() int64 {
 type GetResponse struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Event         *Event                 `protobuf:"bytes,1,opt,name=event,proto3" json:"event,omitempty"`
+	Categories    []*EventCategory       `protobuf:"bytes,2,rep,name=categories,proto3" json:"categories,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -154,6 +155,13 @@ func (*GetResponse) Descriptor() ([]byte, []int) {
 func (x *GetResponse) GetEvent() *Event {
 	if x != nil {
 		return x.Event
+	}
+	return nil
+}
+
+func (x *GetResponse) GetCategories() []*EventCategory {
+	if x != nil {
+		return x.Categories
 	}
 	return nil
 }
@@ -741,9 +749,12 @@ const file_events_proto_rawDesc = "" +
 	"\fevents.proto\x12\tevents_v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\x1c\n" +
 	"\n" +
 	"GetRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"5\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"o\n" +
 	"\vGetResponse\x12&\n" +
-	"\x05event\x18\x01 \x01(\v2\x10.events_v1.EventR\x05event\"\x8b\x03\n" +
+	"\x05event\x18\x01 \x01(\v2\x10.events_v1.EventR\x05event\x128\n" +
+	"\n" +
+	"categories\x18\x02 \x03(\v2\x18.events_v1.EventCategoryR\n" +
+	"categories\"\x8b\x03\n" +
 	"\fEventAddress\x12<\n" +
 	"\n" +
 	"venue_name\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueR\n" +
@@ -855,50 +866,51 @@ var file_events_proto_goTypes = []any{
 }
 var file_events_proto_depIdxs = []int32{
 	4,  // 0: events_v1.GetResponse.event:type_name -> events_v1.Event
-	9,  // 1: events_v1.EventAddress.venue_name:type_name -> google.protobuf.StringValue
-	9,  // 2: events_v1.EventAddress.district:type_name -> google.protobuf.StringValue
-	9,  // 3: events_v1.EventAddress.postal_code:type_name -> google.protobuf.StringValue
-	10, // 4: events_v1.EventAddress.latitude:type_name -> google.protobuf.FloatValue
-	10, // 5: events_v1.EventAddress.longitude:type_name -> google.protobuf.FloatValue
-	9,  // 6: events_v1.Event.description:type_name -> google.protobuf.StringValue
-	10, // 7: events_v1.Event.rating:type_name -> google.protobuf.FloatValue
-	11, // 8: events_v1.Event.reviews_count:type_name -> google.protobuf.Int32Value
-	11, // 9: events_v1.Event.ratings_count:type_name -> google.protobuf.Int32Value
-	11, // 10: events_v1.Event.min_age:type_name -> google.protobuf.Int32Value
-	11, // 11: events_v1.Event.seats_available:type_name -> google.protobuf.Int32Value
-	0,  // 12: events_v1.Event.eventType:type_name -> events_v1.EVENT_TYPE
-	11, // 13: events_v1.Event.min_price:type_name -> google.protobuf.Int32Value
-	12, // 14: events_v1.Event.starts_at:type_name -> google.protobuf.Timestamp
-	9,  // 15: events_v1.Event.image_url:type_name -> google.protobuf.StringValue
-	3,  // 16: events_v1.Event.address:type_name -> events_v1.EventAddress
-	12, // 17: events_v1.Event.created_at:type_name -> google.protobuf.Timestamp
-	12, // 18: events_v1.Event.updated_at:type_name -> google.protobuf.Timestamp
-	9,  // 19: events_v1.Event.currency:type_name -> google.protobuf.StringValue
-	9,  // 20: events_v1.ListEventsRequest.q:type_name -> google.protobuf.StringValue
-	9,  // 21: events_v1.ListEventsRequest.sort:type_name -> google.protobuf.StringValue
-	9,  // 22: events_v1.ListEventsRequest.city:type_name -> google.protobuf.StringValue
-	9,  // 23: events_v1.ListEventsRequest.district:type_name -> google.protobuf.StringValue
-	11, // 24: events_v1.ListEventsRequest.min_price:type_name -> google.protobuf.Int32Value
-	11, // 25: events_v1.ListEventsRequest.max_price:type_name -> google.protobuf.Int32Value
-	9,  // 26: events_v1.ListEventsRequest.event_date:type_name -> google.protobuf.StringValue
-	0,  // 27: events_v1.ListEventsRequest.event_type:type_name -> events_v1.EVENT_TYPE
-	13, // 28: events_v1.ListEventsRequest.limit:type_name -> google.protobuf.Int64Value
-	13, // 29: events_v1.ListEventsRequest.last_id:type_name -> google.protobuf.Int64Value
-	13, // 30: events_v1.ListEventsRequest.offset:type_name -> google.protobuf.Int64Value
-	11, // 31: events_v1.FiltersValues.min_price:type_name -> google.protobuf.Int32Value
-	11, // 32: events_v1.FiltersValues.max_price:type_name -> google.protobuf.Int32Value
-	6,  // 33: events_v1.FiltersValues.categories:type_name -> events_v1.EventCategory
-	4,  // 34: events_v1.ListEventsResponse.data:type_name -> events_v1.Event
-	7,  // 35: events_v1.ListEventsResponse.filters:type_name -> events_v1.FiltersValues
-	1,  // 36: events_v1.Event_V1.GetEvent:input_type -> events_v1.GetRequest
-	5,  // 37: events_v1.Event_V1.ListEvents:input_type -> events_v1.ListEventsRequest
-	2,  // 38: events_v1.Event_V1.GetEvent:output_type -> events_v1.GetResponse
-	8,  // 39: events_v1.Event_V1.ListEvents:output_type -> events_v1.ListEventsResponse
-	38, // [38:40] is the sub-list for method output_type
-	36, // [36:38] is the sub-list for method input_type
-	36, // [36:36] is the sub-list for extension type_name
-	36, // [36:36] is the sub-list for extension extendee
-	0,  // [0:36] is the sub-list for field type_name
+	6,  // 1: events_v1.GetResponse.categories:type_name -> events_v1.EventCategory
+	9,  // 2: events_v1.EventAddress.venue_name:type_name -> google.protobuf.StringValue
+	9,  // 3: events_v1.EventAddress.district:type_name -> google.protobuf.StringValue
+	9,  // 4: events_v1.EventAddress.postal_code:type_name -> google.protobuf.StringValue
+	10, // 5: events_v1.EventAddress.latitude:type_name -> google.protobuf.FloatValue
+	10, // 6: events_v1.EventAddress.longitude:type_name -> google.protobuf.FloatValue
+	9,  // 7: events_v1.Event.description:type_name -> google.protobuf.StringValue
+	10, // 8: events_v1.Event.rating:type_name -> google.protobuf.FloatValue
+	11, // 9: events_v1.Event.reviews_count:type_name -> google.protobuf.Int32Value
+	11, // 10: events_v1.Event.ratings_count:type_name -> google.protobuf.Int32Value
+	11, // 11: events_v1.Event.min_age:type_name -> google.protobuf.Int32Value
+	11, // 12: events_v1.Event.seats_available:type_name -> google.protobuf.Int32Value
+	0,  // 13: events_v1.Event.eventType:type_name -> events_v1.EVENT_TYPE
+	11, // 14: events_v1.Event.min_price:type_name -> google.protobuf.Int32Value
+	12, // 15: events_v1.Event.starts_at:type_name -> google.protobuf.Timestamp
+	9,  // 16: events_v1.Event.image_url:type_name -> google.protobuf.StringValue
+	3,  // 17: events_v1.Event.address:type_name -> events_v1.EventAddress
+	12, // 18: events_v1.Event.created_at:type_name -> google.protobuf.Timestamp
+	12, // 19: events_v1.Event.updated_at:type_name -> google.protobuf.Timestamp
+	9,  // 20: events_v1.Event.currency:type_name -> google.protobuf.StringValue
+	9,  // 21: events_v1.ListEventsRequest.q:type_name -> google.protobuf.StringValue
+	9,  // 22: events_v1.ListEventsRequest.sort:type_name -> google.protobuf.StringValue
+	9,  // 23: events_v1.ListEventsRequest.city:type_name -> google.protobuf.StringValue
+	9,  // 24: events_v1.ListEventsRequest.district:type_name -> google.protobuf.StringValue
+	11, // 25: events_v1.ListEventsRequest.min_price:type_name -> google.protobuf.Int32Value
+	11, // 26: events_v1.ListEventsRequest.max_price:type_name -> google.protobuf.Int32Value
+	9,  // 27: events_v1.ListEventsRequest.event_date:type_name -> google.protobuf.StringValue
+	0,  // 28: events_v1.ListEventsRequest.event_type:type_name -> events_v1.EVENT_TYPE
+	13, // 29: events_v1.ListEventsRequest.limit:type_name -> google.protobuf.Int64Value
+	13, // 30: events_v1.ListEventsRequest.last_id:type_name -> google.protobuf.Int64Value
+	13, // 31: events_v1.ListEventsRequest.offset:type_name -> google.protobuf.Int64Value
+	11, // 32: events_v1.FiltersValues.min_price:type_name -> google.protobuf.Int32Value
+	11, // 33: events_v1.FiltersValues.max_price:type_name -> google.protobuf.Int32Value
+	6,  // 34: events_v1.FiltersValues.categories:type_name -> events_v1.EventCategory
+	4,  // 35: events_v1.ListEventsResponse.data:type_name -> events_v1.Event
+	7,  // 36: events_v1.ListEventsResponse.filters:type_name -> events_v1.FiltersValues
+	1,  // 37: events_v1.Event_V1.GetEvent:input_type -> events_v1.GetRequest
+	5,  // 38: events_v1.Event_V1.ListEvents:input_type -> events_v1.ListEventsRequest
+	2,  // 39: events_v1.Event_V1.GetEvent:output_type -> events_v1.GetResponse
+	8,  // 40: events_v1.Event_V1.ListEvents:output_type -> events_v1.ListEventsResponse
+	39, // [39:41] is the sub-list for method output_type
+	37, // [37:39] is the sub-list for method input_type
+	37, // [37:37] is the sub-list for extension type_name
+	37, // [37:37] is the sub-list for extension extendee
+	0,  // [0:37] is the sub-list for field type_name
 }
 
 func init() { file_events_proto_init() }

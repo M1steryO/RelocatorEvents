@@ -3,8 +3,8 @@ package model
 import "time"
 
 type MediaAttachment struct {
-	StorageKey string `db:"storage_key"`
-	Type       string `db:"media_type"`
+	Type string `db:"type"`
+	Key  string `db:"key"`
 }
 
 type Review struct {
@@ -13,6 +13,6 @@ type Review struct {
 	Advantages    string             `db:"advantages"`
 	Disadvantages string             `db:"disadvantages"`
 	Text          string             `db:"text"`
-	Media         []*MediaAttachment `db:"media"`
+	Media         []*MediaAttachment `db:"media_files"`
 	CreatedAt     time.Time          `db:"created_at"`
 }

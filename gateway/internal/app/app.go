@@ -100,6 +100,7 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 		Auth:      a.serviceProvider.AuthServiceClient(),
 		AuthCfg:   a.serviceProvider.AuthServiceConfig(),
 		EventsCfg: a.serviceProvider.EventsServiceConfig(),
+		MediaCfg:  a.serviceProvider.MediaServiceConfig(),
 	})
 
 	if err != nil {

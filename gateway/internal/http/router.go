@@ -6,10 +6,10 @@ import (
 	user "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	events "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
 	reviews "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
-	media "github.com/M1steryO/RelocatorEvents/media/pkg/api/media/v1"
 	grpcClients "github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/config"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/http/middleware"
+	media "github.com/M1steryO/RelocatorEvents/media/pkg/api/media/v1"
 	"google.golang.org/grpc/metadata"
 	"strconv"
 	"strings"
@@ -25,6 +25,7 @@ type Deps struct {
 	Auth      grpcClients.AuthServiceClient
 	AuthCfg   config.AuthServiceConfig
 	EventsCfg config.EventsServiceConfig
+	MediaCfg  config.MediaServiceConfig
 	CORS      *middleware.CORS
 }
 
@@ -72,7 +73,9 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 		return nil, err
 	}
 
-	if err := media.RegisterMEdia
+	if err := media.RegisterMediaServiceHandlerFromEndpoint(ctx, gw, deps.MediaCfg.GetAddress(), opts); err != nil {
+		return nil, err
+	}
 
 	r := chi.NewRouter()
 	r.Use(deps.CORS.Handler)
@@ -106,6 +109,10 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 
 			r.Handle("/reviews", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				r.URL.Path = "/reviews/v1" + strings.TrimPrefix(r.URL.Path, "/v1/reviews")
+				gw.ServeHTTP(w, r)
+			}))
+			r.Handle("/media", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				r.URL.Path = "/media/v1" + strings.TrimPrefix(r.URL.Path, "/v1/media")
 				gw.ServeHTTP(w, r)
 			}))
 		})

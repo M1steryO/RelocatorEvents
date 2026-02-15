@@ -16,10 +16,10 @@ func (r *repo) List(ctx context.Context, eventId int64) ([]*domain.Review, error
 		Query: `select r.author_id, r.grade, r.advantages, r.disadvantages, r.text, r.created_at,
        		coalesce(
 			  jsonb_agg(
-				jsonb_build_object('storage_key', rm.storage_key, 'type', rm.media_type)
+				jsonb_build_object('key', rm.storage_key, 'type', rm.media_type)
 			  ) filter (where rm.id is not null),
 			  '[]'::jsonb
-			) as media
+			) as media_files
 				from reviews r
 				left join reviews_media rm on r.id = rm.review_id
 				where r.event_id = $1

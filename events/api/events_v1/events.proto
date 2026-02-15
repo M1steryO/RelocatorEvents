@@ -29,6 +29,7 @@ message GetRequest {
 
 message GetResponse {
   Event event = 1;
+  repeated EventCategory categories = 2;
 }
 
 enum EVENT_TYPE{

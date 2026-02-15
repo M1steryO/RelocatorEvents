@@ -20,6 +20,7 @@ type serviceProvider struct {
 	loggerConfig        config.LoggerConfig
 	authServiceConfig   config.AuthServiceConfig
 	eventsServiceConfig config.AuthServiceConfig
+	mediaServiceConfig  config.MediaServiceConfig
 
 	authServiceClient grpcClients.AuthServiceClient
 	userServiceClient grpcClients.UserServiceClient
@@ -81,6 +82,17 @@ func (s *serviceProvider) EventsServiceConfig() config.EventsServiceConfig {
 		s.eventsServiceConfig = cfg
 	}
 	return s.eventsServiceConfig
+}
+
+func (s *serviceProvider) MediaServiceConfig() config.MediaServiceConfig {
+	if s.mediaServiceConfig == nil {
+		cfg, err := config.NewMediaServiceConfig()
+		if err != nil {
+			log.Fatalf("failed to get media service config: %s", err.Error())
+		}
+		s.mediaServiceConfig = cfg
+	}
+	return s.mediaServiceConfig
 }
 
 func (s *serviceProvider) AuthServiceClient() grpcClients.AuthServiceClient {

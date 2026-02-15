@@ -20,7 +20,7 @@ func ReviewFromRepo(m *model.Review) *domain.Review {
 		mt := mediaTypeFromDB(a.Type)
 
 		media = append(media, &domain.MediaAttachment{
-			StorageKey: a.StorageKey,
+			StorageKey: a.Key,
 			Type:       mt,
 		})
 	}
