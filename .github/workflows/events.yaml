@@ -107,3 +107,4 @@ jobs:
             docker rm $CONTAINER_NAME
             docker run -d --name $CONTAINER_NAME  --network reloca -t $REGISTRY/$IMAGE_NAME:$TAG_NAME
 
+
