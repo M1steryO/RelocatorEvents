@@ -1,0 +1,32 @@
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "redispass"]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a redispass ping | grep -q PONG"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+    networks: [reloca]
+
+  parser:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_healthy
+    networks: [reloca]
+
+
+volumes:
+  redis_data:

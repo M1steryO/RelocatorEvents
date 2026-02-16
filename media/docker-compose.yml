@@ -1,0 +1,46 @@
+services:
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    command: server /data --console-address ":9001"
+    ports:
+      - "9000:9000"   # S3 API
+      - "9001:9001"   # Web UI
+    env_file:
+      - config/local.env
+    volumes:
+      - minio_data:/data
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://127.0.0.1:9000/minio/health/live" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks: [reloca]
+  minio-init:
+    image: minio/mc
+    env_file:
+      - config/local.env
+    depends_on:
+      minio:
+        condition: service_started
+    networks: [reloca]
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 $$MINIO_ACCESS_KEY $$MINIO_SECRET_KEY; do sleep 2; done;
+      mc mb -p local/media || true;
+      mc anonymous set public local/media;
+      exit 0;
+      "
+  media:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      minio-init:
+        condition: service_completed_successfully
+      kafka:
+        condition: service_healthy
+    networks: [reloca]
+
+volumes:
+  minio_data:

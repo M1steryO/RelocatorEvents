@@ -1,6 +1,6 @@
 module github.com/M1steryO/RelocatorEvents/events
 
-go 1.25.4
+go 1.25
 
 require (
 	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260205155523-c7d9c55e8bcc

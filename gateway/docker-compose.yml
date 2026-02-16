@@ -1,0 +1,27 @@
+services:
+  gateway:
+    env_file:
+      - ./config/local.env
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+      - 50043:50043
+    depends_on:
+      auth:
+        condition: service_started
+      events:
+        condition: service_started
+      media:
+        condition: service_started
+
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:$$HTTP_PORT/healthz || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+      
+    networks: [reloca]
+
+      

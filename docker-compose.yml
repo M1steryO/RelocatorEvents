@@ -1,0 +1,20 @@
+name: relocatorevents
+
+include:
+  - path: ./auth/docker-compose.yml
+  - path: ./events/docker-compose.yml
+  - path: ./media/docker-compose.yml
+  - path: ./front/docker-compose.yml
+  - path: ./gateway/docker-compose.yml
+  - path: ./infrastructure/docker-compose.yml
+  - path: ./parser/docker-compose.yml
+
+networks:
+  reloca:
+    name: reloca
+    driver: bridge
+
+volumes:
+  pg_data:
+  redis_data:
+  minio_data:
