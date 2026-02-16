@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 env:
-  REGISTRY: "cr.selcloud.ru/relocator-media"
+  REGISTRY: "cr.selcloud.ru/relocator-events"
   IMAGE_NAME: "media-server"
   CONTAINER_NAME: "media-server-container"
 

@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 env:
-  REGISTRY: "cr.selcloud.ru/relocator-gateway"
+  REGISTRY: "cr.selcloud.ru/relocator-events"
   IMAGE_NAME: "gateway-server"
   CONTAINER_NAME: "gateway-server-container"
 

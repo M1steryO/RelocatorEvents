@@ -7,7 +7,7 @@ on:
     branches: [main, master]
 
 env:
-  REGISTRY: "cr.selcloud.ru/relocator-parser"
+  REGISTRY: "cr.selcloud.ru/relocator-events"
   IMAGE_NAME: "parser-server"
   CONTAINER_NAME: "parser-server-container"
 
