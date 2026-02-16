@@ -74,7 +74,7 @@ jobs:
   #         # install-mode: "goinstall"
   build-and-push-image:
     runs-on: ubuntu-latest
-    needs: build-and-test
+    # needs: build-and-test
     steps:
       - uses: actions/checkout@v4
       - name: Set Up Docker Buildx
