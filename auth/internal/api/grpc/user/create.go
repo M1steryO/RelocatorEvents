@@ -59,8 +59,8 @@ func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*
 		Value:    refreshToken,
 		Path:     "/",
 		HttpOnly: true,
-		Secure:   true,
-		SameSite: http.SameSiteNoneMode,
+		Secure: false,
+		SameSite: http.SameSiteLaxMode, // TODO: поменятть !!!!
 	}).String()
 
 	header := metadata.Pairs(
