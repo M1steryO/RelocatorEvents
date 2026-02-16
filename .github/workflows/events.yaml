@@ -106,6 +106,3 @@ jobs:
             docker stop $CONTAINER_NAME
             docker rm $CONTAINER_NAME
             docker run -d --name $CONTAINER_NAME  --network reloca -t $REGISTRY/$IMAGE_NAME:$TAG_NAME
-
-
-
