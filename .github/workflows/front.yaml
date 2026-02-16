@@ -45,4 +45,8 @@ jobs:
             docker login -u ${{secrets.REGISTRY_USERNAME}} -p ${{secrets.REGISTRY_PASSWORD}} $REGISTRY
             docker stop $CONTAINER_NAME
             docker rm $CONTAINER_NAME
-            docker run -d --name $CONTAINER_NAME  --network reloca -t $REGISTRY/$IMAGE_NAME:$TAG_NAME -p 3000:80
+            docker run -d \
+            --name "$CONTAINER_NAME" \
+            --network reloca \
+            -p 3000:80 \
+            -t "$REGISTRY/$IMAGE_NAME:$TAG_NAME"
