@@ -1,0 +1,39 @@
+services:
+  auth_pg:
+    image: postgres:14-alpine3.17
+    env_file:
+      - config/local.env
+    ports:
+      - "54321:5432"
+    volumes:
+      - auth_postgres_volume:/var/lib/postgresql/data
+
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h 127.0.0.1 -p 5432 -U \"$$PG_USER\" -d \"$$PG_DATABASE_NAME\""]
+      interval: 5s
+      timeout: 3s
+      retries: 30
+      start_period: 10s
+    networks: [reloca]
+    
+  auth_migrator:
+    build:
+      context: .
+      dockerfile: migration.Dockerfile
+    restart: on-failure
+    environment:
+      DB_HOST: db
+    networks: [reloca]
+
+  auth:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    depends_on:
+      auth_pg:
+        condition: service_healthy
+    networks: [reloca]
+
+
+volumes:
+  auth_postgres_volume:

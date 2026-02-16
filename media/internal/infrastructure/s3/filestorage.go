@@ -3,11 +3,12 @@ package s3
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/M1steryO/RelocatorEvents/media/internal/domain"
 	"github.com/minio/minio-go"
 	log "github.com/sirupsen/logrus"
-	"strings"
-	"time"
 )
 
 type FileStorage struct {
@@ -50,6 +51,7 @@ func (fs *FileStorage) GetPresignedUrl(_ context.Context, objectName string) (*d
 	if err != nil {
 		return nil, err
 	}
+
 	return &domain.PresignedOutput{
 		Url:       url.String(),
 		ObjectKey: objectName,
