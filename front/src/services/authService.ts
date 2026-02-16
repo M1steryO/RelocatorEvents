@@ -3,7 +3,7 @@ import { notifyServiceUnavailable } from '../utils/serviceUnavailable';
 import { addTelegramInitDataHeader } from '../utils/telegramInitData';
 import { notifyUnauthorized } from '../utils/unauthorized';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:50043';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://5.35.12.153:50043';
 
 export interface RegisterData {
     name?: string;
