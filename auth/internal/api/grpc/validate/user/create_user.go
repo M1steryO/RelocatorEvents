@@ -14,7 +14,7 @@ var errPasswordNotMatch = errors.New("password does not match")
 var errInvalidTelegramToken = errors.New("invalid telegram token")
 
 func isUserFromTelegram(req *desc.CreateRequest) bool {
-	if req.TelegramToken != "" && req.Info.Email == "" && req.Password == "" {
+	if req.TelegramToken != "" && req.Info.Email == nil && req.Password == "" {
 		return true
 	}
 	return false

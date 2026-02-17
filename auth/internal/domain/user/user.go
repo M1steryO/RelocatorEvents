@@ -13,7 +13,7 @@ type User struct {
 type UserInfo struct {
 	UserID int64
 	Name   string
-	Email  string
+	Email  *string
 
 	TelegramID       *int64
 	TelegramUsername string

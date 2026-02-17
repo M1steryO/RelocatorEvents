@@ -16,6 +16,12 @@ func ToInterestsDtoFromApi(interests []*desc.Interest) []string {
 
 	return converted
 }
+func ToStringFromStringValue(s *wrapperspb.StringValue) *string {
+	if s == nil {
+		return nil
+	}
+	return &s.Value
+}
 
 func ToCreateUserDtoInfoFromApi(req *desc.CreateRequest, telegramId *int64) *dto.CreateUser {
 	if req.Info == nil {
@@ -24,7 +30,7 @@ func ToCreateUserDtoInfoFromApi(req *desc.CreateRequest, telegramId *int64) *dto
 
 	return &dto.CreateUser{
 		Name:             req.Info.Name,
-		Email:            req.Info.Email,
+		Email:            ToStringFromStringValue(req.Info.Email),
 		TelegramId:       telegramId,
 		TelegramUsername: req.Info.TelegramUsername,
 
@@ -54,8 +60,15 @@ func ToUserApiFromDomain(user *user.User) *desc.User {
 	return &desc.User{
 		Id: user.ID,
 		Info: &desc.UserInfo{
-			Name:    user.Info.Name,
-			Email:   user.Info.Email,
+			Name: user.Info.Name,
+			Email: func() *wrapperspb.StringValue {
+				if user.Info.Email != nil {
+					return &wrapperspb.StringValue{
+						Value: *user.Info.Email,
+					}
+				}
+				return nil
+			}(),
 			City:    user.Info.City,
 			Country: user.Info.Country,
 

@@ -17,8 +17,8 @@ type UserInfo struct {
 	TelegramId       *int64 `db:"telegram_id"`
 	TelegramUsername string `db:"tg_username"`
 
-	Email string `db:"email"`
-	Name  string `db:"name"`
+	Email *string `db:"email"`
+	Name  string  `db:"name"`
 
 	Country string `db:"country"`
 	City    string `db:"city"`

@@ -6,7 +6,7 @@ import (
 
 type CreateUser struct {
 	Name  string
-	Email string
+	Email *string
 
 	TelegramId       *int64
 	TelegramUsername string

@@ -54,7 +54,7 @@ message User {
 
 message UserInfo {
   string name = 1;
-  string email = 2;
+  google.protobuf.StringValue email = 2;
 
   google.protobuf.Int64Value telegram_id = 3;
   string telegram_username = 4;

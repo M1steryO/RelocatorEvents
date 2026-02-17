@@ -140,14 +140,14 @@ func (x *User) GetUpdatedAt() *timestamppb.Timestamp {
 }
 
 type UserInfo struct {
-	state            protoimpl.MessageState `protogen:"open.v1"`
-	Name             string                 `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	Email            string                 `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
-	TelegramId       *wrapperspb.Int64Value `protobuf:"bytes,3,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
-	TelegramUsername string                 `protobuf:"bytes,4,opt,name=telegram_username,json=telegramUsername,proto3" json:"telegram_username,omitempty"`
-	Country          string                 `protobuf:"bytes,5,opt,name=country,proto3" json:"country,omitempty"`
-	City             string                 `protobuf:"bytes,6,opt,name=city,proto3" json:"city,omitempty"`
-	Interests        []*Interest            `protobuf:"bytes,7,rep,name=interests,proto3" json:"interests,omitempty"`
+	state            protoimpl.MessageState  `protogen:"open.v1"`
+	Name             string                  `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Email            *wrapperspb.StringValue `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	TelegramId       *wrapperspb.Int64Value  `protobuf:"bytes,3,opt,name=telegram_id,json=telegramId,proto3" json:"telegram_id,omitempty"`
+	TelegramUsername string                  `protobuf:"bytes,4,opt,name=telegram_username,json=telegramUsername,proto3" json:"telegram_username,omitempty"`
+	Country          string                  `protobuf:"bytes,5,opt,name=country,proto3" json:"country,omitempty"`
+	City             string                  `protobuf:"bytes,6,opt,name=city,proto3" json:"city,omitempty"`
+	Interests        []*Interest             `protobuf:"bytes,7,rep,name=interests,proto3" json:"interests,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -189,11 +189,11 @@ func (x *UserInfo) GetName() string {
 	return ""
 }
 
-func (x *UserInfo) GetEmail() string {
+func (x *UserInfo) GetEmail() *wrapperspb.StringValue {
 	if x != nil {
 		return x.Email
 	}
-	return ""
+	return nil
 }
 
 func (x *UserInfo) GetTelegramId() *wrapperspb.Int64Value {
@@ -747,10 +747,10 @@ const file_user_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xfe\x01\n" +
+	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x9c\x02\n" +
 	"\bUserInfo\x12\x12\n" +
-	"\x04name\x18\x01 \x01(\tR\x04name\x12\x14\n" +
-	"\x05email\x18\x02 \x01(\tR\x05email\x12<\n" +
+	"\x04name\x18\x01 \x01(\tR\x04name\x122\n" +
+	"\x05email\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x05email\x12<\n" +
 	"\vtelegram_id\x18\x03 \x01(\v2\x1b.google.protobuf.Int64ValueR\n" +
 	"telegramId\x12+\n" +
 	"\x11telegram_username\x18\x04 \x01(\tR\x10telegramUsername\x12\x18\n" +
@@ -828,37 +828,38 @@ var file_user_proto_goTypes = []any{
 	(*GetUserByTelegramIdRequest)(nil),  // 11: user_v1.GetUserByTelegramIdRequest
 	(*GetUserByTelegramIdResponse)(nil), // 12: user_v1.GetUserByTelegramIdResponse
 	(*timestamppb.Timestamp)(nil),       // 13: google.protobuf.Timestamp
-	(*wrapperspb.Int64Value)(nil),       // 14: google.protobuf.Int64Value
-	(*wrapperspb.StringValue)(nil),      // 15: google.protobuf.StringValue
+	(*wrapperspb.StringValue)(nil),      // 14: google.protobuf.StringValue
+	(*wrapperspb.Int64Value)(nil),       // 15: google.protobuf.Int64Value
 	(*emptypb.Empty)(nil),               // 16: google.protobuf.Empty
 }
 var file_user_proto_depIdxs = []int32{
 	2,  // 0: user_v1.User.info:type_name -> user_v1.UserInfo
 	13, // 1: user_v1.User.created_at:type_name -> google.protobuf.Timestamp
 	13, // 2: user_v1.User.updated_at:type_name -> google.protobuf.Timestamp
-	14, // 3: user_v1.UserInfo.telegram_id:type_name -> google.protobuf.Int64Value
-	3,  // 4: user_v1.UserInfo.interests:type_name -> user_v1.Interest
-	15, // 5: user_v1.UpdateUserInfo.name:type_name -> google.protobuf.StringValue
-	15, // 6: user_v1.UpdateUserInfo.email:type_name -> google.protobuf.StringValue
-	2,  // 7: user_v1.CreateRequest.info:type_name -> user_v1.UserInfo
-	1,  // 8: user_v1.GetResponse.user:type_name -> user_v1.User
-	4,  // 9: user_v1.UpdateRequest.info:type_name -> user_v1.UpdateUserInfo
-	1,  // 10: user_v1.GetUserByTelegramIdResponse.user:type_name -> user_v1.User
-	5,  // 11: user_v1.UserV1.Create:input_type -> user_v1.CreateRequest
-	7,  // 12: user_v1.UserV1.Get:input_type -> user_v1.GetRequest
-	11, // 13: user_v1.UserV1.GetUserByTelegramId:input_type -> user_v1.GetUserByTelegramIdRequest
-	9,  // 14: user_v1.UserV1.Update:input_type -> user_v1.UpdateRequest
-	10, // 15: user_v1.UserV1.Delete:input_type -> user_v1.DeleteRequest
-	6,  // 16: user_v1.UserV1.Create:output_type -> user_v1.CreateResponse
-	8,  // 17: user_v1.UserV1.Get:output_type -> user_v1.GetResponse
-	12, // 18: user_v1.UserV1.GetUserByTelegramId:output_type -> user_v1.GetUserByTelegramIdResponse
-	16, // 19: user_v1.UserV1.Update:output_type -> google.protobuf.Empty
-	16, // 20: user_v1.UserV1.Delete:output_type -> google.protobuf.Empty
-	16, // [16:21] is the sub-list for method output_type
-	11, // [11:16] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	14, // 3: user_v1.UserInfo.email:type_name -> google.protobuf.StringValue
+	15, // 4: user_v1.UserInfo.telegram_id:type_name -> google.protobuf.Int64Value
+	3,  // 5: user_v1.UserInfo.interests:type_name -> user_v1.Interest
+	14, // 6: user_v1.UpdateUserInfo.name:type_name -> google.protobuf.StringValue
+	14, // 7: user_v1.UpdateUserInfo.email:type_name -> google.protobuf.StringValue
+	2,  // 8: user_v1.CreateRequest.info:type_name -> user_v1.UserInfo
+	1,  // 9: user_v1.GetResponse.user:type_name -> user_v1.User
+	4,  // 10: user_v1.UpdateRequest.info:type_name -> user_v1.UpdateUserInfo
+	1,  // 11: user_v1.GetUserByTelegramIdResponse.user:type_name -> user_v1.User
+	5,  // 12: user_v1.UserV1.Create:input_type -> user_v1.CreateRequest
+	7,  // 13: user_v1.UserV1.Get:input_type -> user_v1.GetRequest
+	11, // 14: user_v1.UserV1.GetUserByTelegramId:input_type -> user_v1.GetUserByTelegramIdRequest
+	9,  // 15: user_v1.UserV1.Update:input_type -> user_v1.UpdateRequest
+	10, // 16: user_v1.UserV1.Delete:input_type -> user_v1.DeleteRequest
+	6,  // 17: user_v1.UserV1.Create:output_type -> user_v1.CreateResponse
+	8,  // 18: user_v1.UserV1.Get:output_type -> user_v1.GetResponse
+	12, // 19: user_v1.UserV1.GetUserByTelegramId:output_type -> user_v1.GetUserByTelegramIdResponse
+	16, // 20: user_v1.UserV1.Update:output_type -> google.protobuf.Empty
+	16, // 21: user_v1.UserV1.Delete:output_type -> google.protobuf.Empty
+	17, // [17:22] is the sub-list for method output_type
+	12, // [12:17] is the sub-list for method input_type
+	12, // [12:12] is the sub-list for extension type_name
+	12, // [12:12] is the sub-list for extension extendee
+	0,  // [0:12] is the sub-list for field type_name
 }
 
 func init() { file_user_proto_init() }
