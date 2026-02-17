@@ -112,3 +112,9 @@ jobs:
             docker stop $CONTAINER_NAME
             docker rm $CONTAINER_NAME
             docker run -d --name $CONTAINER_NAME  --network reloca -t $REGISTRY/$IMAGE_NAME:$TAG_NAME
+             docker images "$REGISTRY/$IMAGE_NAME" --format '{{.Repository}}:{{.Tag}} {{.ID}}' \
+            | awk -v keep="$REGISTRY/$IMAGE_NAME:$TAG_NAME" '$1!=keep {print $2}' \
+            | xargs -r docker rmi -f || true
+            docker image prune -f || true
+
+        

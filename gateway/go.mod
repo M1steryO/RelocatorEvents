@@ -1,6 +1,6 @@
 module github.com/M1steryO/RelocatorEvents/gateway
 
-go 1.25.6
+go 1.25.4
 
 require (
 	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260217120818-182e25d1a904
