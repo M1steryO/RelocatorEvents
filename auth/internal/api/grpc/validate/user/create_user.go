@@ -3,6 +3,7 @@ package create_user
 import (
 	"context"
 	"errors"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/telegram"
 	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"github.com/M1steryO/platform_common/pkg/sys/validate"
@@ -36,8 +37,9 @@ func ValidateUserData(req *desc.CreateRequest, telegramId *int64, telegramAuth *
 			if err != nil {
 				return errInvalidTelegramToken
 			}
+			logger.Info("get telegram id from token: ", "id", tgId)
 			*telegramId = tgId
-			
+
 			return nil
 		}
 		if isFromWeb && !isFromTg {
