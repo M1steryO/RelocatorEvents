@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventsService } from '../services/eventsService';
 import type { Event as ServerEvent, GetListRequest, FiltersData } from '../services/eventsService';
-import { FiltersModal } from './FiltersModal';
+import { FiltersModal, type FiltersState } from './FiltersModal';
 import { SortModal } from './SortModal';
 import { NotFoundCard } from './NotFoundCard';
 import './HomePage.css';
@@ -116,6 +116,7 @@ export const HomePage = () => {
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(true);
     const [appliedFilters, setAppliedFilters] = useState<GetListRequest>({});
+    const [uiFilters, setUiFilters] = useState<FiltersState | null>(null);
     const [availableFilters, setAvailableFilters] = useState<FiltersData | null>(null);
     const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({});
     const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
@@ -149,6 +150,7 @@ export const HomePage = () => {
             const raw = sessionStorage.getItem('homeFeedState');
             if (raw) {
                 const state = JSON.parse(raw) as {
+                    didLoad?: boolean;
                     searchQuery?: string;
                     debouncedSearchQuery?: string;
                     activeTab?: string;
@@ -157,6 +159,7 @@ export const HomePage = () => {
                     offset?: number;
                     hasMore?: boolean;
                     appliedFilters?: GetListRequest;
+                    uiFilters?: FiltersState | null;
                     availableFilters?: FiltersData | null;
                     loadedImages?: Record<number, boolean>;
                     imageErrors?: Record<number, boolean>;
@@ -171,12 +174,14 @@ export const HomePage = () => {
                 if (state.currentSort) {
                     setCurrentSort(state.currentSort);
                 }
-                if (state.events && state.events.length > 0) {
+                setAppliedFilters(state.appliedFilters ?? {});
+                setUiFilters(state.uiFilters ?? null);
+                setAvailableFilters(state.availableFilters ?? null);
+
+                if (state.didLoad && Array.isArray(state.events)) {
                     setEvents(state.events);
                     setOffset(state.offset ?? state.events.length);
                     setHasMore(state.hasMore ?? true);
-                    setAppliedFilters(state.appliedFilters ?? {});
-                    setAvailableFilters(state.availableFilters ?? null);
                     setLoadedImages(state.loadedImages ?? {});
                     setImageErrors(state.imageErrors ?? {});
                     setIsLoading(false);
@@ -306,6 +311,7 @@ export const HomePage = () => {
         return () => {
             try {
                 const state = {
+                    didLoad: true,
                     searchQuery,
                     debouncedSearchQuery,
                     activeTab,
@@ -314,6 +320,7 @@ export const HomePage = () => {
                     offset,
                     hasMore,
                     appliedFilters,
+                    uiFilters,
                     availableFilters,
                     loadedImages,
                     imageErrors,
@@ -334,6 +341,7 @@ export const HomePage = () => {
         hasMore,
         appliedFilters,
         availableFilters,
+        uiFilters,
         loadedImages,
         imageErrors,
     ]);
@@ -474,7 +482,9 @@ export const HomePage = () => {
                 isOpen={isFiltersOpen}
                 onClose={() => setIsFiltersOpen(false)}
                 availableFilters={availableFilters || undefined}
+                initialFilters={uiFilters}
                 onApply={(filters) => {
+                    setUiFilters(filters);
                     const apiFilters: GetListRequest = {};
 
                     if (filters.cities.length > 0) {

@@ -8,9 +8,10 @@ interface FiltersModalProps {
     onClose: () => void;
     onApply: (filters: FiltersState) => void;
     availableFilters?: FiltersData;
+    initialFilters?: FiltersState | null;
 }
 
-interface FiltersState {
+export interface FiltersState {
     cities: string[];
     districts: string[];
     priceRange: [number, number];
@@ -25,19 +26,66 @@ const CITIES = ['Тбилиси', 'Сухуми', 'Телави', 'Тержол�
 const FORMATS = ['Онлайн', 'Офлайн'];
 const MAX_PRICE = 10000;
 
-export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters }: FiltersModalProps) => {
-    const [filters, setFilters] = useState<FiltersState>({
+const createDefaultFilters = (available?: FiltersData): FiltersState => ({
         cities: [],
         districts: [],
         priceRange: [
-            availableFilters?.min_price ?? 0,
-            availableFilters?.max_price ?? MAX_PRICE
+            available?.min_price ?? 0,
+            available?.max_price ?? MAX_PRICE
         ],
         dateType: null,
         weekdays: false,
         exactDate: '',
         formats: [],
         interests: [],
+    });
+
+const clampPriceRange = (
+    range: [number, number],
+    available?: FiltersData
+): [number, number] => {
+    const minPrice = available?.min_price ?? 0;
+    const maxPrice = available?.max_price ?? MAX_PRICE;
+    const clampedMin = Math.max(minPrice, Math.min(range[0], maxPrice));
+    const clampedMax = Math.max(clampedMin, Math.min(range[1], maxPrice));
+    return [clampedMin, clampedMax];
+};
+
+const validateExactDateError = (value: string): boolean => {
+    // Validate date format DD.MM.YYYY
+    const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
+    if (!value || value.length === 0) {
+        return false;
+    }
+    if (!dateRegex.test(value)) {
+        return true;
+    }
+    const [, day, month, year] = value.match(dateRegex) || [];
+    const dayNum = parseInt(day);
+    const monthNum = parseInt(month);
+    const yearNum = parseInt(year);
+
+    if (monthNum < 1 || monthNum > 12) return true;
+    if (dayNum < 1 || dayNum > 31) return true;
+    if (yearNum < 1900 || yearNum > 2100) return true;
+
+    const date = new Date(yearNum, monthNum - 1, dayNum);
+    const isValid = date.getDate() === dayNum &&
+        date.getMonth() === monthNum - 1 &&
+        date.getFullYear() === yearNum;
+
+    return !isValid;
+};
+
+export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initialFilters }: FiltersModalProps) => {
+    const [filters, setFilters] = useState<FiltersState>(() => {
+        if (initialFilters) {
+            return {
+                ...initialFilters,
+                priceRange: clampPriceRange(initialFilters.priceRange, availableFilters),
+            };
+        }
+        return createDefaultFilters(availableFilters);
     });
 
     const [exactDateError, setExactDateError] = useState(false);
@@ -77,13 +125,24 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters }: Fil
     }, [isOpen]);
 
     useEffect(() => {
-        if (!isOpen || isClosing || !availableFilters) return;
-        setFilters(prev => ({
+        if (!isOpen || isClosing) return;
+
+        // When modal opens, sync UI filters from HomePage (restored state)
+        if (initialFilters) {
+            setFilters({
+                ...initialFilters,
+                priceRange: clampPriceRange(initialFilters.priceRange, availableFilters),
+            });
+            const exact = initialFilters.exactDate ?? '';
+            setShowExactDateInput(exact.trim().length > 0);
+            setExactDateError(validateExactDateError(exact));
+            return;
+        }
+
+        // If no initial filters provided, ensure price range stays within available bounds.
+        setFilters((prev) => ({
             ...prev,
-            priceRange: [
-                availableFilters.min_price ?? 0,
-                availableFilters.max_price ?? MAX_PRICE
-            ]
+            priceRange: clampPriceRange(prev.priceRange, availableFilters),
         }));
     }, [isOpen, isClosing, availableFilters]);
 

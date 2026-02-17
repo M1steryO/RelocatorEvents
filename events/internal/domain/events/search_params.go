@@ -19,8 +19,23 @@ type EventDate struct {
 	Preset *Preset
 }
 
+func safeLocation(tz string) *time.Location {
+	if tz == "" {
+		return time.UTC
+	}
+	loc, err := time.LoadLocation(tz)
+	if err != nil {
+		logger.Error("failed to load timezone, fallback to UTC",
+			"tz", tz,
+			"err", err.Error(),
+		)
+		return time.UTC
+	}
+	return loc
+}
+
 func (e *EventDate) ToRange(tz string) (time.Time, time.Time) {
-	loc, _ := time.LoadLocation(tz)
+	loc := safeLocation(tz)
 	now := time.Now().In(loc)
 
 	if e.Date != nil {
