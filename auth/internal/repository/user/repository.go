@@ -82,9 +82,13 @@ func (s *repo) Create(ctx context.Context, user *modelRepo.User) (int64, error) 
 				VALUES ($1, $2, $3, $4) 
 			 	RETURNING id;`,
 	}
+	var emailVal *string
+	if user.Info.Email != "" {
+		*emailVal = user.Info.Email
+	} // TODO: заглушка
 
 	err := s.db.DB().QueryRowContext(ctx, q,
-		user.Info.Name, user.Info.TelegramId, user.Info.Email, user.Info.Name).Scan(&lastInsertId)
+		user.Info.Name, user.Info.TelegramId, emailVal, user.Info.Name).Scan(&lastInsertId)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {

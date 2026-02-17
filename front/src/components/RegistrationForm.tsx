@@ -158,14 +158,17 @@ export const RegistrationForm = ({onSuccess}: RegistrationFormProps) => {
             const telegramInitData = getTelegramInitData();
             const telegramUsernameFromInitData =
                 window.Telegram?.WebApp?.initDataUnsafe?.user?.username || '';
+            const emailForRegistration = telegramInitData
+                ? undefined // for Telegram registration we intentionally don't send email
+                : `stub_${Date.now()}@example.com`;
 
             const response = await authService.register({
                 telegram_token: telegramInitData,
-                
                 password: '',
                 confirm_password: '',
                 info: {
                     telegram_username: telegramUsernameFromInitData,
+                    email: emailForRegistration,
                     country: formData.country,
                     city: formData.city,
                     interests: formData.interests.map((interest) => ({code: interest})),

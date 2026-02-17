@@ -7,7 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://5.35.12.153:50
 
 export interface RegisterData {
     name?: string;
-
+    
     telegram_token? :   string
 	
 
@@ -15,6 +15,7 @@ export interface RegisterData {
 	confirm_password?:  string
 
     info: {
+        email?: string | null;
         telegram_username? : string
         country?: string;
         city?: string;
