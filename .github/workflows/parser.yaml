@@ -3,8 +3,14 @@ name: Parser
 on:
   push:
     branches: [main, master]
+    paths:
+      - "parser/**"
+      - ".github/workflows/parser.yml"
   pull_request:
     branches: [main, master]
+    paths:
+      - "parser/**"
+      - ".github/workflows/parser.yml"
 
 env:
   REGISTRY: "cr.selcloud.ru/relocator-events"

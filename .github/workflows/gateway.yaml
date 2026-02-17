@@ -3,8 +3,14 @@ name: Gateway
 on:
   push:
     branches: [main, master]
+    paths:
+      - "gateway/**"
+      - ".github/workflows/gateway.yml"
   pull_request:
     branches: [main, master]
+    paths:
+      - "gateway/**"
+      - ".github/workflows/gateway.yml"
 
 env:
   REGISTRY: "cr.selcloud.ru/relocator-events"
