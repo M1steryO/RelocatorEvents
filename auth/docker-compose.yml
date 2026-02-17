@@ -21,6 +21,7 @@ services:
       context: .
       dockerfile: migration.Dockerfile
     restart: on-failure
+    
     environment:
       DB_HOST: db
     networks: [reloca]
