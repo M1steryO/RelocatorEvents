@@ -3,9 +3,10 @@ package create_user
 import (
 	"context"
 	"errors"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/telegram"
 	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"github.com/M1steryO/platform_common/pkg/sys/validate"
-	"math/rand"
+	"time"
 )
 
 var errPasswordNotMatch = errors.New("password does not match")
@@ -25,13 +26,13 @@ func isUserFromWeb(req *desc.CreateRequest) bool {
 	return false
 }
 
-func ValidateUserData(req *desc.CreateRequest, telegramId *int64) validate.Condition {
+func ValidateUserData(req *desc.CreateRequest, telegramId *int64, telegramAuth *telegram.TelegramAuthenticator) validate.Condition {
 	return func(ctx context.Context) error {
 		isFromTg := isUserFromTelegram(req)
 		isFromWeb := isUserFromWeb(req)
 
 		if isFromTg && !isFromWeb {
-			tgId, err := validateTelegramToken(req.TelegramToken)
+			tgId, err := validateTelegramToken(req.TelegramToken, telegramAuth)
 			if err != nil {
 				return errInvalidTelegramToken
 			}
@@ -48,8 +49,15 @@ func ValidateUserData(req *desc.CreateRequest, telegramId *int64) validate.Condi
 	}
 }
 
-func validateTelegramToken(token string) (int64, error) {
-	// TODO
-	n := rand.Int63()
-	return n, nil
+func validateTelegramToken(token string, telegramAuth *telegram.TelegramAuthenticator) (int64, error) {
+	clearData, err := telegramAuth.Validate(token, 5000000*time.Minute)
+	if err != nil {
+		return 0, errors.New("invalid init data")
+	}
+	if clearData.User == nil {
+		return 0, errors.New("user-data is not provided")
+	}
+
+	telegramID := clearData.User.ID
+	return telegramID, nil
 }

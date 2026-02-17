@@ -33,6 +33,8 @@ type serviceProvider struct {
 
 	userService service.UserService
 
+	telegramAuth *telegram.TelegramAuthenticator
+
 	userImpl   *user.Implementation
 	authImpl   *auth.Implementation
 	accessImpl *access.Implementation
@@ -167,18 +169,25 @@ func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 
 func (s *serviceProvider) UserImpl(ctx context.Context) *user.Implementation {
 	if s.userImpl == nil {
-		s.userImpl = user.NewUserImplementation(s.UserService(ctx))
+
+		s.userImpl = user.NewUserImplementation(s.UserService(ctx), s.TelegramAuth(ctx))
 	}
 
 	return s.userImpl
 }
 
+func (s *serviceProvider) TelegramAuth(ctx context.Context) *telegram.TelegramAuthenticator {
+	if s.telegramAuth == nil {
+		secret := telegram.GenerateSecretKey(s.TelegramConfig().Token())
+		s.telegramAuth = telegram.NewTelegramAuthenticator(secret)
+	}
+	return s.telegramAuth
+}
+
 func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.Implementation {
 	if s.authImpl == nil {
-		secret := telegram.GenerateSecretKey(s.TelegramConfig().Token())
-		telegramAuth := telegram.NewTelegramAuthenticator(secret)
 
-		s.authImpl = auth.NewImplementation(s.UserService(ctx), telegramAuth, s.JWTConfig())
+		s.authImpl = auth.NewImplementation(s.UserService(ctx), s.TelegramAuth(ctx), s.JWTConfig())
 	}
 	return s.authImpl
 }
