@@ -3,8 +3,14 @@ name: Front
 on:
   push:
     branches: [main, master]
+    paths:
+      - "front/**"
+      - ".github/workflows/front.yml"
   pull_request:
     branches: [main, master]
+    paths:
+      - "front/**"
+      - ".github/workflows/front.yml"
 
 env:
   REGISTRY: "cr.selcloud.ru/relocator-events"

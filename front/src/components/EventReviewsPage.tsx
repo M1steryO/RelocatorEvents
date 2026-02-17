@@ -74,6 +74,7 @@ export const EventReviewsPage = () => {
     const [event, setEvent] = useState<Event | null>(null);
     const [isLoading, setIsLoading] = useState(true);
     const [reviews, setReviews] = useState<ReviewItem[]>([]);
+    const [isReviewsLoading, setIsReviewsLoading] = useState(true);
     const [reviewsSummary, setReviewsSummary] = useState({
         rating: 0,
         reviews_count: 0,
@@ -126,6 +127,7 @@ export const EventReviewsPage = () => {
     useEffect(() => {
         const loadReviews = async () => {
             if (!eventId) {
+                setIsReviewsLoading(false);
                 return;
             }
             if (lastLoadedReviewsRef.current === eventId) {
@@ -133,6 +135,7 @@ export const EventReviewsPage = () => {
             }
             lastLoadedReviewsRef.current = eventId;
 
+            setIsReviewsLoading(true);
             try {
                 const response = await reviewsService.listReviews(Number(eventId));
                 setReviews(response.reviews.map(mapReview));
@@ -144,6 +147,8 @@ export const EventReviewsPage = () => {
             } catch (error) {
                 console.error('Failed to load reviews:', error);
                 setReviews([]);
+            } finally {
+                setIsReviewsLoading(false);
             }
         };
 
@@ -286,7 +291,7 @@ export const EventReviewsPage = () => {
         }
     };
 
-    if (isLoading) {
+    if (isLoading || isReviewsLoading) {
         return (
             <div className="event-reviews-page">
                 <div className="event-reviews-loader">Загрузка...</div>
