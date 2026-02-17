@@ -11,7 +11,7 @@ ENV CGO_ENABLED=1
 RUN go build -tags musl -o ./bin/events ./cmd/events/main.go
 
 FROM alpine:latest
-RUN apk add --no-cache librdkafka
+RUN apk add --no-cache librdkafka tzdata
 
 WORKDIR /root/
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/events/source/bin/events .
