@@ -122,6 +122,7 @@ export const HomePage = () => {
     const lastRequestRef = useRef<{ key: string; time: number } | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
     const restoredFromSessionRef = useRef(false);
+    const skipNextDebounceRef = useRef(false);
 
     const tabs = ['ДЛЯ ВАС', 'ПОГРУЗИТЕСЬ В НОВУЮ КУЛЬТУРУ', 'ПОПУЛЯРНО'];
 
@@ -180,6 +181,7 @@ export const HomePage = () => {
                     setImageErrors(state.imageErrors ?? {});
                     setIsLoading(false);
                     restoredFromSessionRef.current = true;
+                    skipNextDebounceRef.current = true;
 
                     const scrollY = state.scrollY ?? 0;
                     // Восстанавливаем скролл после отрисовки
@@ -197,12 +199,23 @@ export const HomePage = () => {
 
     // Debounce search input to avoid sending requests on every keystroke
     useEffect(() => {
+        if (!isInitialized) {
+            return;
+        }
+
+        // После восстановления состояния из sessionStorage пропускаем один
+        // дебаунс, чтобы не триггерить повторный запрос и не сбрасывать список.
+        if (skipNextDebounceRef.current) {
+            skipNextDebounceRef.current = false;
+            return;
+        }
+
         const timeoutId = setTimeout(() => {
             setDebouncedSearchQuery(searchQuery);
         }, 400);
 
         return () => clearTimeout(timeoutId);
-    }, [searchQuery]);
+    }, [searchQuery, isInitialized]);
 
     const fetchEventsPage = async (nextOffset: number, replace: boolean) => {
         if (replace) {
