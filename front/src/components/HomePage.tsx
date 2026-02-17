@@ -120,6 +120,8 @@ export const HomePage = () => {
     const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({});
     const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
     const lastRequestRef = useRef<{ key: string; time: number } | null>(null);
+    const [isInitialized, setIsInitialized] = useState(false);
+    const restoredFromSessionRef = useRef(false);
 
     const tabs = ['ДЛЯ ВАС', 'ПОГРУЗИТЕСЬ В НОВУЮ КУЛЬТУРУ', 'ПОПУЛЯРНО'];
 
@@ -134,6 +136,64 @@ export const HomePage = () => {
             default: return 'popular';
         }
     };
+
+    // Restore feed state and scroll position from sessionStorage on first mount
+    useEffect(() => {
+        if (typeof window === 'undefined') {
+            setIsInitialized(true);
+            return;
+        }
+
+        try {
+            const raw = sessionStorage.getItem('homeFeedState');
+            if (raw) {
+                const state = JSON.parse(raw) as {
+                    searchQuery?: string;
+                    debouncedSearchQuery?: string;
+                    activeTab?: string;
+                    currentSort?: string;
+                    events?: DisplayEvent[];
+                    offset?: number;
+                    hasMore?: boolean;
+                    appliedFilters?: GetListRequest;
+                    availableFilters?: FiltersData | null;
+                    loadedImages?: Record<number, boolean>;
+                    imageErrors?: Record<number, boolean>;
+                    scrollY?: number;
+                };
+
+                setSearchQuery(state.searchQuery ?? '');
+                setDebouncedSearchQuery(state.debouncedSearchQuery ?? state.searchQuery ?? '');
+                if (state.activeTab) {
+                    setActiveTab(state.activeTab);
+                }
+                if (state.currentSort) {
+                    setCurrentSort(state.currentSort);
+                }
+                if (state.events && state.events.length > 0) {
+                    setEvents(state.events);
+                    setOffset(state.offset ?? state.events.length);
+                    setHasMore(state.hasMore ?? true);
+                    setAppliedFilters(state.appliedFilters ?? {});
+                    setAvailableFilters(state.availableFilters ?? null);
+                    setLoadedImages(state.loadedImages ?? {});
+                    setImageErrors(state.imageErrors ?? {});
+                    setIsLoading(false);
+                    restoredFromSessionRef.current = true;
+
+                    const scrollY = state.scrollY ?? 0;
+                    // Восстанавливаем скролл после отрисовки
+                    window.requestAnimationFrame(() => {
+                        window.scrollTo(0, scrollY);
+                    });
+                }
+            }
+        } catch (error) {
+            console.error('Failed to restore home feed state:', error);
+        } finally {
+            setIsInitialized(true);
+        }
+    }, []);
 
     // Debounce search input to avoid sending requests on every keystroke
     useEffect(() => {
@@ -191,11 +251,21 @@ export const HomePage = () => {
     };
 
     useEffect(() => {
+        if (!isInitialized) {
+            return;
+        }
+
+        // Если только что восстановили состояние из sessionStorage — пропускаем первый запуск
+        if (restoredFromSessionRef.current) {
+            restoredFromSessionRef.current = false;
+            return;
+        }
+
         lastRequestRef.current = null;
         setOffset(0);
         setHasMore(true);
         fetchEventsPage(0, true);
-    }, [debouncedSearchQuery, currentSort, appliedFilters]);
+    }, [debouncedSearchQuery, currentSort, appliedFilters, isInitialized]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -213,6 +283,47 @@ export const HomePage = () => {
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, currentSort, appliedFilters]);
+
+    // Сохраняем состояние ленты и позицию скролла при размонтировании
+    useEffect(() => {
+        if (typeof window === 'undefined') {
+            return;
+        }
+
+        return () => {
+            try {
+                const state = {
+                    searchQuery,
+                    debouncedSearchQuery,
+                    activeTab,
+                    currentSort,
+                    events,
+                    offset,
+                    hasMore,
+                    appliedFilters,
+                    availableFilters,
+                    loadedImages,
+                    imageErrors,
+                    scrollY: window.scrollY,
+                };
+                sessionStorage.setItem('homeFeedState', JSON.stringify(state));
+            } catch (error) {
+                console.error('Failed to persist home feed state:', error);
+            }
+        };
+    }, [
+        searchQuery,
+        debouncedSearchQuery,
+        activeTab,
+        currentSort,
+        events,
+        offset,
+        hasMore,
+        appliedFilters,
+        availableFilters,
+        loadedImages,
+        imageErrors,
+    ]);
 
     const handleImageLoad = (id: number) => {
         setLoadedImages(prev => ({ ...prev, [id]: true }));

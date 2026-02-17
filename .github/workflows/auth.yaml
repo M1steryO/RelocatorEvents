@@ -115,4 +115,3 @@ jobs:
             docker images "$REGISTRY/$IMAGE_NAME" --format '{{.Repository}}:{{.Tag}} {{.ID}}' \
             | awk -v keep="$REGISTRY/$IMAGE_NAME:$TAG_NAME" '$1!=keep {print $2}' \
             | xargs -r docker rmi -f || true
-            
