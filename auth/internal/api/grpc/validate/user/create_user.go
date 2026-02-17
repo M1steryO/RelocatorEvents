@@ -37,6 +37,7 @@ func ValidateUserData(req *desc.CreateRequest, telegramId *int64, telegramAuth *
 				return errInvalidTelegramToken
 			}
 			*telegramId = tgId
+			
 			return nil
 		}
 		if isFromWeb && !isFromTg {
