@@ -29,9 +29,11 @@ const accessTokenExpiration = 10 * time.Minute
 func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
 	var telegramId int64
 
-	err := validate.Validate(ctx, create_user.ValidateUserData(req, &telegramId, i.telegramAuth))
-	if err != nil {
-		return nil, err
+	if req.TelegramToken != "" {
+		err := validate.Validate(ctx, create_user.ValidateUserData(req, &telegramId, i.telegramAuth))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	id, err := i.service.Create(ctx, converter.ToCreateUserDtoInfoFromApi(req, &telegramId))

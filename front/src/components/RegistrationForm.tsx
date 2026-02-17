@@ -3,6 +3,7 @@ import {useNavigate} from 'react-router-dom';
 import {useAuth} from '../contexts/AuthContext';
 import {authService} from '../services/authService';
 import {INTERESTS_LIST} from '../constants/interests';
+import { getTelegramInitData } from '../utils/telegramInitData';
 import './RegistrationForm.css';
 
 interface RegistrationFormProps {
@@ -154,14 +155,17 @@ export const RegistrationForm = ({onSuccess}: RegistrationFormProps) => {
     const handleSubmit = async () => {
         setIsLoading(true);
         try {
+            const telegramInitData = getTelegramInitData();
+            const telegramUsernameFromInitData =
+                window.Telegram?.WebApp?.initDataUnsafe?.user?.username || '';
 
             const response = await authService.register({
-                telegram_token: '122',
+                telegram_token: telegramInitData,
                 
                 password: '',
                 confirm_password: '',
                 info: {
-                    telegram_username: '123',
+                    telegram_username: telegramUsernameFromInitData,
                     country: formData.country,
                     city: formData.city,
                     interests: formData.interests.map((interest) => ({code: interest})),
