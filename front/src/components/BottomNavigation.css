@@ -12,6 +12,7 @@
     z-index: 100;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
     padding-bottom: 31px;
+    height: 77px;
 }
 
 .nav-item {
@@ -36,11 +37,6 @@
     font-weight: 500;
     color: #414141;
     transition: color 0.2s ease;
-}
-
-.nav-item.active span {
-    color: #414141;
-    line-height: 0.36;
 }
 
 .nav-item svg {
