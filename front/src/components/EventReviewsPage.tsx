@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
+import { MEDIA_BASE_URL } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 import { eventsService } from '../services/eventsService';
 import type { Event } from '../services/eventsService';
@@ -45,7 +46,7 @@ const mapReview = (review: ApiReview, index: number): ReviewItem => ({
         const rawType: string | undefined = typeof item.type === 'string' ? item.type : undefined;
         const isVideo = item.type === MediaType.MEDIA_TYPE_VIDEO || rawType === 'MEDIA_TYPE_VIDEO';
         return {
-            url: storageKey ? `http://5.35.12.153:9000/media/${storageKey}` : '',
+            url: storageKey ? `${MEDIA_BASE_URL}/${storageKey}` : '',
             type: isVideo ? 'video' : 'image',
         };
     }).filter((item) => item.url),

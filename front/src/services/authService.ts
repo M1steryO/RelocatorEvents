@@ -1,9 +1,8 @@
+import { API_BASE_URL } from '../config';
 import { showGlobalNotification } from '../contexts/NotificationContext';
 import { notifyServiceUnavailable } from '../utils/serviceUnavailable';
 import { addTelegramInitDataHeader } from '../utils/telegramInitData';
 import { notifyUnauthorized } from '../utils/unauthorized';
-
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://0.0.0.0:50043';
 
 export interface RegisterData {
     name?: string;
