@@ -62,6 +62,12 @@ select {
   font-size: max(16px, 1em);
 }
 
+/* Цвет курсора (каретки) в полях ввода */
+input,
+textarea {
+  caret-color: #458DBD;
+}
+
 h1 {
     font-size: 3.2em;
     line-height: 1.1;
