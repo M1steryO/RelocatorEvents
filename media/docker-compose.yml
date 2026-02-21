@@ -31,7 +31,7 @@ services:
       mc anonymous set public local/media;
       exit 0;
       "
-  media:
+  media-server-container:
     build:
       context: .
       dockerfile: ./Dockerfile

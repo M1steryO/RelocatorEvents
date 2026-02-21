@@ -8,11 +8,11 @@ services:
     ports:
       - 50043:50043
     depends_on:
-      auth:
+      auth-server-container:
         condition: service_started
-      events:
+      events-server-container:
         condition: service_started
-      media:
+      media-server-container:
         condition: service_started
 
     healthcheck:

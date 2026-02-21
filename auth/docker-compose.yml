@@ -26,7 +26,7 @@ services:
       DB_HOST: db
     networks: [reloca]
 
-  auth:
+  auth-server-container:
     build:
       context: .
       dockerfile: ./Dockerfile

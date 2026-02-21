@@ -178,9 +178,13 @@ export const HomePage = () => {
                 setUiFilters(state.uiFilters ?? null);
                 setAvailableFilters(state.availableFilters ?? null);
 
-                if (state.didLoad && Array.isArray(state.events)) {
-                    setEvents(state.events);
-                    setOffset(state.offset ?? state.events.length);
+                // Восстанавливаем список и скролл только если ранее реально загрузили мероприятия.
+                // Иначе (пустой список / первый визит) — не помечаем как restore, чтобы ушёл запрос за списком.
+                const hasRestorableEvents = state.didLoad && Array.isArray(state.events) && state.events.length > 0;
+                if (hasRestorableEvents) {
+                    const restoredEvents = state.events ?? [];
+                    setEvents(restoredEvents);
+                    setOffset(state.offset ?? restoredEvents.length);
                     setHasMore(state.hasMore ?? true);
                     setLoadedImages(state.loadedImages ?? {});
                     setImageErrors(state.imageErrors ?? {});
@@ -189,7 +193,6 @@ export const HomePage = () => {
                     skipNextDebounceRef.current = true;
 
                     const scrollY = state.scrollY ?? 0;
-                    // Восстанавливаем скролл после отрисовки
                     window.requestAnimationFrame(() => {
                         window.scrollTo(0, scrollY);
                     });

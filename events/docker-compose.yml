@@ -28,7 +28,7 @@ services:
     networks: [reloca]
 
 
-  events:
+  events-server-container:
     build:
       context: .
       dockerfile: ./Dockerfile

@@ -536,13 +536,6 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                         <div className="filter-section">
                             <div className="filter-section-header">
                                 <label className="filter-label">Интересы</label>
-                                <button className="filter-all-button">
-                                    <span>ВСЕ</span>
-
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="5" height="11" viewBox="0 0 5 11" fill="none">
-                                        <path fill-rule="evenodd" clip-rule="evenodd" d="M0.218423 10.8263C-0.0502057 10.574 -0.074377 10.1395 0.164435 9.85571L3.46842 5.9297C3.58404 5.79231 3.64553 5.71851 3.68608 5.66194C3.6875 5.65997 3.68884 5.65809 3.6901 5.65629C3.6889 5.65445 3.68762 5.65252 3.68628 5.6505C3.64764 5.59245 3.58867 5.5164 3.47772 5.37476L0.149422 1.12581C-0.0797227 0.83328 -0.0409939 0.399908 0.235925 0.157844C0.512845 -0.0842185 0.923092 -0.0433068 1.15224 0.249223L4.49284 4.51388C4.58663 4.63358 4.67932 4.75188 4.75105 4.85964C4.83083 4.9795 4.9136 5.12754 4.95899 5.314C5.01757 5.55465 5.01332 5.80756 4.94671 6.04585C4.8951 6.2305 4.80742 6.37535 4.72367 6.49215C4.64837 6.59716 4.55178 6.71191 4.45404 6.82802C4.44976 6.8331 4.44548 6.83819 4.44121 6.84327L1.13722 10.7693C0.898413 11.053 0.487052 11.0786 0.218423 10.8263Z" fill="#414141" />
-                                    </svg>
-                                </button>
                             </div>
                             <div className="filter-chips filter-chips-scroll">
                                 {interestsList.map(interest => (

@@ -407,13 +407,13 @@ export const RegistrationForm = ({onSuccess}: RegistrationFormProps) => {
                 {/* Step 3: Interests Selection */}
                 {step === 3 && (
                     <div className="registration-step">
-                        {renderBackButton()}
-                        <div className="step-header">
-                            <h1 className="step-title">Выберите ваши интересы</h1>
-                            <p className="step-description">
-                                позже их можно будет поменять
-                            </p>
+                        <div className="step-3-title-row">
+                            {renderBackButton()}
+                            <h1 className="step-title step-title-inline">Выберите ваши интересы</h1>
                         </div>
+                        <p className="step-description">
+                            позже их можно будет поменять
+                        </p>
                         <div className="interests-grid">
                             {INTERESTS_LIST.map((interest) => (
                                 <button
