@@ -55,6 +55,13 @@ body {
   min-height: 100dvh;
 }
 
+/* Минимальный размер шрифта для полей ввода на всех страницах (в т.ч. чтобы iOS не зумил при фокусе) */
+input,
+textarea,
+select {
+  font-size: max(16px, 1em);
+}
+
 h1 {
     font-size: 3.2em;
     line-height: 1.1;
