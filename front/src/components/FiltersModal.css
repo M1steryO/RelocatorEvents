@@ -68,6 +68,7 @@
     display: flex;
     flex-direction: column;
     gap: 20px;
+    min-width: 0;
 }
 
 .filter-section-header {
@@ -129,10 +130,13 @@
     display: flex;
     flex-wrap: nowrap;
     overflow-x: auto;
+    overflow-y: hidden;
     gap: 8px;
     scrollbar-width: none;
     -ms-overflow-style: none;
     padding-bottom: 4px;
+    min-width: 0;
+    -webkit-overflow-scrolling: touch;
 }
 
 .filter-chips-scroll::-webkit-scrollbar {
@@ -515,6 +519,25 @@
     .filter-chips-grid {
         grid-template-columns: repeat(3, 1fr);
     }
+
+    /* На большом экране показываем полосу прокрутки у блока интересов */
+    .filter-chips-scroll {
+        scrollbar-width: thin;
+        -ms-overflow-style: auto;
+    }
+    .filter-chips-scroll::-webkit-scrollbar {
+        display: block;
+        height: 6px;
+    }
+    .filter-chips-scroll::-webkit-scrollbar-track {
+        background: #e5e7eb;
+        border-radius: 3px;
+    }
+    .filter-chips-scroll::-webkit-scrollbar-thumb {
+        background: #458DBD;
+        border-radius: 3px;
+    }
+
     .filters-footer{
         border-bottom-left-radius: 24px;
         border-bottom-right-radius: 24px;

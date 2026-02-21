@@ -111,12 +111,7 @@ function App() {
                     />
                     <Route 
                         path="/events/:id/reviews" 
-                        element={
-                            <>
-                                <EventReviewsPage />
-                                <BottomNavigation />
-                            </>
-                        } 
+                        element={<EventReviewsPage />} 
                     />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
