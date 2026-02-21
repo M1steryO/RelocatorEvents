@@ -301,6 +301,12 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
         }
     };
 
+    const handleClear = () => {
+        setFilters(createDefaultFilters(availableFilters));
+        setShowExactDateInput(false);
+        setExactDateError(false);
+    };
+
     if (!isOpen && !isClosing) return null;
 
     return (
@@ -553,6 +559,13 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                 </div>
 
                 <div className="filters-footer">
+                    <button
+                        type="button"
+                        className="filters-clear-button"
+                        onClick={handleClear}
+                    >
+                        Очистить
+                    </button>
                     <button
                         className="filters-apply-button"
                         onClick={handleApply}

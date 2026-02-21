@@ -431,6 +431,8 @@
 }
 
 .filters-footer {
+    display: flex;
+    gap: 12px;
     padding: 20px;
     background-color: #F1EFEF;
     position: sticky;
@@ -438,8 +440,27 @@
     z-index: 10;
 }
 
+.filters-clear-button {
+    padding: 16px 20px;
+    background-color: transparent;
+    color: #458DBD;
+    border: 2px solid #458DBD;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    flex-shrink: 0;
+}
+
+.filters-clear-button:hover {
+    background-color: rgba(69, 141, 189, 0.08);
+}
+
 .filters-apply-button {
-    width: 100%;
+    flex: 1;
+    min-width: 0;
     padding: 16px;
     background-color: #458DBD;
     color: #ffffff;
