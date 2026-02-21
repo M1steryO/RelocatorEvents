@@ -20,6 +20,13 @@ function App() {
     const [isServiceUnavailable, setIsServiceUnavailable] = useState(false);
     const navigate = useNavigate();
 
+    // При полной перезагрузке страницы сбрасываем сохранённую ленту — восстанавливаем только при возврате со страницы мероприятия (SPA-переход).
+    useEffect(() => {
+        if (typeof window !== 'undefined') {
+            sessionStorage.removeItem('homeFeedState');
+        }
+    }, []);
+
     useEffect(() => {
         const initialize = async () => {
             const tg = window.Telegram?.WebApp;
