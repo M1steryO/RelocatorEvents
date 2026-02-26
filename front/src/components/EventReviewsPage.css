@@ -127,7 +127,7 @@
     font-size: 11px;
     color: #B1B1B1;
     text-align: right;
-    margin-top: 2px;
+    margin-top: 5px;
     line-height: 1;
 }
 
@@ -209,6 +209,7 @@
     line-height: 1.15;
     color: #414141;
     font-family: 'Rubik', system-ui, Avenir, Helvetica, Arial, sans-serif;
+    width: 100%;
 }
 .review-form-input:focus-visible {
     outline: none;
