@@ -369,6 +369,12 @@ export const EventDetailPage = () => {
                 <div className="organizer-modal-overlay" onClick={() => setOrganizerModal(null)}>
                     <div className="organizer-modal" onClick={e => e.stopPropagation()}>
                         <div className="organaizer-modal-header">
+                           
+                            <p className="organizer-modal-title">
+                                {organizerModal === 'register'
+                                    ? 'Чтобы зарегистрироваться на мероприятие необходимо перейти на сайт организатора'
+                                    : 'Чтобы купить билет на мероприятие необходимо перейти на сайт организатора'}
+                            </p>
                             <button
                                 type="button"
                                 className="organizer-modal-close"
@@ -380,11 +386,6 @@ export const EventDetailPage = () => {
                                     <path d="M9 9L23 23M23 9L9 23" stroke="#FAF9F6" stroke-width="2" stroke-linecap="round" />
                                 </svg>
                             </button>
-                            <p className="organizer-modal-title">
-                                {organizerModal === 'register'
-                                    ? 'Чтобы зарегистрироваться на мероприятие необходимо перейти на сайт организатора'
-                                    : 'Чтобы купить билет на мероприятие необходимо перейти на сайт организатора'}
-                            </p>
                         </div>
 
                         <p className="organizer-modal-disclaimer">
