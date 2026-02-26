@@ -118,6 +118,7 @@ export const EventDetailPage = () => {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isPosterLoaded, setIsPosterLoaded] = useState(false);
+    const [organizerModal, setOrganizerModal] = useState<'buy' | 'register' | null>(null);
     const [isPosterError, setIsPosterError] = useState(false);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
     const [recommendedEvents, setRecommendedEvents] = useState<Event[]>([]);
@@ -324,7 +325,7 @@ export const EventDetailPage = () => {
                     <div className="chip-label-container">
                         <div className="chip-label">
                             {event.reviews_count || 0} {getRatingNoun(event.reviews_count || 0).toUpperCase()}
-                        
+
                         </div>
                     </div>
 
@@ -349,20 +350,61 @@ export const EventDetailPage = () => {
             {/* Registration Button */}
             <div className="event-registration-section">
                 {event.link ? (
-                    <a
+                    <button
+                        type="button"
                         className="event-registration-button"
-                        href={event.link}
-                        target="_blank"
-                        rel="noreferrer"
+                        onClick={() => setOrganizerModal((event.min_price ?? 0) <= 0 ? 'register' : 'buy')}
                     >
                         {(event.min_price ?? 0) <= 0 ? 'Зарегистрироваться' : `Купить от ${event.min_price ?? 0} ${getCurrencySymbol(event.currency)}`}
-                    </a>
+                    </button>
                 ) : (
                     <button className="event-registration-button" disabled>
                         {(event.min_price ?? 0) <= 0 ? 'Зарегистрироваться' : `Купить от ${event.min_price ?? 0} ${getCurrencySymbol(event.currency)}`}
                     </button>
                 )}
             </div>
+
+            {/* Organizer redirect modal */}
+            {organizerModal && (
+                <div className="organizer-modal-overlay" onClick={() => setOrganizerModal(null)}>
+                    <div className="organizer-modal" onClick={e => e.stopPropagation()}>
+                        <div className="organaizer-modal-header">
+                            <button
+                                type="button"
+                                className="organizer-modal-close"
+                                onClick={() => setOrganizerModal(null)}
+                                aria-label="Закрыть"
+                            >
+                                <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
+                                    <rect width="32" height="32" rx="16" fill="#414141" />
+                                    <path d="M9 9L23 23M23 9L9 23" stroke="#FAF9F6" stroke-width="2" stroke-linecap="round" />
+                                </svg>
+                            </button>
+                            <p className="organizer-modal-title">
+                                {organizerModal === 'register'
+                                    ? 'Чтобы зарегистрироваться на мероприятие необходимо перейти на сайт организатора'
+                                    : 'Чтобы купить билет на мероприятие необходимо перейти на сайт организатора'}
+                            </p>
+                        </div>
+
+                        <p className="organizer-modal-disclaimer">
+                            ВСЕ ССЫЛКИ БЕЗОПАСНЫ И ПРЕДОСТАВЛЯЮТСЯ ПРОВЕРЕННЫМИ ИСТОЧНИКАМИ
+                        </p>
+                        <button className="organizer-modal-cta-btn">
+                        <a
+                            className="organizer-modal-cta"
+                            href={event.link}
+                            target="_blank"
+                            rel="noreferrer"
+                            onClick={() => setOrganizerModal(null)}
+                        >
+                            {organizerModal === 'register' ? 'Перейти к регистрации' : 'Перейти к покупке'}
+                        </a>
+                        </button>
+                        
+                    </div>
+                </div>
+            )}
 
 
 
