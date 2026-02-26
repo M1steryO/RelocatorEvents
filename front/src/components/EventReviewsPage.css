@@ -118,6 +118,19 @@
     gap: 4px;
 }
 
+.review-form-field {
+    position: relative;
+}
+
+.review-form-char-count {
+    display: block;
+    font-size: 11px;
+    color: #B1B1B1;
+    text-align: right;
+    margin-top: 2px;
+    line-height: 1;
+}
+
 .review-form-label {
     font-size: 14px;
     line-height: 1.25;

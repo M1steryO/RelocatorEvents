@@ -52,6 +52,8 @@ const mapReview = (review: ApiReview, index: number): ReviewItem => ({
     }).filter((item) => item.url),
 });
 
+const REVIEW_TEXT_MAX_LENGTH = 200;
+
 const getReviewNoun = (count: number) => {
     const absCount = Math.abs(count);
     const lastTwo = absCount % 100;
@@ -359,24 +361,36 @@ export const EventReviewsPage = () => {
                     <div className="review-form-block">
                         <div className="review-form-label">Отзыв</div>
                         <div className="review-form-inputs">
-                            <input
-                                className="review-form-input"
-                                placeholder="Достоинства"
-                                value={pros}
-                                onChange={(eventInput) => setPros(eventInput.target.value)}
-                            />
-                            <input
-                                className="review-form-input"
-                                placeholder="Недостатки"
-                                value={cons}
-                                onChange={(eventInput) => setCons(eventInput.target.value)}
-                            />
-                            <textarea
-                                className="review-form-input review-form-textarea"
-                                placeholder="Описание"
-                                value={description}
-                                onChange={(eventInput) => setDescription(eventInput.target.value)}
-                            />
+                            <div className="review-form-field">
+                                <input
+                                    className="review-form-input"
+                                    placeholder="Достоинства"
+                                    value={pros}
+                                    maxLength={REVIEW_TEXT_MAX_LENGTH}
+                                    onChange={(e) => setPros(e.target.value.slice(0, REVIEW_TEXT_MAX_LENGTH))}
+                                />
+                                <span className="review-form-char-count">{pros.length}/{REVIEW_TEXT_MAX_LENGTH}</span>
+                            </div>
+                            <div className="review-form-field">
+                                <input
+                                    className="review-form-input"
+                                    placeholder="Недостатки"
+                                    value={cons}
+                                    maxLength={REVIEW_TEXT_MAX_LENGTH}
+                                    onChange={(e) => setCons(e.target.value.slice(0, REVIEW_TEXT_MAX_LENGTH))}
+                                />
+                                <span className="review-form-char-count">{cons.length}/{REVIEW_TEXT_MAX_LENGTH}</span>
+                            </div>
+                            <div className="review-form-field">
+                                <textarea
+                                    className="review-form-input review-form-textarea"
+                                    placeholder="Описание"
+                                    value={description}
+                                    maxLength={REVIEW_TEXT_MAX_LENGTH}
+                                    onChange={(e) => setDescription(e.target.value.slice(0, REVIEW_TEXT_MAX_LENGTH))}
+                                />
+                                <span className="review-form-char-count">{description.length}/{REVIEW_TEXT_MAX_LENGTH}</span>
+                            </div>
                         </div>
                         <div className="review-form-hint">
                             Например, ваши ожидания, впечатления, посоветуете ли вы мероприятие другим
