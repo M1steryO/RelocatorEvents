@@ -156,7 +156,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
                 />
                 <p className="loading-title">Быстрый поиск<br />мероприятий с</p>
                 <img 
-                    src="/eventify-logo.png" 
+                    src="/eventify-logo.svg" 
                     alt="EVENTIFY" 
                     className="loading-logo"
                     onError={(e) => {
