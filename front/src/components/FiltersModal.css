@@ -55,13 +55,81 @@
     text-align: center;
 }
 
+/* Выбранные фильтры — плитки сверху с крестиком */
+.filters-selected-row {
+    padding: 0 20px 20px;
+    background-color: #F1EFEF;
+    flex-shrink: 0;
+}
+
+.filters-selected-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    align-items: center;
+}
+
+.filters-selected-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border-radius: 20px;
+    background-color: #FFEA00;
+    color: #414141;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.2;
+    font-family: inherit;
+    border: none;
+}
+
+.filters-selected-chip-label {
+    white-space: nowrap;
+}
+
+.filters-selected-chip-remove {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: #414141;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background-color 0.15s ease;
+}
+
+.filters-selected-chip-remove:hover {
+    background-color: rgba(65, 65, 65, 0.12);
+}
+
+.filters-selected-chip-clear-all {
+    background-color: #414141;
+    color: #FFEA00;
+    cursor: pointer;
+}
+
+.filters-selected-chip-clear-all .filters-selected-chip-remove {
+    color: #FAF9F6;
+}
+
+.filters-selected-chip-clear-all .filters-selected-chip-remove:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
 .filters-content {
     flex: 1;
     overflow-y: auto;
     padding-inline: 20px;
     display: flex;
     flex-direction: column;
-    gap: 24px;
+    gap: 20px;
 }
 
 .filter-section {
@@ -82,6 +150,7 @@
     font-weight: 600;
     color: #414141;
     display: block;
+    line-height: 1;
 }
 
 .filter-subtitle {
@@ -131,10 +200,8 @@
     flex-wrap: nowrap;
     overflow-x: auto;
     overflow-y: hidden;
-    gap: 8px;
     scrollbar-width: none;
     -ms-overflow-style: none;
-    padding-bottom: 4px;
     min-width: 0;
     -webkit-overflow-scrolling: touch;
 }
@@ -144,7 +211,7 @@
 }
 
 .filter-chip {
-    padding: 8px 16px;
+    padding:10px;
     border: 1px solid #e5e7eb;
     border-radius: 20px;
     background-color: #414141;
@@ -157,6 +224,10 @@
     font-family: inherit;
     white-space: nowrap;
     flex-shrink: 0;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .filter-chip:hover {
@@ -190,8 +261,9 @@
     flex: 1;
     border-radius: 16px;
     background-color: #414141;
-    padding: 10px 12px;
+    padding: 10px;
     max-width: fit-content;
+    height: 32px;
 
 }
 
@@ -211,6 +283,7 @@
     font-weight: 500;
     color: #FAF9F6;
     font-family: inherit;
+    padding: 0;
 }
 
 .price-input:focus {
@@ -315,19 +388,19 @@
 .date-options {
     display: flex;
     flex-direction: column;
-    gap: 12px;
+    gap: 4px;
 }
 
 .date-radio-group {
     display: flex;
-    gap: 8px;
+    gap: 4px;
     flex-wrap: wrap;
 }
 
 .date-radio {
-    padding: 8px 16px;
+    padding: 10px;
     border: 1px solid #e5e7eb;
-    border-radius: 20px;
+    border-radius: 16px;
     background-color: #414141;
     color: #FAF9F6;
     font-size: 16px;
@@ -336,6 +409,10 @@
     cursor: pointer;
     transition: all 0.2s ease;
     font-family: inherit;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .date-radio:hover {
     border-color: transparent;
@@ -438,24 +515,6 @@
     position: sticky;
     bottom: 0;
     z-index: 10;
-}
-
-.filters-clear-button {
-    padding: 16px 20px;
-    background-color: transparent;
-    color: #458DBD;
-    border: 2px solid #458DBD;
-    border-radius: 12px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    font-family: inherit;
-    flex-shrink: 0;
-}
-
-.filters-clear-button:hover {
-    background-color: rgba(69, 141, 189, 0.08);
 }
 
 .filters-apply-button {

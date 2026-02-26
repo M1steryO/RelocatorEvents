@@ -355,11 +355,11 @@ export const EventDetailPage = () => {
                         target="_blank"
                         rel="noreferrer"
                     >
-                        Купить от {event.min_price ?? 0} {getCurrencySymbol(event.currency)}
+                        {(event.min_price ?? 0) <= 0 ? 'Зарегистрироваться' : `Купить от ${event.min_price ?? 0} ${getCurrencySymbol(event.currency)}`}
                     </a>
                 ) : (
                     <button className="event-registration-button" disabled>
-                        Купить от {event.min_price ?? 0} {getCurrencySymbol(event.currency)}
+                        {(event.min_price ?? 0) <= 0 ? 'Зарегистрироваться' : `Купить от ${event.min_price ?? 0} ${getCurrencySymbol(event.currency)}`}
                     </button>
                 )}
             </div>

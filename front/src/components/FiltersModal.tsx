@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
-import { INTERESTS_LIST } from '../constants/interests';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { INTERESTS_LIST, getInterestLabel } from '../constants/interests';
 import type { FiltersData } from '../services/eventsService';
 import './FiltersModal.css';
 
@@ -26,19 +26,26 @@ const CITIES = ['Тбилиси', 'Сухуми', 'Телави', 'Тержол�
 const FORMATS = ['Онлайн', 'Офлайн'];
 const MAX_PRICE = 10000;
 
+const DATE_TYPE_LABELS: Record<string, string> = {
+    today: 'Сегодня',
+    tomorrow: 'Завтра',
+    weekends: 'В выходные',
+    weekdays: 'В будни',
+};
+
 const createDefaultFilters = (available?: FiltersData): FiltersState => ({
-        cities: [],
-        districts: [],
-        priceRange: [
-            available?.min_price ?? 0,
-            available?.max_price ?? MAX_PRICE
-        ],
-        dateType: null,
-        weekdays: false,
-        exactDate: '',
-        formats: [],
-        interests: [],
-    });
+    cities: [],
+    districts: [],
+    priceRange: [
+        available?.min_price ?? 0,
+        available?.max_price ?? MAX_PRICE
+    ],
+    dateType: null,
+    weekdays: false,
+    exactDate: '',
+    formats: [],
+    interests: [],
+});
 
 const clampPriceRange = (
     range: [number, number],
@@ -194,7 +201,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
             const newRange: [number, number] = [...prev.priceRange];
             const maxPrice = availableFilters?.max_price ?? MAX_PRICE;
             const minPrice = availableFilters?.min_price ?? 0;
-            
+
             // Clamp value to valid range
             if (index === 0) {
                 // Min price: ensure it's between minPrice and maxPrice, and <= max value
@@ -203,7 +210,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                 // Max price: ensure it's between minPrice and maxPrice, and >= min value
                 newRange[1] = Math.min(maxPrice, Math.max(value, newRange[0], minPrice));
             }
-            
+
             // Ensure min <= max
             if (newRange[0] > newRange[1]) {
                 if (index === 0) {
@@ -212,23 +219,23 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                     newRange[0] = newRange[1];
                 }
             }
-            
+
             return { ...prev, priceRange: newRange };
         });
     };
 
     const handleExactDateChange = (value: string) => {
         setFilters(prev => ({ ...prev, exactDate: value }));
-        
+
         // Validate date format DD.MM.YYYY
         const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
-        
-        
+
+
         if (!value || value.length === 0) {
             setExactDateError(false);
             return;
         }
-        
+
         if (!dateRegex.test(value)) {
             setExactDateError(true);
             return;
@@ -259,9 +266,9 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
         // Проверка корректности даты через Date
         const date = new Date(yearNum, monthNum - 1, dayNum);
         const isValid = date.getDate() === dayNum &&
-                       date.getMonth() === monthNum - 1 &&
-                       date.getFullYear() === yearNum;
-        
+            date.getMonth() === monthNum - 1 &&
+            date.getFullYear() === yearNum;
+
         setExactDateError(!isValid);
     };
 
@@ -290,7 +297,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
     // 1. Поле ввода даты открыто и дата не введена полностью (меньше 10 символов)
     // 2. Или поле ввода даты открыто и дата некорректна
     const isApplyDisabled = showExactDateInput && (
-        filters.exactDate.length < 10 || 
+        filters.exactDate.length < 10 ||
         exactDateError
     );
 
@@ -307,6 +314,72 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
         setExactDateError(false);
     };
 
+    const minPrice = availableFilters?.min_price ?? 0;
+    const maxPrice = availableFilters?.max_price ?? MAX_PRICE;
+    const isDefaultPriceRange = filters.priceRange[0] === minPrice && filters.priceRange[1] === maxPrice;
+
+    const activeChips = useMemo(() => {
+        const list: { id: string; label: string; onRemove: () => void }[] = [];
+        filters.cities.forEach(city => {
+            list.push({
+                id: `city-${city}`,
+                label: city,
+                onRemove: () => setFilters(prev => ({ ...prev, cities: [] })),
+            });
+        });
+        filters.districts.forEach(district => {
+            list.push({
+                id: `district-${district}`,
+                label: district,
+                onRemove: () => setFilters(prev => ({ ...prev, districts: prev.districts.filter(d => d !== district) })),
+            });
+        });
+        if (filters.dateType) {
+            list.push({
+                id: 'dateType',
+                label: DATE_TYPE_LABELS[filters.dateType] || filters.dateType,
+                onRemove: () => {
+                    setFilters(prev => ({ ...prev, dateType: null }));
+                    setShowExactDateInput(false);
+                    setExactDateError(false);
+                },
+            });
+        }
+        if (filters.exactDate.trim()) {
+            list.push({
+                id: 'exactDate',
+                label: filters.exactDate,
+                onRemove: () => {
+                    setFilters(prev => ({ ...prev, exactDate: '' }));
+                    setShowExactDateInput(false);
+                    setExactDateError(false);
+                },
+            });
+        }
+        if (!isDefaultPriceRange) {
+            list.push({
+                id: 'price',
+                label: `Цена: ${filters.priceRange[0]} – ${filters.priceRange[1]}`,
+                onRemove: () => setFilters(prev => ({ ...prev, priceRange: [minPrice, maxPrice] })),
+            });
+        }
+        filters.formats.forEach(format => {
+            list.push({
+                id: `format-${format}`,
+                label: format,
+                onRemove: () => setFilters(prev => ({ ...prev, formats: prev.formats.filter(f => f !== format) })),
+            });
+        });
+        filters.interests.forEach(code => {
+            list.push({
+                id: `interest-${code}`,
+                label: getInterestLabel(code),
+                onRemove: () => setFilters(prev => ({ ...prev, interests: prev.interests.filter(c => c !== code) })),
+            });
+        });
+        return list;
+    }, [filters, minPrice, maxPrice]);
+
     if (!isOpen && !isClosing) return null;
 
     return (
@@ -315,6 +388,42 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                 <div className="filters-header">
                     <h2 className="filters-title">Фильтры</h2>
                 </div>
+
+                {activeChips.length > 0 && (
+                    <div className="filters-selected-row">
+                        <div className="filters-selected-chips">
+                            {activeChips.map(chip => (
+                                <span key={chip.id} className="filters-selected-chip">
+                                    <span className="filters-selected-chip-label">{chip.label}</span>
+                                    <button
+                                        type="button"
+                                        className="filters-selected-chip-remove"
+                                        onClick={chip.onRemove}
+                                        aria-label={`Удалить ${chip.label}`}
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
+                                            <rect width="19" height="19" rx="9.5" fill="#414141" />
+                                            <path d="M5 5L14 14M14 5L5 14" stroke="#FFEA00" stroke-width="2" stroke-linecap="round" />
+                                        </svg>
+                                    </button>
+                                </span>
+                            ))}
+                            {activeChips.length > 0 && (
+                                <button
+                                    type="button"
+                                    className="filters-selected-chip filters-selected-chip-clear-all"
+                                    onClick={handleClear}
+                                >
+                                    <span className="filters-selected-chip-label">Удалить всё</span>
+                                    <span className="filters-selected-chip-remove" aria-hidden><svg xmlns="http://www.w3.org/2000/svg" width="19" height="19" viewBox="0 0 19 19" fill="none">
+                                        <rect width="19" height="19" rx="9.5" fill="#FFEA00" />
+                                        <path d="M5 5L14 14M14 5L5 14" stroke="#414141" stroke-width="2" stroke-linecap="round" />
+                                    </svg></span>
+                                </button>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 <div className="filters-content">
                     {/* Город */}
@@ -428,8 +537,8 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                 <button
                                     className={`date-radio ${filters.dateType === 'today' ? 'active' : ''}`}
                                     onClick={() => {
-                                        setFilters(prev => ({ 
-                                            ...prev, 
+                                        setFilters(prev => ({
+                                            ...prev,
                                             dateType: prev.dateType === 'today' ? null : 'today',
                                             exactDate: '' // Очищаем поле точной даты
                                         }));
@@ -442,8 +551,8 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                 <button
                                     className={`date-radio ${filters.dateType === 'tomorrow' ? 'active' : ''}`}
                                     onClick={() => {
-                                        setFilters(prev => ({ 
-                                            ...prev, 
+                                        setFilters(prev => ({
+                                            ...prev,
                                             dateType: prev.dateType === 'tomorrow' ? null : 'tomorrow',
                                             exactDate: '' // Очищаем поле точной даты
                                         }));
@@ -456,8 +565,8 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                 <button
                                     className={`date-radio ${filters.dateType === 'weekends' ? 'active' : ''}`}
                                     onClick={() => {
-                                        setFilters(prev => ({ 
-                                            ...prev, 
+                                        setFilters(prev => ({
+                                            ...prev,
                                             dateType: prev.dateType === 'weekends' ? null : 'weekends',
                                             exactDate: '' // Очищаем поле точной даты
                                         }));
@@ -471,8 +580,8 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                 <button
                                     className={`date-radio ${filters.dateType === 'weekdays' ? 'active' : ''}`}
                                     onClick={() => {
-                                        setFilters(prev => ({ 
-                                            ...prev, 
+                                        setFilters(prev => ({
+                                            ...prev,
                                             dateType: prev.dateType === 'weekdays' ? null : 'weekdays',
                                             exactDate: '' // Очищаем поле точной даты
                                         }));
@@ -483,7 +592,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                     В будни
                                 </button>
                             </div>
-                        
+
                             {!showExactDateInput ? (
                                 <button
                                     className="date-exact-button"
@@ -496,7 +605,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                 >
                                     <span>Указать точную дату</span>
                                     <svg xmlns="http://www.w3.org/2000/svg" width="8" height="16" viewBox="0 0 8 16" fill="none">
-                                        <path fillRule="evenodd" clipRule="evenodd" d="M0.335518 15.7474C-0.0772419 15.3804 -0.114383 14.7484 0.252562 14.3356L5.32927 8.62504C5.50694 8.42519 5.60141 8.31784 5.66373 8.23557C5.6659 8.2327 5.66796 8.22996 5.6699 8.22735C5.66805 8.22467 5.66609 8.22186 5.66402 8.21892C5.60466 8.13449 5.51405 8.02386 5.34357 7.81784L0.229495 1.63754C-0.122597 1.21204 -0.0630883 0.581678 0.362411 0.229585C0.78791 -0.122506 1.41827 -0.0629985 1.77036 0.362501L6.90335 6.56565C7.04745 6.73975 7.18988 6.91183 7.30009 7.06858C7.42268 7.24293 7.54985 7.45826 7.6196 7.72947C7.70961 8.0795 7.70309 8.44737 7.60074 8.79398C7.52143 9.06256 7.3867 9.27325 7.25802 9.44314C7.14233 9.59588 6.9939 9.7628 6.84372 9.93169C6.83715 9.93908 6.83058 9.94647 6.82401 9.95386L1.7473 15.6644C1.38035 16.0772 0.748277 16.1143 0.335518 15.7474Z" fill="#414141"/>
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M0.335518 15.7474C-0.0772419 15.3804 -0.114383 14.7484 0.252562 14.3356L5.32927 8.62504C5.50694 8.42519 5.60141 8.31784 5.66373 8.23557C5.6659 8.2327 5.66796 8.22996 5.6699 8.22735C5.66805 8.22467 5.66609 8.22186 5.66402 8.21892C5.60466 8.13449 5.51405 8.02386 5.34357 7.81784L0.229495 1.63754C-0.122597 1.21204 -0.0630883 0.581678 0.362411 0.229585C0.78791 -0.122506 1.41827 -0.0629985 1.77036 0.362501L6.90335 6.56565C7.04745 6.73975 7.18988 6.91183 7.30009 7.06858C7.42268 7.24293 7.54985 7.45826 7.6196 7.72947C7.70961 8.0795 7.70309 8.44737 7.60074 8.79398C7.52143 9.06256 7.3867 9.27325 7.25802 9.44314C7.14233 9.59588 6.9939 9.7628 6.84372 9.93169C6.83715 9.93908 6.83058 9.94647 6.82401 9.95386L1.7473 15.6644C1.38035 16.0772 0.748277 16.1143 0.335518 15.7474Z" fill="#414141" />
                                     </svg>
                                 </button>
                             ) : (
@@ -559,13 +668,6 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                 </div>
 
                 <div className="filters-footer">
-                    <button
-                        type="button"
-                        className="filters-clear-button"
-                        onClick={handleClear}
-                    >
-                        Очистить
-                    </button>
                     <button
                         className="filters-apply-button"
                         onClick={handleApply}

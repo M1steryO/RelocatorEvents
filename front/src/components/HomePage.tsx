@@ -139,7 +139,7 @@ export const HomePage = () => {
         }
     };
 
-    // Restore feed state and scroll position from sessionStorage on first mount
+    // Restore feed state and scroll position from sessionStorage on first mount (или мок для теста)
     useEffect(() => {
         if (typeof window === 'undefined') {
             setIsInitialized(true);
@@ -461,7 +461,7 @@ export const HomePage = () => {
                                         {event.reviewsCount > 0 && (
                                             <span className="event-rating">{event.rating.toFixed(1).replace('.', ',')} ★</span>
                                         )}
-                                        <span className="event-price">{event.price} {event.currencySymbol}</span>
+                                        <span className="event-price">{event.price <= 0 ? 'Бесплатно' : `${event.price} ${event.currencySymbol}`}</span>
                                         {event.distance !== undefined && (
                                             <span className="event-distance">{event.distance} км</span>
                                         )}
