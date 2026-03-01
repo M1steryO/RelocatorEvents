@@ -22,5 +22,6 @@ type Review struct {
 	Text          string
 	Media         []*MediaAttachment
 	AuthorId      int64
+	AuthorName    *string
 	CreatedAt     time.Time
 }

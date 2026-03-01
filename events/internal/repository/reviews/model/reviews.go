@@ -9,6 +9,7 @@ type MediaAttachment struct {
 
 type Review struct {
 	AuthorId      int64              `db:"author_id"`
+	AuthorName    *string            `db:"author_name"`
 	Grade         int                `db:"grade"`
 	Advantages    string             `db:"advantages"`
 	Disadvantages string             `db:"disadvantages"`

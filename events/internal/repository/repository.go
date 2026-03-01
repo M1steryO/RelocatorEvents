@@ -17,7 +17,7 @@ type EventRepository interface {
 }
 
 type ReviewRepository interface {
-	Create(ctx context.Context, eventId int64, authorId int64, review *domainReviews.Review) (int64, error)
+	Create(ctx context.Context, eventId int64, review *domainReviews.Review) (int64, error)
 	CreateMedia(ctx context.Context, reviewId int64, media []*domainReviews.MediaAttachment) error
 	List(ctx context.Context, eventId int64) ([]*domainReviews.Review, error)
 }

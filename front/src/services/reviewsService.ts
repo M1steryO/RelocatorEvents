@@ -21,6 +21,7 @@ export interface MediaAttachment {
 export interface Review {
     grade: number;
     advantages?: string;
+    author_name?: string;
     disadvantages?: string;
     text: string;
     media?: MediaAttachment[];

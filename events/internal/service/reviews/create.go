@@ -12,7 +12,15 @@ func (s *serv) Create(ctx context.Context, eventId, authorId int64, review *doma
 	var reviewID int64
 
 	err := s.txManager.ReadCommitted(ctx, func(txCtx context.Context) error {
-		id, err := s.reviewsRepo.Create(txCtx, eventId, authorId, review)
+		review.AuthorId = authorId
+
+		authorName, err := s.userClient.GetUserName(txCtx, authorId)
+		if err != nil {
+			return err
+		}
+		review.AuthorName = &authorName
+
+		id, err := s.reviewsRepo.Create(txCtx, eventId, review)
 		if err != nil {
 			return err
 		}

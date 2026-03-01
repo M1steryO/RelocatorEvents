@@ -33,7 +33,7 @@ interface MediaUploadItem {
 
 const mapReview = (review: ApiReview, index: number): ReviewItem => ({
     id: String(index),
-    author: 'Пользователь',
+    author: review.author_name || 'Пользователь',
     date: '',
     rating: review.grade,
     pros: review.advantages || '-',

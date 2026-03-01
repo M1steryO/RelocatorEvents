@@ -13,7 +13,7 @@ func (r *repo) List(ctx context.Context, eventId int64) ([]*domain.Review, error
 
 	q := db.Query{
 		Title: "review_repository.List",
-		Query: `select r.author_id, r.grade, r.advantages, r.disadvantages, r.text, r.created_at,
+		Query: `select r.author_id, r.grade, r.advantages, r.disadvantages, r.text, r.created_at, r.author_name,
        		coalesce(
 			  jsonb_agg(
 				jsonb_build_object('key', rm.storage_key, 'type', rm.media_type)

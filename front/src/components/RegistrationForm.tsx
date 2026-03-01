@@ -438,7 +438,7 @@ export const RegistrationForm = ({onSuccess}: RegistrationFormProps) => {
                             <button
                                 className="continue-button"
                                 onClick={handleNext}
-                                disabled={isLoading}
+                                disabled={isLoading || formData.interests.length === 0}
                             >
                                 Продолжить
                             </button>

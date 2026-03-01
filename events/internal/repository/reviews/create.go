@@ -10,16 +10,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-func (r *repo) Create(ctx context.Context, eventId int64, authorId int64, review *domain.Review) (int64, error) {
+func (r *repo) Create(ctx context.Context, eventId int64, review *domain.Review) (int64, error) {
 	var reviewId int64
 	q := db.Query{
 		Title: "review_repository.Create",
-		Query: `insert into reviews (event_id, author_id, grade, advantages, disadvantages, text) 
-				values ($1, $2, $3, $4, $5, $6) returning id`,
+		Query: `insert into reviews (event_id, author_id, grade, advantages, disadvantages, text, author_name) 
+				values ($1, $2, $3, $4, $5, $6, $7) returning id`,
 	}
 	err := r.db.DB().QueryRowContext(ctx,
-		q, eventId, authorId, review.Grade, review.Advantages,
-		review.Disadvantages, review.Text).Scan(&reviewId)
+		q, eventId, review.AuthorId, review.Grade, review.Advantages,
+		review.Disadvantages, review.Text, review.AuthorName).Scan(&reviewId)
 
 	if err != nil {
 		var pgErr *pgconn.PgError

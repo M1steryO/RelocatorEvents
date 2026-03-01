@@ -195,6 +195,7 @@ func (s *serviceProvider) ReviewService(ctx context.Context) service.ReviewServi
 			s.ReviewRepository(ctx),
 			s.EventRepository(ctx),
 			s.TxManager(ctx),
+			s.UserServiceClient(),
 		)
 	}
 

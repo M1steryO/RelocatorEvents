@@ -12,6 +12,7 @@ import (
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
+	wrapperspb "google.golang.org/protobuf/types/known/wrapperspb"
 	reflect "reflect"
 	sync "sync"
 	unsafe "unsafe"
@@ -231,14 +232,15 @@ func (x *MediaAttachment) GetType() MediaType {
 }
 
 type Review struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Grade         int32                  `protobuf:"varint,1,opt,name=grade,proto3" json:"grade,omitempty"`
-	Advantages    string                 `protobuf:"bytes,2,opt,name=advantages,proto3" json:"advantages,omitempty"`
-	Disadvantages string                 `protobuf:"bytes,3,opt,name=disadvantages,proto3" json:"disadvantages,omitempty"`
-	Text          string                 `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
-	Media         []*MediaAttachment     `protobuf:"bytes,5,rep,name=media,proto3" json:"media,omitempty"`
-	AuthorId      int64                  `protobuf:"varint,6,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	Grade         int32                   `protobuf:"varint,1,opt,name=grade,proto3" json:"grade,omitempty"`
+	Advantages    string                  `protobuf:"bytes,2,opt,name=advantages,proto3" json:"advantages,omitempty"`
+	Disadvantages string                  `protobuf:"bytes,3,opt,name=disadvantages,proto3" json:"disadvantages,omitempty"`
+	Text          string                  `protobuf:"bytes,4,opt,name=text,proto3" json:"text,omitempty"`
+	Media         []*MediaAttachment      `protobuf:"bytes,5,rep,name=media,proto3" json:"media,omitempty"`
+	AuthorId      int64                   `protobuf:"varint,6,opt,name=author_id,json=authorId,proto3" json:"author_id,omitempty"`
+	CreatedAt     *timestamppb.Timestamp  `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	AuthorName    *wrapperspb.StringValue `protobuf:"bytes,8,opt,name=author_name,json=authorName,proto3" json:"author_name,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -318,6 +320,13 @@ func (x *Review) GetAuthorId() int64 {
 func (x *Review) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
+	}
+	return nil
+}
+
+func (x *Review) GetAuthorName() *wrapperspb.StringValue {
+	if x != nil {
+		return x.AuthorName
 	}
 	return nil
 }
@@ -415,7 +424,7 @@ var File_reviews_proto protoreflect.FileDescriptor
 const file_reviews_proto_rawDesc = "" +
 	"\n" +
 	"\rreviews.proto\x12\n" +
-	"reviews_v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"8\n" +
+	"reviews_v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17validate/validate.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"8\n" +
 	"\x12ListReviewsRequest\x12\"\n" +
 	"\bevent_id\x18\x01 \x01(\x03B\a\xfaB\x04\"\x02 \x00R\aeventId\"\x81\x01\n" +
 	"\x13ListReviewsResponse\x12,\n" +
@@ -425,7 +434,7 @@ const file_reviews_proto_rawDesc = "" +
 	"\x0fMediaAttachment\x12\x1f\n" +
 	"\vstorage_key\x18\x01 \x01(\tR\n" +
 	"storageKey\x123\n" +
-	"\x04type\x18\x02 \x01(\x0e2\x15.reviews_v1.MediaTypeB\b\xfaB\x05\x82\x01\x02\x10\x01R\x04type\"\xb8\x02\n" +
+	"\x04type\x18\x02 \x01(\x0e2\x15.reviews_v1.MediaTypeB\b\xfaB\x05\x82\x01\x02\x10\x01R\x04type\"\xf7\x02\n" +
 	"\x06Review\x12\x1f\n" +
 	"\x05grade\x18\x01 \x01(\x05B\t\xfaB\x06\x1a\x04\x18\n" +
 	"(\x00R\x05grade\x12(\n" +
@@ -438,7 +447,9 @@ const file_reviews_proto_rawDesc = "" +
 	"\x05media\x18\x05 \x03(\v2\x1b.reviews_v1.MediaAttachmentB\b\xfaB\x05\x92\x01\x02\x10\x03R\x05media\x12\x1b\n" +
 	"\tauthor_id\x18\x06 \x01(\x03R\bauthorId\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\"o\n" +
+	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x12=\n" +
+	"\vauthor_name\x18\b \x01(\v2\x1c.google.protobuf.StringValueR\n" +
+	"authorName\"o\n" +
 	"\x13CreateReviewRequest\x12\"\n" +
 	"\bevent_id\x18\x01 \x01(\x03B\a\xfaB\x04\"\x02 \x00R\aeventId\x124\n" +
 	"\x06review\x18\x02 \x01(\v2\x12.reviews_v1.ReviewB\b\xfaB\x05\x8a\x01\x02\x10\x01R\x06review\"\x16\n" +
@@ -467,30 +478,32 @@ func file_reviews_proto_rawDescGZIP() []byte {
 var file_reviews_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_reviews_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_reviews_proto_goTypes = []any{
-	(MediaType)(0),                // 0: reviews_v1.MediaType
-	(*ListReviewsRequest)(nil),    // 1: reviews_v1.ListReviewsRequest
-	(*ListReviewsResponse)(nil),   // 2: reviews_v1.ListReviewsResponse
-	(*MediaAttachment)(nil),       // 3: reviews_v1.MediaAttachment
-	(*Review)(nil),                // 4: reviews_v1.Review
-	(*CreateReviewRequest)(nil),   // 5: reviews_v1.CreateReviewRequest
-	(*CreateReviewResponse)(nil),  // 6: reviews_v1.CreateReviewResponse
-	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
+	(MediaType)(0),                 // 0: reviews_v1.MediaType
+	(*ListReviewsRequest)(nil),     // 1: reviews_v1.ListReviewsRequest
+	(*ListReviewsResponse)(nil),    // 2: reviews_v1.ListReviewsResponse
+	(*MediaAttachment)(nil),        // 3: reviews_v1.MediaAttachment
+	(*Review)(nil),                 // 4: reviews_v1.Review
+	(*CreateReviewRequest)(nil),    // 5: reviews_v1.CreateReviewRequest
+	(*CreateReviewResponse)(nil),   // 6: reviews_v1.CreateReviewResponse
+	(*timestamppb.Timestamp)(nil),  // 7: google.protobuf.Timestamp
+	(*wrapperspb.StringValue)(nil), // 8: google.protobuf.StringValue
 }
 var file_reviews_proto_depIdxs = []int32{
 	4, // 0: reviews_v1.ListReviewsResponse.reviews:type_name -> reviews_v1.Review
 	0, // 1: reviews_v1.MediaAttachment.type:type_name -> reviews_v1.MediaType
 	3, // 2: reviews_v1.Review.media:type_name -> reviews_v1.MediaAttachment
 	7, // 3: reviews_v1.Review.created_at:type_name -> google.protobuf.Timestamp
-	4, // 4: reviews_v1.CreateReviewRequest.review:type_name -> reviews_v1.Review
-	1, // 5: reviews_v1.Reviews_v1.ListReviews:input_type -> reviews_v1.ListReviewsRequest
-	5, // 6: reviews_v1.Reviews_v1.CreateReview:input_type -> reviews_v1.CreateReviewRequest
-	2, // 7: reviews_v1.Reviews_v1.ListReviews:output_type -> reviews_v1.ListReviewsResponse
-	6, // 8: reviews_v1.Reviews_v1.CreateReview:output_type -> reviews_v1.CreateReviewResponse
-	7, // [7:9] is the sub-list for method output_type
-	5, // [5:7] is the sub-list for method input_type
-	5, // [5:5] is the sub-list for extension type_name
-	5, // [5:5] is the sub-list for extension extendee
-	0, // [0:5] is the sub-list for field type_name
+	8, // 4: reviews_v1.Review.author_name:type_name -> google.protobuf.StringValue
+	4, // 5: reviews_v1.CreateReviewRequest.review:type_name -> reviews_v1.Review
+	1, // 6: reviews_v1.Reviews_v1.ListReviews:input_type -> reviews_v1.ListReviewsRequest
+	5, // 7: reviews_v1.Reviews_v1.CreateReview:input_type -> reviews_v1.CreateReviewRequest
+	2, // 8: reviews_v1.Reviews_v1.ListReviews:output_type -> reviews_v1.ListReviewsResponse
+	6, // 9: reviews_v1.Reviews_v1.CreateReview:output_type -> reviews_v1.CreateReviewResponse
+	8, // [8:10] is the sub-list for method output_type
+	6, // [6:8] is the sub-list for method input_type
+	6, // [6:6] is the sub-list for extension type_name
+	6, // [6:6] is the sub-list for extension extendee
+	0, // [0:6] is the sub-list for field type_name
 }
 
 func init() { file_reviews_proto_init() }

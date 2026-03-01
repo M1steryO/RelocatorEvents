@@ -2,6 +2,7 @@ package reviews
 
 import (
 	"fmt"
+	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/converters/common"
 	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
 	desc "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
 	"google.golang.org/protobuf/types/known/timestamppb"
@@ -69,6 +70,7 @@ func ReviewToProto(r *domain.Review) *desc.Review {
 		Text:          r.Text,
 		Media:         media,
 		AuthorId:      r.AuthorId,
+		AuthorName:    common.ToStringValueFromString(r.AuthorName),
 		CreatedAt:     timestamppb.New(r.CreatedAt),
 	}
 }

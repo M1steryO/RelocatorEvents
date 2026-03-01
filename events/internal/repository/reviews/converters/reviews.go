@@ -32,6 +32,7 @@ func ReviewFromRepo(m *model.Review) *domain.Review {
 		Text:          m.Text,
 		Media:         media,
 		AuthorId:      m.AuthorId,
+		AuthorName:    m.AuthorName,
 		CreatedAt:     m.CreatedAt,
 	}
 }
