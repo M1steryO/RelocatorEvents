@@ -5,8 +5,6 @@ import { addTelegramInitDataHeader } from '../utils/telegramInitData';
 import { notifyUnauthorized } from '../utils/unauthorized';
 
 export interface RegisterData {
-    name?: string;
-    
     telegram_token? :   string
 	
 
@@ -14,6 +12,7 @@ export interface RegisterData {
 	confirm_password?:  string
 
     info: {
+        name?:string;
         email?: string | null;
         telegram_username? : string
         country?: string;
