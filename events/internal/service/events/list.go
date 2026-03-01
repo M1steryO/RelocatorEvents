@@ -2,7 +2,6 @@ package events
 
 import (
 	"context"
-	"errors"
 	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 )
 
@@ -12,15 +11,16 @@ func (s *serv) GetList(ctx context.Context, params *domain.SearchParams) (*domai
 		filtersData *domain.FiltersData
 		err         error
 	)
-	userId, ok := ctx.Value("userId").(int64)
-	if !ok {
-		return nil, errors.New("userId not found in context")
-	}
+	//userId, ok := ctx.Value("userId").(int64)
+	//if !ok {
+	//	return nil, errors.New("userId not found in context")
+	//}
 
-	userCountry, err := s.userClient.GetUserCountry(ctx, userId)
-	if err != nil {
-		return nil, err
-	}
+	//userCountry, err := s.userClient.GetUserCountry(ctx, userId)
+	//if err != nil {
+	//	return nil, err
+	//}
+	userCountry := "Грузия"
 
 	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		events, err = s.db.GetList(ctx, params, userCountry)

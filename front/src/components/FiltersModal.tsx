@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
-import { INTERESTS_LIST, getInterestLabel } from '../constants/interests';
-import type { FiltersData } from '../services/eventsService';
+import { getInterestLabel } from '../constants/interests';
+import type { Category, FiltersData } from '../services/eventsService';
 import './FiltersModal.css';
 
 interface FiltersModalProps {
@@ -107,13 +107,11 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
     const [isClosing, setIsClosing] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
     const showCitiesSection = !availableFilters?.cities || availableFilters.cities.length > 0;
-    const showInterestsSection = !availableFilters?.categories || availableFilters.categories.length > 0;
+    const interestsList = availableFilters?.categories;
+    const showInterestsSection = Boolean(interestsList?.length);
     const citiesList = availableFilters?.cities && availableFilters.cities.length > 0
         ? availableFilters.cities
         : CITIES;
-    const interestsList = availableFilters?.categories && availableFilters.categories.length > 0
-        ? availableFilters.categories
-        : INTERESTS_LIST;
 
     const handleClose = useCallback(() => {
         if (isClosing) return; // Предотвращаем множественные вызовы
@@ -386,14 +384,15 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
             });
         });
         filters.interests.forEach(code => {
+            const label = interestsList?.find(c => c.code === code)?.title ?? getInterestLabel(code);
             list.push({
                 id: `interest-${code}`,
-                label: getInterestLabel(code),
+                label,
                 onRemove: () => setFilters(prev => ({ ...prev, interests: prev.interests.filter(c => c !== code) })),
             });
         });
         return list;
-    }, [filters, minPrice, maxPrice]);
+    }, [filters, minPrice, maxPrice, interestsList]);
 
     if (!isOpen && !isClosing) return null;
 
@@ -662,19 +661,19 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                     </div>
 
                     {/* Интересы */}
-                    {showInterestsSection && (
+                    {showInterestsSection && interestsList && (
                         <div className="filter-section">
                             <div className="filter-section-header">
                                 <label className="filter-label">Интересы</label>
                             </div>
                             <div className="filter-chips filter-chips-scroll">
-                                {interestsList.map(interest => (
+                                {interestsList.map((interest: Category) => (
                                     <button
                                         key={interest.code}
                                         className={`filter-chip ${filters.interests.includes(interest.code) ? 'active' : ''}`}
                                         onClick={() => toggleInterest(interest.code)}
                                     >
-                                        {'title' in interest ? interest.title : interest.label}
+                                        {interest.title}
                                     </button>
                                 ))}
                             </div>
