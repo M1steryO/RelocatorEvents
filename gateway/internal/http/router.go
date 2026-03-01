@@ -18,6 +18,7 @@ import (
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/encoding/protojson"
 	"net/http"
 )
 
@@ -50,6 +51,14 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 			return metadata.Pairs(
 				"x-user-id", strconv.FormatInt(userID, 10),
 			)
+		}),
+		runtime.WithMarshalerOption(runtime.MIMEWildcard, &runtime.JSONPb{
+			MarshalOptions: protojson.MarshalOptions{
+				UseProtoNames: true,
+			},
+			UnmarshalOptions: protojson.UnmarshalOptions{
+				DiscardUnknown: true,
+			},
 		}),
 	)
 
