@@ -184,7 +184,7 @@ class EventsService {
         }
 
         if (response.status === 500) {
-            showGlobalNotification('Ошибка сервера. Пожалуйста, попробуйте позже.', 'error');
+            showGlobalNotification('Произошла ошибка. Попробуйте позже.', 'error');
             const error = await response.json().catch(() => ({
                 message: 'Internal Server Error',
             }));
@@ -293,7 +293,7 @@ class EventsService {
         }
 
         if (response.status === 500) {
-            showGlobalNotification('Ошибка сервера. Пожалуйста, попробуйте позже.', 'error');
+            showGlobalNotification('Произошла ошибка. Попробуйте позже.', 'error');
             const error = await response.json().catch(() => ({
                 message: 'Internal Server Error',
             }));

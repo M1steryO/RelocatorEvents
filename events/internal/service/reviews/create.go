@@ -10,16 +10,14 @@ import (
 
 func (s *serv) Create(ctx context.Context, eventId, authorId int64, review *domain.Review) (int64, error) {
 	var reviewID int64
+	authorName, err := s.userClient.GetUserName(ctx, authorId)
+	if err != nil {
+		return 0, err
+	}
+	review.AuthorId = authorId
+	review.AuthorName = &authorName
 
-	err := s.txManager.ReadCommitted(ctx, func(txCtx context.Context) error {
-		review.AuthorId = authorId
-
-		authorName, err := s.userClient.GetUserName(txCtx, authorId)
-		if err != nil {
-			return err
-		}
-		review.AuthorName = &authorName
-
+	err = s.txManager.ReadCommitted(ctx, func(txCtx context.Context) error {
 		id, err := s.reviewsRepo.Create(txCtx, eventId, review)
 		if err != nil {
 			return err

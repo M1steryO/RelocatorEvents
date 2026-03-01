@@ -15,12 +15,13 @@ func (impl *ReviewsImplementation) CreateReview(ctx context.Context, req *desc.C
 	if err != nil {
 		return nil, err
 	}
-	//userId, ok := ctx.Value("userId").(int64)
-	//if !ok {
-	//	return nil, errors.New("missing userId")
-	//}
 
-	_, err = impl.service.Create(ctx, req.EventId, review.AuthorId, review)
+	userId, ok := ctx.Value("userId").(int64)
+	if !ok {
+		return nil, errors.New("missing userId")
+	}
+
+	_, err = impl.service.Create(ctx, req.EventId, userId, review)
 	if err != nil {
 		if errors.Is(err, events.ErrEventNotFound) {
 			return nil, status.Error(codes.NotFound, "event not found")

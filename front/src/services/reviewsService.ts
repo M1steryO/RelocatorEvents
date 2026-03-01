@@ -101,6 +101,14 @@ class ReviewsService {
             throw new Error(error.message || 'Service Unavailable');
         }
 
+        if (response.status === 500) {
+            showGlobalNotification('Произошла ошибка. Попробуйте позже.', 'error');
+            const error = await response.json().catch(() => ({
+                message: 'Internal Server Error',
+            }));
+            throw new Error(error.message || 'Internal Server Error');
+        }
+
         if (response.status === 401) {
             notifyUnauthorized();
             const error = await response.json().catch(() => ({
@@ -154,6 +162,14 @@ class ReviewsService {
                 message: 'Service Unavailable',
             }));
             throw new Error(error.message || 'Service Unavailable');
+        }
+
+        if (response.status === 500) {
+            showGlobalNotification('Произошла ошибка. Попробуйте позже.', 'error');
+            const error = await response.json().catch(() => ({
+                message: 'Internal Server Error',
+            }));
+            throw new Error(error.message || 'Internal Server Error');
         }
 
         if (response.status === 401) {
@@ -210,6 +226,14 @@ class ReviewsService {
                 message: 'Service Unavailable',
             }));
             throw new Error(error.message || 'Service Unavailable');
+        }
+
+        if (response.status === 500) {
+            showGlobalNotification('Произошла ошибка. Попробуйте позже.', 'error');
+            const error = await response.json().catch(() => ({
+                message: 'Internal Server Error',
+            }));
+            throw new Error(error.message || 'Internal Server Error');
         }
 
         if (response.status === 401) {
