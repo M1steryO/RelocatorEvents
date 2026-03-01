@@ -313,7 +313,7 @@ export const EventDetailPage = () => {
                     onClick={handleOpenReviews}
                     type="button"
                 >
-                    {event.rating !== null && (
+                    {event.rating !== null && event.rating !== undefined && (
                         <div className="chip-value">
                             {event.rating?.toFixed(1).replace('.', ',')}
                             <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10" viewBox="0 0 10 10" fill="none">
@@ -330,7 +330,7 @@ export const EventDetailPage = () => {
                     </div>
 
                 </button>
-                {event.min_age !== null && (
+                {event.min_age !== null && event.min_age !== undefined && (
                     <div className="event-info-chip">
                         <div className="chip-label-container">
                             <div className="chip-label">ВОЗРАСТ</div>
@@ -338,7 +338,7 @@ export const EventDetailPage = () => {
                         </div>
                     </div>
                 )}
-                {event.seats_available !== null && (
+                {event.seats_available !== null && event.seats_available !== undefined && (
                     <div className="event-info-chip">
                         <div className="chip-label-container">
                             <div className="chip-label">МЕСТА</div>
@@ -369,7 +369,7 @@ export const EventDetailPage = () => {
                 <div className="organizer-modal-overlay" onClick={() => setOrganizerModal(null)}>
                     <div className="organizer-modal" onClick={e => e.stopPropagation()}>
                         <div className="organaizer-modal-header">
-                           
+
                             <p className="organizer-modal-title">
                                 {organizerModal === 'register'
                                     ? 'Чтобы зарегистрироваться на мероприятие необходимо перейти на сайт организатора'
@@ -392,17 +392,17 @@ export const EventDetailPage = () => {
                             ВСЕ ССЫЛКИ БЕЗОПАСНЫ И ПРЕДОСТАВЛЯЮТСЯ ПРОВЕРЕННЫМИ ИСТОЧНИКАМИ
                         </p>
                         <button className="organizer-modal-cta-btn">
-                        <a
-                            className="organizer-modal-cta"
-                            href={event.link}
-                            target="_blank"
-                            rel="noreferrer"
-                            onClick={() => setOrganizerModal(null)}
-                        >
-                            {organizerModal === 'register' ? 'Перейти к регистрации' : 'Перейти к покупке'}
-                        </a>
+                            <a
+                                className="organizer-modal-cta"
+                                href={event.link}
+                                target="_blank"
+                                rel="noreferrer"
+                                onClick={() => setOrganizerModal(null)}
+                            >
+                                {organizerModal === 'register' ? 'Перейти к регистрации' : 'Перейти к покупке'}
+                            </a>
                         </button>
-                        
+
                     </div>
                 </div>
             )}
