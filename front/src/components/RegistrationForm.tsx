@@ -158,6 +158,7 @@ export const RegistrationForm = ({onSuccess}: RegistrationFormProps) => {
                 window.Telegram?.WebApp?.initDataUnsafe?.user?.username || '';
             const telegramNameFromInitData =
                 window.Telegram?.WebApp?.initDataUnsafe?.user?.first_name || '';
+            alert(telegramNameFromInitData)
             const emailForRegistration = telegramInitData
                 ? undefined // for Telegram registration we intentionally don't send email
                 : `stub_${Date.now()}@example.com`;

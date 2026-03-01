@@ -74,6 +74,8 @@ func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*
 		return nil, sys.NewCommonError("failed to send access token header", codes.Internal)
 	}
 
+	logger.Info("user successfully created:", slog.Any("user", id))
+
 	return &desc.CreateResponse{
 		Id:           id,
 		RefreshToken: refreshToken,
