@@ -464,7 +464,7 @@ export const EventReviewsPage = () => {
                             </div>
                             <div className="reviews-summary-text">
                                 <div className="reviews-summary-count">
-                                    {reviewsSummary.reviews_count} {getReviewNoun(reviewsSummary.reviews_count)}
+                                    {reviews.length} {getReviewNoun(reviews.length)}
                                 </div>
                             </div>
                         </section>
