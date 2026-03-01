@@ -4,7 +4,7 @@ go 1.25.4
 
 require (
 	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260217120818-182e25d1a904
-	github.com/M1steryO/RelocatorEvents/events v0.0.0-20260301175020-97ec68fe03ad
+	github.com/M1steryO/RelocatorEvents/events v0.0.0-20260301191457-d6c10b010b0e
 	github.com/M1steryO/RelocatorEvents/media v0.0.0-20260210113908-43f2162d2c47
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/fatih/color v1.18.0
