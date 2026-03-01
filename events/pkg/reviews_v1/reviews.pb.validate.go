@@ -455,10 +455,10 @@ func (m *Review) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if l := utf8.RuneCountInString(m.GetText()); l < 1 || l > 200 {
+	if utf8.RuneCountInString(m.GetText()) > 200 {
 		err := ReviewValidationError{
 			field:  "Text",
-			reason: "value length must be between 1 and 200 runes, inclusive",
+			reason: "value length must be at most 200 runes",
 		}
 		if !all {
 			return err

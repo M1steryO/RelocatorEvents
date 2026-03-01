@@ -68,7 +68,6 @@ message Review {
   ];
   string text = 4 [
     (validate.rules).string = {
-      min_len: 1,
       max_len: 200
     }
   ];
