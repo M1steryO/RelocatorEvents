@@ -433,10 +433,10 @@ func (m *Review) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetAdvantages()) > 200 {
+	if utf8.RuneCountInString(m.GetAdvantages()) > 100 {
 		err := ReviewValidationError{
 			field:  "Advantages",
-			reason: "value length must be at most 200 runes",
+			reason: "value length must be at most 100 runes",
 		}
 		if !all {
 			return err
@@ -444,10 +444,10 @@ func (m *Review) validate(all bool) error {
 		errors = append(errors, err)
 	}
 
-	if utf8.RuneCountInString(m.GetDisadvantages()) > 200 {
+	if utf8.RuneCountInString(m.GetDisadvantages()) > 100 {
 		err := ReviewValidationError{
 			field:  "Disadvantages",
-			reason: "value length must be at most 200 runes",
+			reason: "value length must be at most 100 runes",
 		}
 		if !all {
 			return err

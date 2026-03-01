@@ -52,7 +52,8 @@ const mapReview = (review: ApiReview, index: number): ReviewItem => ({
     }).filter((item) => item.url),
 });
 
-const REVIEW_TEXT_MAX_LENGTH = 200;
+const REVIEW_PROSE_CONS_MAX_LENGTH = 100;
+const REVIEW_DESCRIPTION_MAX_LENGTH = 200;
 
 const getReviewNoun = (count: number) => {
     const absCount = Math.abs(count);
@@ -167,9 +168,11 @@ export const EventReviewsPage = () => {
     };
 
     const hasReviews = reviewsSummary.reviews_count > 0 || reviews.length > 0;
+    const hasMediaAttached = mediaUploads.some((item) => !item.isLoading && item.storageKey);
+    const hasAnyText = pros.trim().length > 0 || cons.trim().length > 0 || description.trim().length > 0;
     const isSubmitDisabled = rating === null
-        || description.trim().length === 0
-        || mediaUploads.some((item) => item.isLoading);
+        || mediaUploads.some((item) => item.isLoading)
+        || (hasMediaAttached && !hasAnyText);
 
     useEffect(() => {
         return () => {
@@ -366,30 +369,30 @@ export const EventReviewsPage = () => {
                                     className="review-form-input"
                                     placeholder="Достоинства"
                                     value={pros}
-                                    maxLength={REVIEW_TEXT_MAX_LENGTH}
-                                    onChange={(e) => setPros(e.target.value.slice(0, REVIEW_TEXT_MAX_LENGTH))}
+                                    maxLength={REVIEW_PROSE_CONS_MAX_LENGTH}
+                                    onChange={(e) => setPros(e.target.value.slice(0, REVIEW_PROSE_CONS_MAX_LENGTH))}
                                 />
-                                <span className="review-form-char-count">{pros.length}/{REVIEW_TEXT_MAX_LENGTH}</span>
+                                <span className="review-form-char-count">{pros.length}/{REVIEW_PROSE_CONS_MAX_LENGTH}</span>
                             </div>
                             <div className="review-form-field">
                                 <input
                                     className="review-form-input"
                                     placeholder="Недостатки"
                                     value={cons}
-                                    maxLength={REVIEW_TEXT_MAX_LENGTH}
-                                    onChange={(e) => setCons(e.target.value.slice(0, REVIEW_TEXT_MAX_LENGTH))}
+                                    maxLength={REVIEW_PROSE_CONS_MAX_LENGTH}
+                                    onChange={(e) => setCons(e.target.value.slice(0, REVIEW_PROSE_CONS_MAX_LENGTH))}
                                 />
-                                <span className="review-form-char-count">{cons.length}/{REVIEW_TEXT_MAX_LENGTH}</span>
+                                <span className="review-form-char-count">{cons.length}/{REVIEW_PROSE_CONS_MAX_LENGTH}</span>
                             </div>
                             <div className="review-form-field">
                                 <textarea
                                     className="review-form-input review-form-textarea"
                                     placeholder="Описание"
                                     value={description}
-                                    maxLength={REVIEW_TEXT_MAX_LENGTH}
-                                    onChange={(e) => setDescription(e.target.value.slice(0, REVIEW_TEXT_MAX_LENGTH))}
+                                    maxLength={REVIEW_DESCRIPTION_MAX_LENGTH}
+                                    onChange={(e) => setDescription(e.target.value.slice(0, REVIEW_DESCRIPTION_MAX_LENGTH))}
                                 />
-                                <span className="review-form-char-count">{description.length}/{REVIEW_TEXT_MAX_LENGTH}</span>
+                                <span className="review-form-char-count">{description.length}/{REVIEW_DESCRIPTION_MAX_LENGTH}</span>
                             </div>
                         </div>
                         <div className="review-form-hint">

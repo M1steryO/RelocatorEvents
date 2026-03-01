@@ -12,5 +12,9 @@ func (c *userServiceClient) GetUserName(ctx context.Context, userId int64) (stri
 	if err != nil {
 		return "", err
 	}
+	name := resp.GetUser().GetInfo().GetName()
+	if name == "" {
+		return resp.User.Info.GetTelegramUsername(), nil
+	}
 	return resp.User.Info.GetName(), nil
 }

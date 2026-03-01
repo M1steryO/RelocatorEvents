@@ -18,20 +18,21 @@ func (s *serv) Create(ctx context.Context, eventId, authorId int64, review *doma
 	review.AuthorName = &authorName
 
 	err = s.txManager.ReadCommitted(ctx, func(txCtx context.Context) error {
-		id, err := s.reviewsRepo.Create(txCtx, eventId, review)
-		if err != nil {
-			return err
-		}
+		if len(review.Text) != 0 || len(review.Disadvantages) != 0 || len(review.Advantages) != 0 {
+			id, err := s.reviewsRepo.Create(txCtx, eventId, review)
+			if err != nil {
+				return err
+			}
 
-		if err := s.reviewsRepo.CreateMedia(txCtx, id, review.Media); err != nil {
-			return err
+			if err := s.reviewsRepo.CreateMedia(txCtx, id, review.Media); err != nil {
+				return err
+			}
+			reviewID = id
 		}
-
 		if err := s.eventsRepo.UpdateRating(txCtx, eventId, review.Grade); err != nil {
 			return err
 		}
 
-		reviewID = id
 		return nil
 	})
 

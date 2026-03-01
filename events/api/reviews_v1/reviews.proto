@@ -58,12 +58,12 @@ message Review {
   ];
   string advantages = 2 [
     (validate.rules).string = {
-      max_len: 200
+      max_len: 100
     }
   ];
   string disadvantages = 3 [
     (validate.rules).string = {
-      max_len: 200
+      max_len: 100
     }
   ];
   string text = 4 [

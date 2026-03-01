@@ -81,7 +81,14 @@ const validateExactDateError = (value: string): boolean => {
         date.getMonth() === monthNum - 1 &&
         date.getFullYear() === yearNum;
 
-    return !isValid;
+    if (!isValid) return true;
+
+    // Дата мероприятия — только сегодня и будущее, не вчера и не раньше
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (date < today) return true;
+
+    return false;
 };
 
 export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initialFilters }: FiltersModalProps) => {
@@ -269,7 +276,15 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
             date.getMonth() === monthNum - 1 &&
             date.getFullYear() === yearNum;
 
-        setExactDateError(!isValid);
+        if (!isValid) {
+            setExactDateError(true);
+            return;
+        }
+
+        // Дата мероприятия — только сегодня и будущее
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        setExactDateError(date < today);
     };
 
     const formatDateInput = (value: string) => {
