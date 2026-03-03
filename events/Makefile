@@ -20,6 +20,7 @@ install-deps:
 	GOBIN=$(LOCAL_BIN) go install  github.com/grpc-ecosystem/grpc-gateway/v2/protoc-gen-grpc-gateway@latest
 	GOBIN=$(LOCAL_BIN) go install  github.com/envoyproxy/protoc-gen-validate@latest
 
+
 vendor-proto:
 	@if [ ! -d vendor.protogen/validate ]; then \
 		mkdir -p vendor.protogen/validate && \
