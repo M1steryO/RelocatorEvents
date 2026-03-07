@@ -43,6 +43,41 @@
     transition: background-color 0.2s;
 }
 
+.event-detail-favourite-heart {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: rgba(255, 255, 255, 0.85);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+    justify-self: end;
+}
+
+.event-detail-favourite-heart:hover {
+    transform: scale(1.08);
+    background: #fff;
+}
+
+.event-detail-favourite-heart svg {
+    width: 20px;
+    height: 18px;
+}
+
+.event-detail-favourite-heart.favourite-heart-active svg {
+    fill: #E53935;
+    stroke: #E53935;
+}
+
+.event-detail-favourite-heart.favourite-heart-outline svg {
+    fill: none;
+    stroke: #fff;
+}
 
 /* Poster Section */
 .event-poster-section {

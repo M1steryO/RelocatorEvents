@@ -205,6 +205,8 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 
 	err = reviewsDesc.RegisterReviewsV1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
 
+	err = favsDesc.RegisterFavouritesServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
+
 	handlerWithAuth := middleware.AuthMiddleware(mux)
 
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -9,6 +9,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    gap: 33px;
     z-index: 100;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
     padding-bottom: 31px;
@@ -27,11 +28,11 @@
     font-family: inherit;
     padding: 5px;
 }
-
-.nav-item:hover {
-    background-color: #f3f3f398;
+@media (min-width: 1024px) {
+    .nav-item:hover {
+        background-color: #f3f3f398;
+    }
 }
-
 .nav-item span {
     font-size: 10px;
     font-weight: 500;
@@ -42,3 +43,4 @@
 .nav-item svg {
     transition: all 0.2s ease;
 }
+

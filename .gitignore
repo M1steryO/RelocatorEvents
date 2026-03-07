@@ -38,4 +38,7 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
-/relocator_events/
+/relocator_events
+Dockerfile.local
+**/.config/
+.config/

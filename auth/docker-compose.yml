@@ -2,7 +2,7 @@ services:
   auth_pg:
     image: postgres:14-alpine3.17
     env_file:
-      - config/local.env
+      - config/prod.env
     ports:
       - "54321:5432"
     volumes:
@@ -29,7 +29,9 @@ services:
   auth-server-container:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.local
+    ports:
+      - "50051:50051"
     depends_on:
       auth_pg:
         condition: service_healthy

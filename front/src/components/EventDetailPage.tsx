@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { eventsService } from '../services/eventsService';
 import type { Event, Address } from '../services/eventsService';
 import { NotFoundCard } from './NotFoundCard';
+import { useFavourites } from '../contexts/FavouritesContext';
 import './EventDetailPage.css';
 
 let yandexMapsPromise: Promise<any> | null = null;
@@ -107,6 +108,7 @@ const getCurrencySymbol = (currency?: string): string => {
 export const EventDetailPage = () => {
     const navigate = useNavigate();
     const { id } = useParams();
+    const { isFavourite, toggleFavourite } = useFavourites();
     const [event, setEvent] = useState<Event | null>(null);
     const [, setAddress] = useState<Address | undefined>(undefined);
     const [venueName, setVenueName] = useState<string | undefined>(undefined);
@@ -281,7 +283,18 @@ export const EventDetailPage = () => {
                 <header className="event-detail-header">
                     <button className="event-back-button" onClick={handleBack}>
                         <svg xmlns="http://www.w3.org/2000/svg" width="8" height="16" viewBox="0 0 8 16" fill="none">
-                            <path fill-rule="evenodd" clip-rule="evenodd" d="M7.3472 15.7474C7.75996 15.3804 7.7971 14.7484 7.43015 14.3356L2.35344 8.62504C2.17578 8.42519 2.0813 8.31784 2.01899 8.23557C2.01681 8.2327 2.01476 8.22996 2.01282 8.22735C2.01467 8.22467 2.01662 8.22186 2.01869 8.21892C2.07806 8.13449 2.16867 8.02386 2.33914 7.81784L7.45322 1.63754C7.80531 1.21204 7.7458 0.581678 7.32031 0.229585C6.89481 -0.122506 6.26444 -0.0629985 5.91235 0.362501L0.779368 6.56565C0.635262 6.73975 0.492836 6.91183 0.382621 7.06858C0.260039 7.24293 0.132862 7.45826 0.0631174 7.72947C-0.0268922 8.0795 -0.0203743 8.44737 0.0819781 8.79398C0.161286 9.06256 0.296011 9.27325 0.424693 9.44314C0.540388 9.59588 0.688816 9.7628 0.838995 9.93169C0.845564 9.93908 0.852137 9.94647 0.85871 9.95386L5.93542 15.6644C6.30236 16.0772 6.93444 16.1143 7.3472 15.7474Z" fill="#414141" />
+                            <path fillRule="evenodd" clipRule="evenodd" d="M7.3472 15.7474C7.75996 15.3804 7.7971 14.7484 7.43015 14.3356L2.35344 8.62504C2.17578 8.42519 2.0813 8.31784 2.01899 8.23557C2.01681 8.2327 2.01476 8.22996 2.01282 8.22735C2.01467 8.22467 2.01662 8.22186 2.01869 8.21892C2.07806 8.13449 2.16867 8.02386 2.33914 7.81784L7.45322 1.63754C7.80531 1.21204 7.7458 0.581678 7.32031 0.229585C6.89481 -0.122506 6.26444 -0.0629985 5.91235 0.362501L0.779368 6.56565C0.635262 6.73975 0.492836 6.91183 0.382621 7.06858C0.260039 7.24293 0.132862 7.45826 0.0631174 7.72947C-0.0268922 8.0795 -0.0203743 8.44737 0.0819781 8.79398C0.161286 9.06256 0.296011 9.27325 0.424693 9.44314C0.540388 9.59588 0.688816 9.7628 0.838995 9.93169C0.845564 9.93908 0.852137 9.94647 0.85871 9.95386L5.93542 15.6644C6.30236 16.0772 6.93444 16.1143 7.3472 15.7474Z" fill="#414141" />
+                        </svg>
+                    </button>
+                    <span />
+                    <button
+                        type="button"
+                        className={`event-detail-favourite-heart ${isFavourite(event.id) ? 'favourite-heart-active' : 'favourite-heart-outline'}`}
+                        onClick={() => toggleFavourite(event.id)}
+                        aria-label={isFavourite(event.id) ? 'Удалить из избранного' : 'Добавить в избранное'}
+                    >
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 22" fill="none">
+                            <path d="M12 20.5C11.5 20.5 11 20.3 10.6 19.9L2.5 12.1C-0.5 9.1 -0.5 4.2 2.5 1.2C4.5 -0.8 7.5 -0.8 9.5 1.2L12 3.7L14.5 1.2C16.5 -0.8 19.5 -0.8 21.5 1.2C24.5 4.2 24.5 9.1 21.5 12.1L13.4 19.9C13 20.3 12.5 20.5 12 20.5Z" stroke="#414141" strokeWidth="1.5" strokeLinejoin="round"/>
                         </svg>
                     </button>
                 </header>

@@ -2,6 +2,7 @@
   import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import { eventsService } from '../services/eventsService';
+import { favouritesService } from '../services/favouritesService';
 
 interface User {
   id: number;
@@ -54,12 +55,14 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUserState(newUser); // Store only in memory
     authService.setAccessToken(accessToken); // Update authService token
     eventsService.setAccessToken(accessToken); // Update eventsService token
+    favouritesService.setAccessToken(accessToken); // Update favouritesService token
   };
 
   const setAccessToken = (accessToken: string) => {
     setToken(accessToken); // Store only in memory
     authService.setAccessToken(accessToken); // Update authService token (synchronous)
     eventsService.setAccessToken(accessToken); // Update eventsService token
+    favouritesService.setAccessToken(accessToken); // Update favouritesService token
   };
 
   const logout = () => {
@@ -67,6 +70,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUserState(null);
     authService.setAccessToken(null); // Clear authService token
     eventsService.setAccessToken(null); // Clear eventsService token
+    favouritesService.setAccessToken(null); // Clear favouritesService token
     // Note: refresh token in cookie will be cleared by server on logout
   };
 

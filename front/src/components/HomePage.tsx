@@ -5,6 +5,7 @@ import type { Event as ServerEvent, GetListRequest, FiltersData } from '../servi
 import { FiltersModal, type FiltersState } from './FiltersModal';
 import { SortModal } from './SortModal';
 import { NotFoundCard } from './NotFoundCard';
+import { useFavourites } from '../contexts/FavouritesContext';
 import './HomePage.css';
 
 interface DisplayEvent {
@@ -103,6 +104,7 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
 
 export const HomePage = () => {
     const navigate = useNavigate();
+    const { isFavourite, toggleFavourite } = useFavourites();
     const PAGE_LIMIT = 20;
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
@@ -449,6 +451,26 @@ export const HomePage = () => {
                                     onLoad={() => handleImageLoad(event.id)}
                                     onError={() => handleImageError(event.id)}
                                 />
+                                <button
+                                    type="button"
+                                    className={`favourite-heart ${isFavourite(event.id) ? 'favourite-heart-active' : 'favourite-heart-outline'}`}
+                                    onClick={(e) => { e.stopPropagation(); toggleFavourite(event.id); }}
+                                    aria-label={isFavourite(event.id) ? 'Удалить из избранного' : 'Добавить в избранное'}
+                                >
+                                    {isFavourite(event.id) ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="21" viewBox="0 0 24 21" fill="none">
+                                            <path d="M18.1857 1C13.5464 1 13.5464 4.75243 12 4.75243C10.4536 4.75243 10.4536 1 5.81429 1C1.56161 1 0.364775 5.56486 1.2971 9.22077C2.22941 12.8767 8.90714 20 12 20C15.0929 20 21.7706 12.8767 22.7029 9.22077C23.6352 5.56486 22.4384 1 18.1857 1Z" fill="#E94C29" stroke="#E94C29" stroke-width="2" />
+                                        </svg>
+                                    ) : (
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21" fill="none">
+                                            <path d="M11.5 4.75243C10.0239 4.75243 10.0239 1 5.59545 1C1.53608 1 0.393649 5.56486 1.28359 9.22078C2.17353 12.8767 8.54773 20 11.5 20" stroke="#414141" stroke-width="2" />
+                                            <path d="M11.5 4.75243C12.9761 4.75243 12.9761 1 17.4045 1C21.4639 1 22.6064 5.56486 21.7164 9.22078C20.8265 12.8767 14.4523 20 11.5 20" stroke="#414141" stroke-width="2" />
+                                        </svg>
+
+                                    )}
+
+                                </button>
                             </div>
                             <div className="event-content">
                                 <h3 className="event-title">{event.title}</h3>

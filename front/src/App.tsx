@@ -8,6 +8,7 @@ import {LoadingScreen} from "./components/LoadingScreen";
 import {HomePage} from "./components/HomePage";
 import {EventDetailPage} from "./components/EventDetailPage";
 import {EventReviewsPage} from "./components/EventReviewsPage";
+import {FavouritesPage} from "./components/FavouritesPage";
 import {BottomNavigation} from "./components/BottomNavigation";
 import {ServiceUnavailablePage} from "./components/ServiceUnavailablePage";
 import {subscribeToServiceUnavailable} from "./utils/serviceUnavailable";
@@ -96,6 +97,15 @@ function App() {
                         element={
                             <>
                                 <HomePage />
+                                <BottomNavigation />
+                            </>
+                        } 
+                    />
+                    <Route 
+                        path="/favourites" 
+                        element={
+                            <>
+                                <FavouritesPage />
                                 <BottomNavigation />
                             </>
                         } 

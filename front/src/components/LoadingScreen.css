@@ -103,6 +103,45 @@
     animation-fill-mode: forwards;
 }
 
+/* Десктоп: ограничиваем размер картинок и контента */
+@media (min-width: 768px) {
+    .loading-screen-content {
+        max-width: 560px;
+        padding: 0 40px;
+    }
+
+    .loading-initial-container,
+    .loading-welcome-container {
+        max-width: 100%;
+    }
+
+    .loading-logo {
+        max-width: 320px;
+        width: auto;
+    }
+
+    .loading-title,
+    .loading-welcome {
+        font-size: 40px;
+        line-height: 1.25;
+    }
+
+    .loading-welcome-container {
+        gap: 120px;
+    }
+}
+
+@media (min-width: 960px) {
+    .loading-logo {
+        max-width: 400px;
+    }
+
+    .loading-title,
+    .loading-welcome {
+        font-size: 44px;
+    }
+}
+
 @keyframes spin {
     to {
         transform: rotate(360deg);
