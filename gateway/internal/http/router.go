@@ -5,6 +5,7 @@ import (
 	auth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
 	user "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	events "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
+	favourites "github.com/M1steryO/RelocatorEvents/events/pkg/favourites_v1"
 	reviews "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
 	grpcClients "github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/config"
@@ -86,6 +87,10 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 		return nil, err
 	}
 
+	if err := favourites.RegisterFavouritesServiceHandlerFromEndpoint(ctx, gw, deps.EventsCfg.GetAddress(), opts); err != nil {
+		return nil, err
+	}
+
 	r := chi.NewRouter()
 	r.Use(deps.CORS.Handler)
 	r.Use(middleware.RequestID)
@@ -122,6 +127,16 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 			}))
 			r.Handle("/media", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				r.URL.Path = "/media/v1" + strings.TrimPrefix(r.URL.Path, "/v1/media")
+				gw.ServeHTTP(w, r)
+			}))
+
+			r.Handle("/favourites", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				r.URL.Path = "/favourites/v1"
+				gw.ServeHTTP(w, r)
+			}))
+
+			r.Handle("/favourites/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				r.URL.Path = "/favourites/v1" + strings.TrimPrefix(r.URL.Path, "/v1/favourites")
 				gw.ServeHTTP(w, r)
 			}))
 		})

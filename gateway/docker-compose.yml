@@ -1,10 +1,10 @@
 services:
   gateway:
     env_file:
-      - ./config/local.env
+      - ./config/prod.env
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.local
     ports:
       - 50043:50043
     depends_on:
