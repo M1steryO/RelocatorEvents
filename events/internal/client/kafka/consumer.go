@@ -5,6 +5,7 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"log"
 	"strings"
+	"time"
 )
 
 const (
@@ -59,6 +60,7 @@ func (c *Consumer) Start(ctx context.Context) error {
 		msg, err := c.consumer.ReadMessage(noTimeout)
 		if err != nil {
 			log.Printf("Error reading message from consumer: %v", err)
+			time.Sleep(1 * time.Minute)
 		}
 		if msg == nil {
 			continue

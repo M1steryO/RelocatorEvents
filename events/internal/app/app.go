@@ -11,6 +11,7 @@ import (
 	"github.com/M1steryO/RelocatorEvents/events/internal/metric"
 	"github.com/M1steryO/RelocatorEvents/events/internal/middleware"
 	desc "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
+	favsDesc "github.com/M1steryO/RelocatorEvents/events/pkg/favourites_v1"
 	reviewsDesc "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	kafka2 "github.com/confluentinc/confluent-kafka-go/v2/kafka"
@@ -180,6 +181,7 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	desc.RegisterEvent_V1Server(a.grpcServer, a.serviceProvider.EventsImpl(ctx))
 	reviewsDesc.RegisterReviewsV1Server(a.grpcServer, a.serviceProvider.ReviewsImpl(ctx))
+	favsDesc.RegisterFavouritesServiceServer(a.grpcServer, a.serviceProvider.FavsImpl(ctx))
 
 	return nil
 }
@@ -300,6 +302,7 @@ func (a *App) initKafkaConsumer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
+
 	a.kafkaConsumer = consumer
 
 	closer.Add(consumer.Stop)

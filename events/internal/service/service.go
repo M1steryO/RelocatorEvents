@@ -17,3 +17,9 @@ type ReviewService interface {
 	Create(ctx context.Context, eventId, authorId int64, review *domainReviews.Review) (int64, error)
 	List(ctx context.Context, eventId int64) (*reviews.ListReviewsResult, error)
 }
+
+type FavouritesService interface {
+	Create(ctx context.Context, eventId, userId int64) error
+	List(ctx context.Context, userId int64) ([]*domainEvents.Event, error)
+	Delete(ctx context.Context, eventId, userId int64) error
+}

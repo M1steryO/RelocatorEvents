@@ -21,3 +21,9 @@ type ReviewRepository interface {
 	CreateMedia(ctx context.Context, reviewId int64, media []*domainReviews.MediaAttachment) error
 	List(ctx context.Context, eventId int64) ([]*domainReviews.Review, error)
 }
+
+type FavouritesRepository interface {
+	Create(ctx context.Context, eventId, userId int64) error
+	List(ctx context.Context, userId int64) ([]int64, error)
+	Delete(ctx context.Context, eventId, userId int64) error
+}

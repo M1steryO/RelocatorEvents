@@ -44,6 +44,7 @@ get-deps:
 generate:
 	make generate-events-api
 	make generates-reviews-api
+	make generates-favourites-api
 
 generate-events-api:
 	mkdir -p pkg/events_v1
@@ -86,6 +87,20 @@ generates-reviews-api:
 			--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
 			api/reviews_v1/reviews.proto
 
+generates-favourites-api:
+	mkdir -p pkg/favourites_v1
+	protoc --proto_path api/favourites_v1 --proto_path vendor.protogen\
+			--go_out pkg/favourites_v1 \
+			--go_opt=paths=source_relative \
+			--plugin=protoc-gen-go=bin/protoc-gen-go \
+			--go-grpc_out=pkg/favourites_v1 \
+			--go-grpc_opt=paths=source_relative \
+			--plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
+			--validate_out lang=go:pkg/favourites_v1 --validate_opt=paths=source_relative \
+			--plugin=protoc-gen-validate=bin/protoc-gen-validate \
+			--grpc-gateway_out=pkg/favourites_v1 --grpc-gateway_opt=paths=source_relative \
+			--plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
+			api/favourites_v1/favourites.proto
 
 local-migration-status:
 	${LOCAL_BIN}/goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} status -v
