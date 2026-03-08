@@ -1,5 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services/authService';
 import './LoadingScreen.css';
 
 interface LoadingScreenProps {
@@ -8,136 +9,91 @@ interface LoadingScreenProps {
 }
 
 export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingScreenProps) => {
-    const { user, isAuthenticated } = useAuth();
+    const { user, setUser } = useAuth();
     const [showLoading, setShowLoading] = useState(true);
     const [isClosing, setIsClosing] = useState(false);
     const [showWelcomeText, setShowWelcomeText] = useState(false);
     const [isFadingOut, setIsFadingOut] = useState(false);
     const [shouldAnimateWelcome, setShouldAnimateWelcome] = useState(false);
+    const [welcomeUserName, setWelcomeUserName] = useState<string | null>(null);
+    const welcomeRequestDoneRef = useRef(false);
     const startTimeRef = useRef<number>(Date.now());
     const timeoutRef = useRef<number | null>(null);
     const fadeOutTimeoutRef = useRef<number | null>(null);
     const welcomeTextTimeoutRef = useRef<number | null>(null);
     const fadeInTimeoutRef = useRef<number | null>(null);
 
+    // При загрузке 1-й части вызываем getCurrentUser(); если получили юзера — показываем 2-ю часть
     useEffect(() => {
-        // Если пользователь не авторизован, сбрасываем состояние приветственного текста
-        if (!isAuthenticated || !user) {
-            setShowWelcomeText(false);
-            setIsFadingOut(false);
-            setShouldAnimateWelcome(false);
-            if (welcomeTextTimeoutRef.current) {
-                clearTimeout(welcomeTextTimeoutRef.current);
-                welcomeTextTimeoutRef.current = null;
-            }
-            if (fadeInTimeoutRef.current) {
-                clearTimeout(fadeInTimeoutRef.current);
-                fadeInTimeoutRef.current = null;
-            }
-            return;
-        }
-
-        // Показываем текст приветствия через секунду после показа загрузочного экрана
-        // Только если пользователь авторизован
-        if (showLoading && !showWelcomeText && !isClosing && !isFadingOut && isAuthenticated && user) {
-            if (welcomeTextTimeoutRef.current) {
-                clearTimeout(welcomeTextTimeoutRef.current);
-            }
-            welcomeTextTimeoutRef.current = setTimeout(() => {
-                // Сначала запускаем fade out старого контента и одновременно показываем новый
-                setIsFadingOut(true);
-                setShowWelcomeText(true);
-                // Используем requestAnimationFrame для плавной анимации появления нового контента
-                requestAnimationFrame(() => {
-                    requestAnimationFrame(() => {
-                        setShouldAnimateWelcome(true);
+        if (!showLoading || showWelcomeText || isClosing || welcomeRequestDoneRef.current) return;
+        welcomeTextTimeoutRef.current = window.setTimeout(() => {
+            authService.getCurrentUser()
+                .then((data) => {
+                    welcomeRequestDoneRef.current = true;
+                    setWelcomeUserName(data.name);
+                    setUser({
+                        id: data.id,
+                        name: data.name,
+                        country: data.country,
+                        city: data.city,
                     });
+                    setIsFadingOut(true);
+                    setShowWelcomeText(true);
+                    requestAnimationFrame(() => {
+                        requestAnimationFrame(() => setShouldAnimateWelcome(true));
+                    });
+                    if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
+                    fadeInTimeoutRef.current = window.setTimeout(() => setIsFadingOut(false), 300);
+                })
+                .catch(() => {
+                    welcomeRequestDoneRef.current = true;
                 });
-                // После завершения fade out убираем старый контент
-                if (fadeInTimeoutRef.current) {
-                    clearTimeout(fadeInTimeoutRef.current);
-                }
-                fadeInTimeoutRef.current = setTimeout(() => {
-                    setIsFadingOut(false);
-                }, 300); // Время fade out анимации
-            }, 1000);
-        }
-
+        }, 1000);
         return () => {
-            if (welcomeTextTimeoutRef.current) {
-                clearTimeout(welcomeTextTimeoutRef.current);
-            }
-            if (fadeInTimeoutRef.current) {
-                clearTimeout(fadeInTimeoutRef.current);
-            }
+            if (welcomeTextTimeoutRef.current) clearTimeout(welcomeTextTimeoutRef.current);
+            if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
         };
-    }, [showLoading, showWelcomeText, isClosing, isAuthenticated, user, isFadingOut]);
+    }, [showLoading, showWelcomeText, isClosing, setUser]);
 
+    const startClosing = useCallback(() => {
+        if (fadeOutTimeoutRef.current) clearTimeout(fadeOutTimeoutRef.current);
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+        setIsClosing(true);
+        fadeOutTimeoutRef.current = setTimeout(() => {
+            setShowLoading(false);
+        }, 300);
+    }, []);
+
+    // Таймаут = минимум времени показа (например 2 с). Уходим только когда прошло не меньше этого времени И загрузка завершена (может быть дольше, если данные ещё грузятся).
     useEffect(() => {
-        // Если загрузка завершилась
         if (!isLoading) {
-            const elapsedTime = Date.now() - startTimeRef.current;
-            const remainingTime = minimumDisplayTime - elapsedTime;
-
-            if (remainingTime <= 0) {
-                // Минимальное время уже прошло, начинаем плавное закрытие
-                setIsClosing(true);
-                // Ждем завершения анимации перед полным скрытием
-                if (fadeOutTimeoutRef.current) {
-                    clearTimeout(fadeOutTimeoutRef.current);
-                }
-                fadeOutTimeoutRef.current = setTimeout(() => {
-                    setShowLoading(false);
-                }, 300); // Время анимации fade out
-            } else {
-                // Ждем оставшееся время до минимального времени отображения
-                if (timeoutRef.current) {
-                    clearTimeout(timeoutRef.current);
-                }
-                timeoutRef.current = setTimeout(() => {
-                    setIsClosing(true);
-                    // Ждем завершения анимации перед полным скрытием
-                    if (fadeOutTimeoutRef.current) {
-                        clearTimeout(fadeOutTimeoutRef.current);
-                    }
-                    fadeOutTimeoutRef.current = setTimeout(() => {
-                        setShowLoading(false);
-                    }, 300); // Время анимации fade out
-                }, remainingTime);
-            }
-        } else {
-            // Если загрузка еще идет, сбрасываем таймеры
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-                timeoutRef.current = null;
-            }
-            if (fadeOutTimeoutRef.current) {
-                clearTimeout(fadeOutTimeoutRef.current);
-                fadeOutTimeoutRef.current = null;
-            }
-            setShowLoading(true);
-            setIsClosing(false);
-            setShowWelcomeText(false);
-            setIsFadingOut(false);
-            setShouldAnimateWelcome(false);
+            const elapsed = Date.now() - startTimeRef.current;
+            const remaining = Math.max(0, minimumDisplayTime - elapsed);
+            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            timeoutRef.current = setTimeout(startClosing, remaining);
+            return () => {
+                if (timeoutRef.current) clearTimeout(timeoutRef.current);
+            };
         }
-
-        return () => {
-            if (timeoutRef.current) {
-                clearTimeout(timeoutRef.current);
-            }
-            if (fadeOutTimeoutRef.current) {
-                clearTimeout(fadeOutTimeoutRef.current);
-            }
-        };
-    }, [isLoading, minimumDisplayTime]);
+        setShowLoading(true);
+        setIsClosing(false);
+        if (timeoutRef.current) {
+            clearTimeout(timeoutRef.current);
+            timeoutRef.current = null;
+        }
+    }, [isLoading, minimumDisplayTime, startClosing]);
 
     if (!showLoading) {
         return null;
     }
 
+    // Часть 1 первой; часть 2 — только если getCurrentUser() вернул юзера
     const shouldShowInitial = !showWelcomeText || isFadingOut;
-    const shouldShowWelcome = showWelcomeText && isAuthenticated && user;
+    const shouldShowWelcome = showWelcomeText;
+    const displayName = user?.name ?? welcomeUserName ?? '';
 
     return (
         <div className={`loading-screen ${isClosing ? 'loading-screen-closing' : ''}`}>
@@ -149,7 +105,6 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
                             alt="EVENTIFY" 
                     className="loading-logo"
                     onError={(e) => {
-                        // Fallback если изображение не найдено
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                     }}
@@ -160,7 +115,6 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
                     alt="EVENTIFY" 
                     className="loading-logo"
                     onError={(e) => {
-                        // Fallback если изображение не найдено
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                     }}
@@ -170,7 +124,6 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
                     alt="EVENTIFY" 
                     className="loading-logo"
                     onError={(e) => {
-                        // Fallback если изображение не найдено
                         const target = e.target as HTMLImageElement;
                         target.style.display = 'none';
                     }}
@@ -182,7 +135,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
                         <p className="loading-welcome">
                             Добро пожаловать<br />
                             в Eventify,<br />
-                            {user.name}
+                            <span className="loading-welcome-name">{displayName || '...'}</span>
                         </p>
                         <img 
                             src="/loading-page-countries-1.png" 

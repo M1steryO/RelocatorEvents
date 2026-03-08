@@ -55,6 +55,8 @@
 .favourites-empty {
     text-align: center;
     padding: 40px 20px;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .favourites-empty-text {
@@ -62,12 +64,14 @@
     font-weight: 600;
     color: #414141;
     margin: 0 0 8px;
+    text-align: center;
 }
 
 .favourites-empty-hint {
     font-size: 14px;
     color: #6b6b6b;
     margin: 0;
+    text-align: center;
 }
 
 /* Heart on card - top right over image */
@@ -266,6 +270,11 @@
         min-height: 420px;
     }
 
+    .favourites-feed.favourites-feed-empty {
+        display: flex;
+        justify-content: center;
+    }
+
     .favourites-feed .event-card {
         border-radius: 20px;
     }
@@ -288,5 +297,10 @@
     .favourites-feed {
         display: grid;
         grid-template-columns: repeat(3, 1fr);
+    }
+
+    .favourites-feed.favourites-feed-empty {
+        display: flex;
+        justify-content: center;
     }
 }

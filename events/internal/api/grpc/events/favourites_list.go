@@ -3,8 +3,9 @@ package events
 import (
 	"context"
 	"errors"
-	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/converters/favourites"
-	desc "github.com/M1steryO/RelocatorEvents/events/pkg/favourites_v1"
+	converter "github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/converters/events"
+
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
 )
 
 func (impl *EventsImplementation) ListFavourites(ctx context.Context, req *desc.ListFavouritesRequest) (*desc.ListFavouritesResponse, error) {
@@ -19,6 +20,6 @@ func (impl *EventsImplementation) ListFavourites(ctx context.Context, req *desc.
 	}
 
 	return &desc.ListFavouritesResponse{
-		Events: favourites.EventListToApiFromService(events),
+		Events: converter.EventListToApiFromService(events),
 	}, nil
 }

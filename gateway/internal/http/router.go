@@ -130,15 +130,15 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 				gw.ServeHTTP(w, r)
 			}))
 
-			r.Handle("/favourites", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				r.URL.Path = "/favourites/v1"
-				gw.ServeHTTP(w, r)
-			}))
+			// r.Handle("/favourites", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// 	r.URL.Path = "/favourites/v1"
+			// 	gw.ServeHTTP(w, r)
+			// }))
 
-			r.Handle("/favourites/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				r.URL.Path = "/favourites/v1" + strings.TrimPrefix(r.URL.Path, "/v1/favourites")
-				gw.ServeHTTP(w, r)
-			}))
+			// r.Handle("/favourites/*", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			// 	r.URL.Path = "/favourites/v1" + strings.TrimPrefix(r.URL.Path, "/v1/favourites")
+			// 	gw.ServeHTTP(w, r)
+			// }))
 		})
 
 	})

@@ -181,7 +181,6 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	desc.RegisterEvent_V1Server(a.grpcServer, a.serviceProvider.EventsImpl(ctx))
 	reviewsDesc.RegisterReviewsV1Server(a.grpcServer, a.serviceProvider.ReviewsImpl(ctx))
-	favsDesc.RegisterFavouritesServiceServer(a.grpcServer, a.serviceProvider.FavsImpl(ctx))
 
 	return nil
 }

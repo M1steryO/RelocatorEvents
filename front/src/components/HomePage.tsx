@@ -20,6 +20,8 @@ interface DisplayEvent {
     currencySymbol: string;
     distance?: number;
     image: string;
+    /** Из API списка: true — мероприятие в избранном */
+    isFavourite?: boolean;
 }
 
 // Helper function to format date from timestamp string
@@ -98,7 +100,8 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
         price: event.min_price || 0,
         currencySymbol: getCurrencySymbol(event.currency),
         distance: undefined, // Distance not in API response
-        image: event.image_url || '/event-no-img.png'
+        image: event.image_url || '/event-no-img.png',
+        isFavourite: event.is_favourite === true,
     };
 };
 

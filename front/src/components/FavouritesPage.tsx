@@ -120,7 +120,7 @@ export const FavouritesPage = () => {
                 <span />
             </header>
 
-            <main className={`favourites-feed ${isLoading ? 'loading' : ''}`}>
+            <main className={`favourites-feed ${isLoading ? 'loading' : ''} ${!isLoading && events.length === 0 ? 'favourites-feed-empty' : ''}`}>
                 {isLoading ? (
                     <div className="events-loader">
                         <div className="loader-spinner" />
@@ -129,7 +129,7 @@ export const FavouritesPage = () => {
                 ) : events.length === 0 ? (
                     <div className="favourites-empty">
                         <p className="favourites-empty-text">В избранном пока ничего нет</p>
-                        <p className="favourites-empty-hint">Добавляйте мероприятия сердечком на ленте или на странице мероприятия</p>
+                        <p className="favourites-empty-hint">Добавляйте мероприятия нажатием на сердечко и они появятся здесь</p>
                     </div>
                 ) : (
                     events.map((event) => (

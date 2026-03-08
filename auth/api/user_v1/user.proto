@@ -21,7 +21,7 @@ service UserV1 {
   };
   rpc Get(GetRequest) returns (GetResponse){
     option (google.api.http) = {
-      get: "/user/v1"
+      get: "/user/v1/{id}"
     };
   };
   rpc GetUserByTelegramId(GetUserByTelegramIdRequest) returns (GetUserByTelegramIdResponse);

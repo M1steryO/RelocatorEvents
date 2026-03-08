@@ -61,12 +61,18 @@ function App() {
         return <ServiceUnavailablePage />;
     }
 
-    // Show loading screen - will display for minimum 3 seconds or until components are loaded
+    // LoadingScreen — первый экран; контент не рендерим пока идёт загрузка
     const isAppLoading = isLoading || isInitializing;
-    
+
+    useEffect(() => {
+        if (!isAppLoading) {
+            document.getElementById('app-loading-cover')?.remove();
+        }
+    }, [isAppLoading]);
+
     return (
         <>
-            <LoadingScreen isLoading={isAppLoading} minimumDisplayTime={3000} />
+            <LoadingScreen isLoading={isAppLoading} minimumDisplayTime={2000} />
             {!isAppLoading && (
                 <Routes>
                     <Route 

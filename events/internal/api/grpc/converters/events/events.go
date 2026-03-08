@@ -46,6 +46,8 @@ func EventToApiFromService(event *domain.Event) *desc.Event {
 
 		Address: EventAddressToApiFromService(event.Address),
 
+		IsFavourite: event.IsFavourite,
+
 		EventType: desc.EVENT_TYPE(event.Type),
 		StartsAt:  common.TimeToProto(&event.StartsAt),
 		ImageUrl:  common.ToStringValueFromString(event.ImageUrl),

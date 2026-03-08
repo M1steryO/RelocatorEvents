@@ -5,7 +5,6 @@ import (
 	"github.com/M1steryO/RelocatorEvents/auth/pkg/access_v1"
 	"github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
 	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/events"
-	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/favourites"
 	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/reviews"
 	grpcClients "github.com/M1steryO/RelocatorEvents/events/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/events/internal/client/grpc/auth"
@@ -18,7 +17,6 @@ import (
 	reviewsRepo "github.com/M1steryO/RelocatorEvents/events/internal/repository/reviews"
 	"github.com/M1steryO/RelocatorEvents/events/internal/service"
 	serv "github.com/M1steryO/RelocatorEvents/events/internal/service/events"
-	favourites2 "github.com/M1steryO/RelocatorEvents/events/internal/service/favourites"
 	reviewsServ "github.com/M1steryO/RelocatorEvents/events/internal/service/reviews"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	dbclient "github.com/M1steryO/platform_common/pkg/db"
@@ -52,11 +50,9 @@ type serviceProvider struct {
 
 	eventService  service.EventService
 	reviewService service.ReviewService
-	favsService   service.FavouritesService
 
 	eventsImpl  *events.EventsImplementation
 	reviewsImpl *reviews.ReviewsImplementation
-	favsImpl    *favourites.FavouritesImplementation
 
 	eventsHandler *eventsConsumer.EventsHandler
 }
@@ -173,7 +169,7 @@ func (s *serviceProvider) EventService(ctx context.Context) service.EventService
 			s.EventRepository(ctx),
 			s.TxManager(ctx),
 			s.UserServiceClient(),
-			s.FavsService(ctx),
+			s.FavsRepository(ctx),
 		)
 	}
 
@@ -222,21 +218,6 @@ func (s *serviceProvider) FavsRepository(ctx context.Context) repository.Favouri
 		s.favsRepository = favourites3.NewFavouritesRepository(s.DBCClient(ctx))
 	}
 	return s.favsRepository
-}
-
-func (s *serviceProvider) FavsService(ctx context.Context) service.FavouritesService {
-	if s.favsService == nil {
-		s.favsService = favourites2.NewFavouritesService(s.FavsRepository(ctx), s.TxManager(ctx), s.EventService(ctx))
-	}
-	return s.favsService
-}
-
-func (s *serviceProvider) FavsImpl(ctx context.Context) *favourites.FavouritesImplementation {
-	if s.favsImpl == nil {
-		s.favsImpl = favourites.NewFavouritesImplementation(s.FavsService(ctx))
-	}
-	return s.favsImpl
-
 }
 
 func (s *serviceProvider) EventsHandler(ctx context.Context) *eventsConsumer.EventsHandler {

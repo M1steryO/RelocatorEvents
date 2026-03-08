@@ -94,6 +94,10 @@
     padding: 18px 20px;
 }
 
+.loading-welcome-name {
+    font-weight: 600;
+}
+
 .loading-logo {
     max-width: 100%;
     height: auto;

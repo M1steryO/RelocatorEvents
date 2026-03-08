@@ -293,9 +293,18 @@ export const EventDetailPage = () => {
                         onClick={() => toggleFavourite(event.id)}
                         aria-label={isFavourite(event.id) ? 'Удалить из избранного' : 'Добавить в избранное'}
                     >
-                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="22" viewBox="0 0 24 22" fill="none">
-                            <path d="M12 20.5C11.5 20.5 11 20.3 10.6 19.9L2.5 12.1C-0.5 9.1 -0.5 4.2 2.5 1.2C4.5 -0.8 7.5 -0.8 9.5 1.2L12 3.7L14.5 1.2C16.5 -0.8 19.5 -0.8 21.5 1.2C24.5 4.2 24.5 9.1 21.5 12.1L13.4 19.9C13 20.3 12.5 20.5 12 20.5Z" stroke="#414141" strokeWidth="1.5" strokeLinejoin="round"/>
-                        </svg>
+                        {isFavourite(event.id) ? (
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="21" viewBox="0 0 24 21" fill="none">
+                                            <path d="M18.1857 1C13.5464 1 13.5464 4.75243 12 4.75243C10.4536 4.75243 10.4536 1 5.81429 1C1.56161 1 0.364775 5.56486 1.2971 9.22077C2.22941 12.8767 8.90714 20 12 20C15.0929 20 21.7706 12.8767 22.7029 9.22077C23.6352 5.56486 22.4384 1 18.1857 1Z" fill="#E94C29" stroke="#E94C29" stroke-width="2" />
+                                        </svg>
+                                    ) : (
+
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21" fill="none">
+                                            <path d="M11.5 4.75243C10.0239 4.75243 10.0239 1 5.59545 1C1.53608 1 0.393649 5.56486 1.28359 9.22078C2.17353 12.8767 8.54773 20 11.5 20" stroke="#414141" stroke-width="2" />
+                                            <path d="M11.5 4.75243C12.9761 4.75243 12.9761 1 17.4045 1C21.4639 1 22.6064 5.56486 21.7164 9.22078C20.8265 12.8767 14.4523 20 11.5 20" stroke="#414141" stroke-width="2" />
+                                        </svg>
+
+                                    )}
                     </button>
                 </header>
                 <div className={`event-poster-image ${isPosterLoaded && !isPosterError ? 'loaded' : 'loading'}`}>

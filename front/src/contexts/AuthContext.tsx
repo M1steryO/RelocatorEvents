@@ -1,5 +1,5 @@
-  import { createContext, useContext, useState, useEffect } from 'react';
-  import type { ReactNode } from 'react';
+import { createContext, useContext, useState, useMemo } from 'react';
+import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import { eventsService } from '../services/eventsService';
 import { favouritesService } from '../services/favouritesService';
@@ -14,6 +14,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  storedUserId: number | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (accessToken: string, user: User) => void;
@@ -36,51 +37,62 @@ interface AuthProviderProps {
   children: ReactNode;
 }
 
+/** Извлекает userId из payload JWT (sub, user_id, userId, id). */
+function getUserIdFromAccessToken(accessToken: string | null): number | null {
+  if (!accessToken || typeof accessToken !== 'string') return null;
+  try {
+    const parts = accessToken.split('.');
+    if (parts.length !== 3) return null;
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
+    ) as Record<string, unknown>;
+    const raw = payload.sub ?? payload.user_id ?? payload.userId ?? payload.id;
+    if (raw == null) return null;
+    const n = typeof raw === 'number' ? raw : parseInt(String(raw), 10);
+    return Number.isFinite(n) ? n : null;
+  } catch {
+    return null;
+  }
+}
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUserState] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const isLoading = false;
 
-
-  // Function to refresh refresh token (uses refresh token from http-only cookie)
-
-  useEffect(() => {
-    // No need to restore token on init - check-access will handle authentication
-    // Refresh token is http-only cookie, cannot be read from JavaScript
-    setIsLoading(false);
-  }, []);
+  const storedUserId = useMemo(() => getUserIdFromAccessToken(token), [token]);
 
   const login = (accessToken: string, newUser: User) => {
-    setToken(accessToken); // Store only in memory
-    setUserState(newUser); // Store only in memory
-    authService.setAccessToken(accessToken); // Update authService token
-    eventsService.setAccessToken(accessToken); // Update eventsService token
-    favouritesService.setAccessToken(accessToken); // Update favouritesService token
+    setToken(accessToken);
+    setUserState(newUser);
+    authService.setAccessToken(accessToken);
+    eventsService.setAccessToken(accessToken);
+    favouritesService.setAccessToken(accessToken);
   };
 
   const setAccessToken = (accessToken: string) => {
-    setToken(accessToken); // Store only in memory
-    authService.setAccessToken(accessToken); // Update authService token (synchronous)
-    eventsService.setAccessToken(accessToken); // Update eventsService token
-    favouritesService.setAccessToken(accessToken); // Update favouritesService token
+    setToken(accessToken);
+    authService.setAccessToken(accessToken);
+    eventsService.setAccessToken(accessToken);
+    favouritesService.setAccessToken(accessToken);
   };
 
   const logout = () => {
     setToken(null);
     setUserState(null);
-    authService.setAccessToken(null); // Clear authService token
-    eventsService.setAccessToken(null); // Clear eventsService token
-    favouritesService.setAccessToken(null); // Clear favouritesService token
-    // Note: refresh token in cookie will be cleared by server on logout
+    authService.setAccessToken(null);
+    eventsService.setAccessToken(null);
+    favouritesService.setAccessToken(null);
   };
 
   const setUser = (newUser: User) => {
-    setUserState(newUser); // Store only in memory
+    setUserState(newUser);
   };
 
   const value: AuthContextType = {
     user,
     token,
+    storedUserId,
     isAuthenticated: !!token && !!user,
     isLoading,
     login,

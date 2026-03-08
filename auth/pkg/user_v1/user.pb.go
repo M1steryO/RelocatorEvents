@@ -789,11 +789,10 @@ const file_user_proto_rawDesc = "" +
 	"\x04user\x18\x01 \x01(\v2\r.user_v1.UserR\x04user*\x1b\n" +
 	"\x04Role\x12\b\n" +
 	"\x04USER\x10\x00\x12\t\n" +
-	"\x05ADMIN\x10\x012\xa0\x03\n" +
+	"\x05ADMIN\x10\x012\xa5\x03\n" +
 	"\x06UserV1\x12U\n" +
-	"\x06Create\x12\x16.user_v1.CreateRequest\x1a\x17.user_v1.CreateResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/user/v1/create\x12B\n" +
-	"\x03Get\x12\x13.user_v1.GetRequest\x1a\x14.user_v1.GetResponse\"\x10\x82\xd3\xe4\x93\x02\n" +
-	"\x12\b/user/v1\x12`\n" +
+	"\x06Create\x12\x16.user_v1.CreateRequest\x1a\x17.user_v1.CreateResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/user/v1/create\x12G\n" +
+	"\x03Get\x12\x13.user_v1.GetRequest\x1a\x14.user_v1.GetResponse\"\x15\x82\xd3\xe4\x93\x02\x0f\x12\r/user/v1/{id}\x12`\n" +
 	"\x13GetUserByTelegramId\x12#.user_v1.GetUserByTelegramIdRequest\x1a$.user_v1.GetUserByTelegramIdResponse\x12M\n" +
 	"\x06Update\x12\x16.user_v1.UpdateRequest\x1a\x16.google.protobuf.Empty\"\x13\x82\xd3\xe4\x93\x02\r:\x01*2\b/user/v1\x12J\n" +
 	"\x06Delete\x12\x16.user_v1.DeleteRequest\x1a\x16.google.protobuf.Empty\"\x10\x82\xd3\xe4\x93\x02\n" +

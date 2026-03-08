@@ -60,7 +60,7 @@ class FavouritesService {
             }
             addTelegramInitDataHeader(headers);
 
-            response = await fetch(`${this.baseUrl}/v1/favourites`, {
+            response = await fetch(`${this.baseUrl}/v1/events/favourites/list`, {
                 method: 'GET',
                 headers,
                 credentials: 'include',
@@ -100,7 +100,7 @@ class FavouritesService {
             }
             addTelegramInitDataHeader(headers);
 
-            response = await fetch(`${this.baseUrl}/v1/favourites`, {
+            response = await fetch(`${this.baseUrl}/v1/events/favourites`, {
                 method: 'POST',
                 headers,
                 credentials: 'include',
@@ -138,8 +138,8 @@ class FavouritesService {
             }
             addTelegramInitDataHeader(headers);
 
-            response = await fetch(`${this.baseUrl}/v1/favourites/${eventId}`, {
-                method: 'DELETE',
+            response = await fetch(`${this.baseUrl}/v1/events/favourites/${eventId}`, {
+                method: 'DELETE',   
                 headers,
                 credentials: 'include',
             });

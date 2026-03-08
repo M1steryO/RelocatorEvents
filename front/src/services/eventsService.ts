@@ -30,6 +30,8 @@ export interface Event {
     created_at?: string;
     updated_at?: string;
     address?: Address; // Адрес может быть внутри event
+    /** Приходит в списке мероприятий: true — в избранном у текущего пользователя */
+    is_favourite?: boolean;
 }
 
 export interface Address {
@@ -73,6 +75,7 @@ export interface GetEventResponse {
     latitude?: number;
     longitude?: number;
     postal_code?: string | null;
+    is_favourite?: boolean;
 }
 
 export interface GetListRequest {
@@ -250,6 +253,7 @@ class EventsService {
                 created_at: responseData.created_at,
                 updated_at: responseData.updated_at,
                 address: address, // Адрес внутри event
+                is_favourite: responseData.is_favourite,
             };
         }
         
