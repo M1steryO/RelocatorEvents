@@ -1,4 +1,4 @@
-package favourites
+package events
 
 import (
 	"context"
@@ -7,12 +7,12 @@ import (
 	desc "github.com/M1steryO/RelocatorEvents/events/pkg/favourites_v1"
 )
 
-func (impl *FavouritesImplementation) ListFavourites(ctx context.Context, req *desc.ListFavouritesRequest) (*desc.ListFavouritesResponse, error) {
+func (impl *EventsImplementation) ListFavourites(ctx context.Context, req *desc.ListFavouritesRequest) (*desc.ListFavouritesResponse, error) {
 	userId, ok := ctx.Value("userId").(int64)
 	if !ok {
 		return nil, errors.New("missing userId")
 	}
-	events, err := impl.service.List(ctx, userId)
+	events, err := impl.service.FavouritesList(ctx, userId)
 
 	if err != nil {
 		return nil, err

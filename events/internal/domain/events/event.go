@@ -38,6 +38,7 @@ type Event struct {
 	StartsAt       time.Time
 	ImageUrl       *string
 	Address        *EventAddress
+	IsFavourite    bool
 	CreatedAt      time.Time
 	UpdatedAt      *time.Time
 }

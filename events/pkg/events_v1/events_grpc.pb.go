@@ -19,8 +19,11 @@ import (
 const _ = grpc.SupportPackageIsVersion9
 
 const (
-	Event_V1_GetEvent_FullMethodName   = "/events_v1.Event_V1/GetEvent"
-	Event_V1_ListEvents_FullMethodName = "/events_v1.Event_V1/ListEvents"
+	Event_V1_GetEvent_FullMethodName         = "/events_v1.Event_V1/GetEvent"
+	Event_V1_ListEvents_FullMethodName       = "/events_v1.Event_V1/ListEvents"
+	Event_V1_ListFavourites_FullMethodName   = "/events_v1.Event_V1/ListFavourites"
+	Event_V1_AddFavourites_FullMethodName    = "/events_v1.Event_V1/AddFavourites"
+	Event_V1_DeleteFavourites_FullMethodName = "/events_v1.Event_V1/DeleteFavourites"
 )
 
 // Event_V1Client is the client API for Event_V1 service.
@@ -29,6 +32,9 @@ const (
 type Event_V1Client interface {
 	GetEvent(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	ListEvents(ctx context.Context, in *ListEventsRequest, opts ...grpc.CallOption) (*ListEventsResponse, error)
+	ListFavourites(ctx context.Context, in *ListFavouritesRequest, opts ...grpc.CallOption) (*ListFavouritesResponse, error)
+	AddFavourites(ctx context.Context, in *AddFavouritesRequest, opts ...grpc.CallOption) (*AddFavouritesResponse, error)
+	DeleteFavourites(ctx context.Context, in *DeleteFavouritesRequest, opts ...grpc.CallOption) (*DeleteFavouritesResponse, error)
 }
 
 type event_V1Client struct {
@@ -59,12 +65,45 @@ func (c *event_V1Client) ListEvents(ctx context.Context, in *ListEventsRequest, 
 	return out, nil
 }
 
+func (c *event_V1Client) ListFavourites(ctx context.Context, in *ListFavouritesRequest, opts ...grpc.CallOption) (*ListFavouritesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(ListFavouritesResponse)
+	err := c.cc.Invoke(ctx, Event_V1_ListFavourites_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *event_V1Client) AddFavourites(ctx context.Context, in *AddFavouritesRequest, opts ...grpc.CallOption) (*AddFavouritesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(AddFavouritesResponse)
+	err := c.cc.Invoke(ctx, Event_V1_AddFavourites_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *event_V1Client) DeleteFavourites(ctx context.Context, in *DeleteFavouritesRequest, opts ...grpc.CallOption) (*DeleteFavouritesResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(DeleteFavouritesResponse)
+	err := c.cc.Invoke(ctx, Event_V1_DeleteFavourites_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // Event_V1Server is the server API for Event_V1 service.
 // All implementations must embed UnimplementedEvent_V1Server
 // for forward compatibility.
 type Event_V1Server interface {
 	GetEvent(context.Context, *GetRequest) (*GetResponse, error)
 	ListEvents(context.Context, *ListEventsRequest) (*ListEventsResponse, error)
+	ListFavourites(context.Context, *ListFavouritesRequest) (*ListFavouritesResponse, error)
+	AddFavourites(context.Context, *AddFavouritesRequest) (*AddFavouritesResponse, error)
+	DeleteFavourites(context.Context, *DeleteFavouritesRequest) (*DeleteFavouritesResponse, error)
 	mustEmbedUnimplementedEvent_V1Server()
 }
 
@@ -80,6 +119,15 @@ func (UnimplementedEvent_V1Server) GetEvent(context.Context, *GetRequest) (*GetR
 }
 func (UnimplementedEvent_V1Server) ListEvents(context.Context, *ListEventsRequest) (*ListEventsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListEvents not implemented")
+}
+func (UnimplementedEvent_V1Server) ListFavourites(context.Context, *ListFavouritesRequest) (*ListFavouritesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListFavourites not implemented")
+}
+func (UnimplementedEvent_V1Server) AddFavourites(context.Context, *AddFavouritesRequest) (*AddFavouritesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddFavourites not implemented")
+}
+func (UnimplementedEvent_V1Server) DeleteFavourites(context.Context, *DeleteFavouritesRequest) (*DeleteFavouritesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteFavourites not implemented")
 }
 func (UnimplementedEvent_V1Server) mustEmbedUnimplementedEvent_V1Server() {}
 func (UnimplementedEvent_V1Server) testEmbeddedByValue()                  {}
@@ -138,6 +186,60 @@ func _Event_V1_ListEvents_Handler(srv interface{}, ctx context.Context, dec func
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Event_V1_ListFavourites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListFavouritesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Event_V1Server).ListFavourites(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Event_V1_ListFavourites_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Event_V1Server).ListFavourites(ctx, req.(*ListFavouritesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Event_V1_AddFavourites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddFavouritesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Event_V1Server).AddFavourites(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Event_V1_AddFavourites_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Event_V1Server).AddFavourites(ctx, req.(*AddFavouritesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Event_V1_DeleteFavourites_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteFavouritesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(Event_V1Server).DeleteFavourites(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Event_V1_DeleteFavourites_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(Event_V1Server).DeleteFavourites(ctx, req.(*DeleteFavouritesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Event_V1_ServiceDesc is the grpc.ServiceDesc for Event_V1 service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -152,6 +254,18 @@ var Event_V1_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListEvents",
 			Handler:    _Event_V1_ListEvents_Handler,
+		},
+		{
+			MethodName: "ListFavourites",
+			Handler:    _Event_V1_ListFavourites_Handler,
+		},
+		{
+			MethodName: "AddFavourites",
+			Handler:    _Event_V1_AddFavourites_Handler,
+		},
+		{
+			MethodName: "DeleteFavourites",
+			Handler:    _Event_V1_DeleteFavourites_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

@@ -8,18 +8,18 @@ import (
 )
 
 type EventService interface {
-	Get(ctx context.Context, id int64) (*domainEvents.Event, error)
+	Get(ctx context.Context, eventId, userId int64) (*domainEvents.Event, error)
 	Create(ctx context.Context, event *domainEvents.Event, category string) (int64, error)
-	GetList(ctx context.Context, params *domainEvents.SearchParams) (*domainEvents.EventsList, error)
+	GetList(ctx context.Context, userId int64, params *domainEvents.SearchParams) (*domainEvents.EventsList, error)
+
+	CreateFavourites(ctx context.Context, eventId, userId int64) error
+	FavouritesList(ctx context.Context, userId int64) ([]*domainEvents.Event, error)
+	DeleteFavourites(ctx context.Context, eventId, userId int64) error
+	CheckFavourites(ctx context.Context, eventId, userId int64) (bool, error)
+	CheckFavouritesList(ctx context.Context, eventIds []int64, userId int64) (map[int64]bool, error)
 }
 
 type ReviewService interface {
 	Create(ctx context.Context, eventId, authorId int64, review *domainReviews.Review) (int64, error)
 	List(ctx context.Context, eventId int64) (*reviews.ListReviewsResult, error)
-}
-
-type FavouritesService interface {
-	Create(ctx context.Context, eventId, userId int64) error
-	List(ctx context.Context, userId int64) ([]*domainEvents.Event, error)
-	Delete(ctx context.Context, eventId, userId int64) error
 }

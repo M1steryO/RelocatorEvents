@@ -285,6 +285,7 @@ type Event struct {
 	CreatedAt      *timestamppb.Timestamp  `protobuf:"bytes,15,opt,name=created_at,proto3" json:"created_at,omitempty"`
 	UpdatedAt      *timestamppb.Timestamp  `protobuf:"bytes,16,opt,name=updated_at,proto3" json:"updated_at,omitempty"`
 	Currency       *wrapperspb.StringValue `protobuf:"bytes,17,opt,name=currency,proto3" json:"currency,omitempty"`
+	IsFavourite    bool                    `protobuf:"varint,18,opt,name=is_favourite,proto3" json:"is_favourite,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -436,6 +437,13 @@ func (x *Event) GetCurrency() *wrapperspb.StringValue {
 		return x.Currency
 	}
 	return nil
+}
+
+func (x *Event) GetIsFavourite() bool {
+	if x != nil {
+		return x.IsFavourite
+	}
+	return false
 }
 
 type ListEventsRequest struct {
@@ -742,6 +750,246 @@ func (x *ListEventsResponse) GetFilters() *FiltersValues {
 	return nil
 }
 
+type ListFavouritesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListFavouritesRequest) Reset() {
+	*x = ListFavouritesRequest{}
+	mi := &file_events_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListFavouritesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListFavouritesRequest) ProtoMessage() {}
+
+func (x *ListFavouritesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_events_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListFavouritesRequest.ProtoReflect.Descriptor instead.
+func (*ListFavouritesRequest) Descriptor() ([]byte, []int) {
+	return file_events_proto_rawDescGZIP(), []int{8}
+}
+
+type ListFavouritesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Events        []*Event               `protobuf:"bytes,1,rep,name=events,proto3" json:"events,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListFavouritesResponse) Reset() {
+	*x = ListFavouritesResponse{}
+	mi := &file_events_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListFavouritesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListFavouritesResponse) ProtoMessage() {}
+
+func (x *ListFavouritesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_events_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListFavouritesResponse.ProtoReflect.Descriptor instead.
+func (*ListFavouritesResponse) Descriptor() ([]byte, []int) {
+	return file_events_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *ListFavouritesResponse) GetEvents() []*Event {
+	if x != nil {
+		return x.Events
+	}
+	return nil
+}
+
+type AddFavouritesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddFavouritesRequest) Reset() {
+	*x = AddFavouritesRequest{}
+	mi := &file_events_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddFavouritesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddFavouritesRequest) ProtoMessage() {}
+
+func (x *AddFavouritesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_events_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddFavouritesRequest.ProtoReflect.Descriptor instead.
+func (*AddFavouritesRequest) Descriptor() ([]byte, []int) {
+	return file_events_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *AddFavouritesRequest) GetEventId() int64 {
+	if x != nil {
+		return x.EventId
+	}
+	return 0
+}
+
+type AddFavouritesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddFavouritesResponse) Reset() {
+	*x = AddFavouritesResponse{}
+	mi := &file_events_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddFavouritesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddFavouritesResponse) ProtoMessage() {}
+
+func (x *AddFavouritesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_events_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddFavouritesResponse.ProtoReflect.Descriptor instead.
+func (*AddFavouritesResponse) Descriptor() ([]byte, []int) {
+	return file_events_proto_rawDescGZIP(), []int{11}
+}
+
+type DeleteFavouritesRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	EventId       int64                  `protobuf:"varint,1,opt,name=event_id,json=eventId,proto3" json:"event_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteFavouritesRequest) Reset() {
+	*x = DeleteFavouritesRequest{}
+	mi := &file_events_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteFavouritesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteFavouritesRequest) ProtoMessage() {}
+
+func (x *DeleteFavouritesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_events_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteFavouritesRequest.ProtoReflect.Descriptor instead.
+func (*DeleteFavouritesRequest) Descriptor() ([]byte, []int) {
+	return file_events_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *DeleteFavouritesRequest) GetEventId() int64 {
+	if x != nil {
+		return x.EventId
+	}
+	return 0
+}
+
+type DeleteFavouritesResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteFavouritesResponse) Reset() {
+	*x = DeleteFavouritesResponse{}
+	mi := &file_events_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteFavouritesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteFavouritesResponse) ProtoMessage() {}
+
+func (x *DeleteFavouritesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_events_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteFavouritesResponse.ProtoReflect.Descriptor instead.
+func (*DeleteFavouritesResponse) Descriptor() ([]byte, []int) {
+	return file_events_proto_rawDescGZIP(), []int{13}
+}
+
 var File_events_proto protoreflect.FileDescriptor
 
 const file_events_proto_rawDesc = "" +
@@ -765,7 +1013,7 @@ const file_events_proto_rawDesc = "" +
 	"\bdistrict\x18\x06 \x01(\v2\x1c.google.protobuf.StringValueR\bdistrict\x12>\n" +
 	"\vpostal_code\x18\a \x01(\v2\x1c.google.protobuf.StringValueR\vpostal_code\x127\n" +
 	"\blatitude\x18\b \x01(\v2\x1b.google.protobuf.FloatValueR\blatitude\x129\n" +
-	"\tlongitude\x18\t \x01(\v2\x1b.google.protobuf.FloatValueR\tlongitude\"\x97\a\n" +
+	"\tlongitude\x18\t \x01(\v2\x1b.google.protobuf.FloatValueR\tlongitude\"\xbb\a\n" +
 	"\x05Event\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x14\n" +
 	"\x05title\x18\x02 \x01(\tR\x05title\x12>\n" +
@@ -789,7 +1037,8 @@ const file_events_proto_rawDesc = "" +
 	"\n" +
 	"updated_at\x18\x10 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"updated_at\x128\n" +
-	"\bcurrency\x18\x11 \x01(\v2\x1c.google.protobuf.StringValueR\bcurrencyB\n" +
+	"\bcurrency\x18\x11 \x01(\v2\x1c.google.protobuf.StringValueR\bcurrency\x12\"\n" +
+	"\fis_favourite\x18\x12 \x01(\bR\fis_favouriteB\n" +
 	"\n" +
 	"\b_address\"\x97\x05\n" +
 	"\x11ListEventsRequest\x12*\n" +
@@ -823,16 +1072,28 @@ const file_events_proto_rawDesc = "" +
 	"categories\"n\n" +
 	"\x12ListEventsResponse\x12$\n" +
 	"\x04data\x18\x01 \x03(\v2\x10.events_v1.EventR\x04data\x122\n" +
-	"\afilters\x18\x02 \x01(\v2\x18.events_v1.FiltersValuesR\afilters*%\n" +
+	"\afilters\x18\x02 \x01(\v2\x18.events_v1.FiltersValuesR\afilters\"\x17\n" +
+	"\x15ListFavouritesRequest\"B\n" +
+	"\x16ListFavouritesResponse\x12(\n" +
+	"\x06events\x18\x01 \x03(\v2\x10.events_v1.EventR\x06events\"1\n" +
+	"\x14AddFavouritesRequest\x12\x19\n" +
+	"\bevent_id\x18\x01 \x01(\x03R\aeventId\"\x17\n" +
+	"\x15AddFavouritesResponse\"4\n" +
+	"\x17DeleteFavouritesRequest\x12\x19\n" +
+	"\bevent_id\x18\x01 \x01(\x03R\aeventId\"\x1a\n" +
+	"\x18DeleteFavouritesResponse*%\n" +
 	"\n" +
 	"EVENT_TYPE\x12\v\n" +
 	"\aoffline\x10\x00\x12\n" +
 	"\n" +
-	"\x06online\x10\x012\xc2\x01\n" +
+	"\x06online\x10\x012\xbb\x04\n" +
 	"\bEvent_V1\x12R\n" +
 	"\bGetEvent\x12\x15.events_v1.GetRequest\x1a\x16.events_v1.GetResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/events/v1/{id}\x12b\n" +
 	"\n" +
-	"ListEvents\x12\x1c.events_v1.ListEventsRequest\x1a\x1d.events_v1.ListEventsResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/events/v1/listB?Z=GolandProjects/RelocatorEvents/events/pkg/events_v1;events_v1b\x06proto3"
+	"ListEvents\x12\x1c.events_v1.ListEventsRequest\x1a\x1d.events_v1.ListEventsResponse\"\x17\x82\xd3\xe4\x93\x02\x11\x12\x0f/events/v1/list\x12y\n" +
+	"\x0eListFavourites\x12 .events_v1.ListFavouritesRequest\x1a!.events_v1.ListFavouritesResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/events/v1/favourites/list\x12t\n" +
+	"\rAddFavourites\x12\x1f.events_v1.AddFavouritesRequest\x1a .events_v1.AddFavouritesResponse\" \x82\xd3\xe4\x93\x02\x1a:\x01*\"\x15/events/v1/favourites\x12\x85\x01\n" +
+	"\x10DeleteFavourites\x12\".events_v1.DeleteFavouritesRequest\x1a#.events_v1.DeleteFavouritesResponse\"(\x82\xd3\xe4\x93\x02\"* /events/v1/favourites/{event_id}B?Z=GolandProjects/RelocatorEvents/events/pkg/events_v1;events_v1b\x06proto3"
 
 var (
 	file_events_proto_rawDescOnce sync.Once
@@ -847,70 +1108,83 @@ func file_events_proto_rawDescGZIP() []byte {
 }
 
 var file_events_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_events_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_events_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_events_proto_goTypes = []any{
-	(EVENT_TYPE)(0),                // 0: events_v1.EVENT_TYPE
-	(*GetRequest)(nil),             // 1: events_v1.GetRequest
-	(*GetResponse)(nil),            // 2: events_v1.GetResponse
-	(*EventAddress)(nil),           // 3: events_v1.EventAddress
-	(*Event)(nil),                  // 4: events_v1.Event
-	(*ListEventsRequest)(nil),      // 5: events_v1.ListEventsRequest
-	(*EventCategory)(nil),          // 6: events_v1.EventCategory
-	(*FiltersValues)(nil),          // 7: events_v1.FiltersValues
-	(*ListEventsResponse)(nil),     // 8: events_v1.ListEventsResponse
-	(*wrapperspb.StringValue)(nil), // 9: google.protobuf.StringValue
-	(*wrapperspb.FloatValue)(nil),  // 10: google.protobuf.FloatValue
-	(*wrapperspb.Int32Value)(nil),  // 11: google.protobuf.Int32Value
-	(*timestamppb.Timestamp)(nil),  // 12: google.protobuf.Timestamp
-	(*wrapperspb.Int64Value)(nil),  // 13: google.protobuf.Int64Value
+	(EVENT_TYPE)(0),                  // 0: events_v1.EVENT_TYPE
+	(*GetRequest)(nil),               // 1: events_v1.GetRequest
+	(*GetResponse)(nil),              // 2: events_v1.GetResponse
+	(*EventAddress)(nil),             // 3: events_v1.EventAddress
+	(*Event)(nil),                    // 4: events_v1.Event
+	(*ListEventsRequest)(nil),        // 5: events_v1.ListEventsRequest
+	(*EventCategory)(nil),            // 6: events_v1.EventCategory
+	(*FiltersValues)(nil),            // 7: events_v1.FiltersValues
+	(*ListEventsResponse)(nil),       // 8: events_v1.ListEventsResponse
+	(*ListFavouritesRequest)(nil),    // 9: events_v1.ListFavouritesRequest
+	(*ListFavouritesResponse)(nil),   // 10: events_v1.ListFavouritesResponse
+	(*AddFavouritesRequest)(nil),     // 11: events_v1.AddFavouritesRequest
+	(*AddFavouritesResponse)(nil),    // 12: events_v1.AddFavouritesResponse
+	(*DeleteFavouritesRequest)(nil),  // 13: events_v1.DeleteFavouritesRequest
+	(*DeleteFavouritesResponse)(nil), // 14: events_v1.DeleteFavouritesResponse
+	(*wrapperspb.StringValue)(nil),   // 15: google.protobuf.StringValue
+	(*wrapperspb.FloatValue)(nil),    // 16: google.protobuf.FloatValue
+	(*wrapperspb.Int32Value)(nil),    // 17: google.protobuf.Int32Value
+	(*timestamppb.Timestamp)(nil),    // 18: google.protobuf.Timestamp
+	(*wrapperspb.Int64Value)(nil),    // 19: google.protobuf.Int64Value
 }
 var file_events_proto_depIdxs = []int32{
 	4,  // 0: events_v1.GetResponse.event:type_name -> events_v1.Event
 	6,  // 1: events_v1.GetResponse.categories:type_name -> events_v1.EventCategory
-	9,  // 2: events_v1.EventAddress.venue_name:type_name -> google.protobuf.StringValue
-	9,  // 3: events_v1.EventAddress.district:type_name -> google.protobuf.StringValue
-	9,  // 4: events_v1.EventAddress.postal_code:type_name -> google.protobuf.StringValue
-	10, // 5: events_v1.EventAddress.latitude:type_name -> google.protobuf.FloatValue
-	10, // 6: events_v1.EventAddress.longitude:type_name -> google.protobuf.FloatValue
-	9,  // 7: events_v1.Event.description:type_name -> google.protobuf.StringValue
-	10, // 8: events_v1.Event.rating:type_name -> google.protobuf.FloatValue
-	11, // 9: events_v1.Event.reviews_count:type_name -> google.protobuf.Int32Value
-	11, // 10: events_v1.Event.ratings_count:type_name -> google.protobuf.Int32Value
-	11, // 11: events_v1.Event.min_age:type_name -> google.protobuf.Int32Value
-	11, // 12: events_v1.Event.seats_available:type_name -> google.protobuf.Int32Value
+	15, // 2: events_v1.EventAddress.venue_name:type_name -> google.protobuf.StringValue
+	15, // 3: events_v1.EventAddress.district:type_name -> google.protobuf.StringValue
+	15, // 4: events_v1.EventAddress.postal_code:type_name -> google.protobuf.StringValue
+	16, // 5: events_v1.EventAddress.latitude:type_name -> google.protobuf.FloatValue
+	16, // 6: events_v1.EventAddress.longitude:type_name -> google.protobuf.FloatValue
+	15, // 7: events_v1.Event.description:type_name -> google.protobuf.StringValue
+	16, // 8: events_v1.Event.rating:type_name -> google.protobuf.FloatValue
+	17, // 9: events_v1.Event.reviews_count:type_name -> google.protobuf.Int32Value
+	17, // 10: events_v1.Event.ratings_count:type_name -> google.protobuf.Int32Value
+	17, // 11: events_v1.Event.min_age:type_name -> google.protobuf.Int32Value
+	17, // 12: events_v1.Event.seats_available:type_name -> google.protobuf.Int32Value
 	0,  // 13: events_v1.Event.eventType:type_name -> events_v1.EVENT_TYPE
-	11, // 14: events_v1.Event.min_price:type_name -> google.protobuf.Int32Value
-	12, // 15: events_v1.Event.starts_at:type_name -> google.protobuf.Timestamp
-	9,  // 16: events_v1.Event.image_url:type_name -> google.protobuf.StringValue
+	17, // 14: events_v1.Event.min_price:type_name -> google.protobuf.Int32Value
+	18, // 15: events_v1.Event.starts_at:type_name -> google.protobuf.Timestamp
+	15, // 16: events_v1.Event.image_url:type_name -> google.protobuf.StringValue
 	3,  // 17: events_v1.Event.address:type_name -> events_v1.EventAddress
-	12, // 18: events_v1.Event.created_at:type_name -> google.protobuf.Timestamp
-	12, // 19: events_v1.Event.updated_at:type_name -> google.protobuf.Timestamp
-	9,  // 20: events_v1.Event.currency:type_name -> google.protobuf.StringValue
-	9,  // 21: events_v1.ListEventsRequest.q:type_name -> google.protobuf.StringValue
-	9,  // 22: events_v1.ListEventsRequest.sort:type_name -> google.protobuf.StringValue
-	9,  // 23: events_v1.ListEventsRequest.city:type_name -> google.protobuf.StringValue
-	9,  // 24: events_v1.ListEventsRequest.district:type_name -> google.protobuf.StringValue
-	11, // 25: events_v1.ListEventsRequest.min_price:type_name -> google.protobuf.Int32Value
-	11, // 26: events_v1.ListEventsRequest.max_price:type_name -> google.protobuf.Int32Value
-	9,  // 27: events_v1.ListEventsRequest.event_date:type_name -> google.protobuf.StringValue
+	18, // 18: events_v1.Event.created_at:type_name -> google.protobuf.Timestamp
+	18, // 19: events_v1.Event.updated_at:type_name -> google.protobuf.Timestamp
+	15, // 20: events_v1.Event.currency:type_name -> google.protobuf.StringValue
+	15, // 21: events_v1.ListEventsRequest.q:type_name -> google.protobuf.StringValue
+	15, // 22: events_v1.ListEventsRequest.sort:type_name -> google.protobuf.StringValue
+	15, // 23: events_v1.ListEventsRequest.city:type_name -> google.protobuf.StringValue
+	15, // 24: events_v1.ListEventsRequest.district:type_name -> google.protobuf.StringValue
+	17, // 25: events_v1.ListEventsRequest.min_price:type_name -> google.protobuf.Int32Value
+	17, // 26: events_v1.ListEventsRequest.max_price:type_name -> google.protobuf.Int32Value
+	15, // 27: events_v1.ListEventsRequest.event_date:type_name -> google.protobuf.StringValue
 	0,  // 28: events_v1.ListEventsRequest.event_type:type_name -> events_v1.EVENT_TYPE
-	13, // 29: events_v1.ListEventsRequest.limit:type_name -> google.protobuf.Int64Value
-	13, // 30: events_v1.ListEventsRequest.last_id:type_name -> google.protobuf.Int64Value
-	13, // 31: events_v1.ListEventsRequest.offset:type_name -> google.protobuf.Int64Value
-	11, // 32: events_v1.FiltersValues.min_price:type_name -> google.protobuf.Int32Value
-	11, // 33: events_v1.FiltersValues.max_price:type_name -> google.protobuf.Int32Value
+	19, // 29: events_v1.ListEventsRequest.limit:type_name -> google.protobuf.Int64Value
+	19, // 30: events_v1.ListEventsRequest.last_id:type_name -> google.protobuf.Int64Value
+	19, // 31: events_v1.ListEventsRequest.offset:type_name -> google.protobuf.Int64Value
+	17, // 32: events_v1.FiltersValues.min_price:type_name -> google.protobuf.Int32Value
+	17, // 33: events_v1.FiltersValues.max_price:type_name -> google.protobuf.Int32Value
 	6,  // 34: events_v1.FiltersValues.categories:type_name -> events_v1.EventCategory
 	4,  // 35: events_v1.ListEventsResponse.data:type_name -> events_v1.Event
 	7,  // 36: events_v1.ListEventsResponse.filters:type_name -> events_v1.FiltersValues
-	1,  // 37: events_v1.Event_V1.GetEvent:input_type -> events_v1.GetRequest
-	5,  // 38: events_v1.Event_V1.ListEvents:input_type -> events_v1.ListEventsRequest
-	2,  // 39: events_v1.Event_V1.GetEvent:output_type -> events_v1.GetResponse
-	8,  // 40: events_v1.Event_V1.ListEvents:output_type -> events_v1.ListEventsResponse
-	39, // [39:41] is the sub-list for method output_type
-	37, // [37:39] is the sub-list for method input_type
-	37, // [37:37] is the sub-list for extension type_name
-	37, // [37:37] is the sub-list for extension extendee
-	0,  // [0:37] is the sub-list for field type_name
+	4,  // 37: events_v1.ListFavouritesResponse.events:type_name -> events_v1.Event
+	1,  // 38: events_v1.Event_V1.GetEvent:input_type -> events_v1.GetRequest
+	5,  // 39: events_v1.Event_V1.ListEvents:input_type -> events_v1.ListEventsRequest
+	9,  // 40: events_v1.Event_V1.ListFavourites:input_type -> events_v1.ListFavouritesRequest
+	11, // 41: events_v1.Event_V1.AddFavourites:input_type -> events_v1.AddFavouritesRequest
+	13, // 42: events_v1.Event_V1.DeleteFavourites:input_type -> events_v1.DeleteFavouritesRequest
+	2,  // 43: events_v1.Event_V1.GetEvent:output_type -> events_v1.GetResponse
+	8,  // 44: events_v1.Event_V1.ListEvents:output_type -> events_v1.ListEventsResponse
+	10, // 45: events_v1.Event_V1.ListFavourites:output_type -> events_v1.ListFavouritesResponse
+	12, // 46: events_v1.Event_V1.AddFavourites:output_type -> events_v1.AddFavouritesResponse
+	14, // 47: events_v1.Event_V1.DeleteFavourites:output_type -> events_v1.DeleteFavouritesResponse
+	43, // [43:48] is the sub-list for method output_type
+	38, // [38:43] is the sub-list for method input_type
+	38, // [38:38] is the sub-list for extension type_name
+	38, // [38:38] is the sub-list for extension extendee
+	0,  // [0:38] is the sub-list for field type_name
 }
 
 func init() { file_events_proto_init() }
@@ -926,7 +1200,7 @@ func file_events_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_events_proto_rawDesc), len(file_events_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   8,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

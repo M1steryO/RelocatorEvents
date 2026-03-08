@@ -19,7 +19,12 @@ func (i *EventsImplementation) GetEvent(ctx context.Context, req *desc.GetReques
 	}
 	logger.Info("Received", slog.Int64("id:", req.GetId()))
 
-	event, err := i.service.Get(ctx, req.GetId())
+	userId, ok := ctx.Value("userId").(int64)
+	if !ok {
+		return nil, errors.New("missing userId")
+	}
+
+	event, err := i.service.Get(ctx, req.GetId(), userId)
 	if err != nil {
 		if errors.Is(err, domain.ErrEventNotFound) {
 			return nil, sys.NewCommonError(domain.ErrEventNotFound.Error(), codes.NotFound)

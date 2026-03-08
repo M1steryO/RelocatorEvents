@@ -173,6 +173,7 @@ func (s *serviceProvider) EventService(ctx context.Context) service.EventService
 			s.EventRepository(ctx),
 			s.TxManager(ctx),
 			s.UserServiceClient(),
+			s.FavsService(ctx),
 		)
 	}
 

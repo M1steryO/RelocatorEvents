@@ -37,8 +37,8 @@ services:
     depends_on:
       auth_pg:
         condition: service_healthy
-      kafka:
-        condition: service_healthy
+      # kafka:
+      #   condition: service_healthy
     networks: [reloca]
 
  

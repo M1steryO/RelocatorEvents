@@ -7,11 +7,18 @@ import (
 	"log/slog"
 )
 
-func (s *serv) Get(ctx context.Context, id int64) (*domain.Event, error) {
-	event, err := s.db.Get(ctx, id)
+func (s *serv) Get(ctx context.Context, eventId, userId int64) (*domain.Event, error) {
+	event, err := s.db.Get(ctx, eventId)
 	if err != nil {
 		logger.Error("error getting event", slog.String("error", err.Error()))
 		return nil, err
 	}
+
+	isFavourite, err := s.favsRepo.Check(ctx, eventId, userId)
+	if err != nil {
+		return nil, err
+	}
+	event.IsFavourite = isFavourite
+
 	return event, nil
 }

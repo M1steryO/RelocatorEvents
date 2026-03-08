@@ -20,6 +20,22 @@ service Event_V1{
       get: "/events/v1/list";
     };
   };
+  rpc ListFavourites(ListFavouritesRequest) returns (ListFavouritesResponse){
+    option (google.api.http) = {
+      get: "/events/v1/favourites/list";
+    };
+  };
+  rpc AddFavourites(AddFavouritesRequest) returns (AddFavouritesResponse){
+    option (google.api.http) = {
+      post: "/events/v1/favourites";
+      body: "*"
+    };
+  };
+  rpc DeleteFavourites(DeleteFavouritesRequest) returns (DeleteFavouritesResponse){
+    option (google.api.http) = {
+      delete: "/events/v1/favourites/{event_id}";
+    };
+  };
 }
 
 
@@ -77,6 +93,8 @@ message Event {
 
   google.protobuf.StringValue currency = 17 [json_name = "currency"];
 
+  bool is_favourite = 18 [json_name="is_favourite"];
+
 }
 
 message ListEventsRequest {
@@ -114,4 +132,27 @@ message FiltersValues {
 message ListEventsResponse {
   repeated Event data = 1 [json_name = "data"];
   FiltersValues filters = 2  [json_name = "filters"];
+}
+
+message ListFavouritesRequest{
+}
+
+message ListFavouritesResponse{
+  repeated Event events = 1;
+}
+
+message AddFavouritesRequest{
+  int64 event_id = 1;
+}
+
+message AddFavouritesResponse {
+
+}
+
+message DeleteFavouritesRequest{
+  int64 event_id = 1;
+}
+
+message DeleteFavouritesResponse {
+
 }

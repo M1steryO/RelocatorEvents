@@ -925,6 +925,8 @@ func (m *Event) validate(all bool) error {
 		}
 	}
 
+	// no validation rules for IsFavourite
+
 	if m.Address != nil {
 
 		if all {
@@ -1891,3 +1893,653 @@ var _ interface {
 	Cause() error
 	ErrorName() string
 } = ListEventsResponseValidationError{}
+
+// Validate checks the field values on ListFavouritesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListFavouritesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListFavouritesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListFavouritesRequestMultiError, or nil if none found.
+func (m *ListFavouritesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListFavouritesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return ListFavouritesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListFavouritesRequestMultiError is an error wrapping multiple validation
+// errors returned by ListFavouritesRequest.ValidateAll() if the designated
+// constraints aren't met.
+type ListFavouritesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListFavouritesRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListFavouritesRequestMultiError) AllErrors() []error { return m }
+
+// ListFavouritesRequestValidationError is the validation error returned by
+// ListFavouritesRequest.Validate if the designated constraints aren't met.
+type ListFavouritesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListFavouritesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListFavouritesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListFavouritesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListFavouritesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListFavouritesRequestValidationError) ErrorName() string {
+	return "ListFavouritesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListFavouritesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListFavouritesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListFavouritesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListFavouritesRequestValidationError{}
+
+// Validate checks the field values on ListFavouritesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *ListFavouritesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on ListFavouritesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// ListFavouritesResponseMultiError, or nil if none found.
+func (m *ListFavouritesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *ListFavouritesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	for idx, item := range m.GetEvents() {
+		_, _ = idx, item
+
+		if all {
+			switch v := interface{}(item).(type) {
+			case interface{ ValidateAll() error }:
+				if err := v.ValidateAll(); err != nil {
+					errors = append(errors, ListFavouritesResponseValidationError{
+						field:  fmt.Sprintf("Events[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			case interface{ Validate() error }:
+				if err := v.Validate(); err != nil {
+					errors = append(errors, ListFavouritesResponseValidationError{
+						field:  fmt.Sprintf("Events[%v]", idx),
+						reason: "embedded message failed validation",
+						cause:  err,
+					})
+				}
+			}
+		} else if v, ok := interface{}(item).(interface{ Validate() error }); ok {
+			if err := v.Validate(); err != nil {
+				return ListFavouritesResponseValidationError{
+					field:  fmt.Sprintf("Events[%v]", idx),
+					reason: "embedded message failed validation",
+					cause:  err,
+				}
+			}
+		}
+
+	}
+
+	if len(errors) > 0 {
+		return ListFavouritesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// ListFavouritesResponseMultiError is an error wrapping multiple validation
+// errors returned by ListFavouritesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type ListFavouritesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m ListFavouritesResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m ListFavouritesResponseMultiError) AllErrors() []error { return m }
+
+// ListFavouritesResponseValidationError is the validation error returned by
+// ListFavouritesResponse.Validate if the designated constraints aren't met.
+type ListFavouritesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e ListFavouritesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e ListFavouritesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e ListFavouritesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e ListFavouritesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e ListFavouritesResponseValidationError) ErrorName() string {
+	return "ListFavouritesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e ListFavouritesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sListFavouritesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = ListFavouritesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = ListFavouritesResponseValidationError{}
+
+// Validate checks the field values on AddFavouritesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AddFavouritesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AddFavouritesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AddFavouritesRequestMultiError, or nil if none found.
+func (m *AddFavouritesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AddFavouritesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for EventId
+
+	if len(errors) > 0 {
+		return AddFavouritesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// AddFavouritesRequestMultiError is an error wrapping multiple validation
+// errors returned by AddFavouritesRequest.ValidateAll() if the designated
+// constraints aren't met.
+type AddFavouritesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AddFavouritesRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AddFavouritesRequestMultiError) AllErrors() []error { return m }
+
+// AddFavouritesRequestValidationError is the validation error returned by
+// AddFavouritesRequest.Validate if the designated constraints aren't met.
+type AddFavouritesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AddFavouritesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AddFavouritesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AddFavouritesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AddFavouritesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AddFavouritesRequestValidationError) ErrorName() string {
+	return "AddFavouritesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AddFavouritesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAddFavouritesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AddFavouritesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AddFavouritesRequestValidationError{}
+
+// Validate checks the field values on AddFavouritesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *AddFavouritesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on AddFavouritesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// AddFavouritesResponseMultiError, or nil if none found.
+func (m *AddFavouritesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *AddFavouritesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return AddFavouritesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// AddFavouritesResponseMultiError is an error wrapping multiple validation
+// errors returned by AddFavouritesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type AddFavouritesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m AddFavouritesResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m AddFavouritesResponseMultiError) AllErrors() []error { return m }
+
+// AddFavouritesResponseValidationError is the validation error returned by
+// AddFavouritesResponse.Validate if the designated constraints aren't met.
+type AddFavouritesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e AddFavouritesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e AddFavouritesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e AddFavouritesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e AddFavouritesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e AddFavouritesResponseValidationError) ErrorName() string {
+	return "AddFavouritesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e AddFavouritesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sAddFavouritesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = AddFavouritesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = AddFavouritesResponseValidationError{}
+
+// Validate checks the field values on DeleteFavouritesRequest with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteFavouritesRequest) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteFavouritesRequest with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteFavouritesRequestMultiError, or nil if none found.
+func (m *DeleteFavouritesRequest) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteFavouritesRequest) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	// no validation rules for EventId
+
+	if len(errors) > 0 {
+		return DeleteFavouritesRequestMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteFavouritesRequestMultiError is an error wrapping multiple validation
+// errors returned by DeleteFavouritesRequest.ValidateAll() if the designated
+// constraints aren't met.
+type DeleteFavouritesRequestMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteFavouritesRequestMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteFavouritesRequestMultiError) AllErrors() []error { return m }
+
+// DeleteFavouritesRequestValidationError is the validation error returned by
+// DeleteFavouritesRequest.Validate if the designated constraints aren't met.
+type DeleteFavouritesRequestValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteFavouritesRequestValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteFavouritesRequestValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteFavouritesRequestValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteFavouritesRequestValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteFavouritesRequestValidationError) ErrorName() string {
+	return "DeleteFavouritesRequestValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteFavouritesRequestValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteFavouritesRequest.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteFavouritesRequestValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteFavouritesRequestValidationError{}
+
+// Validate checks the field values on DeleteFavouritesResponse with the rules
+// defined in the proto definition for this message. If any rules are
+// violated, the first error encountered is returned, or nil if there are no violations.
+func (m *DeleteFavouritesResponse) Validate() error {
+	return m.validate(false)
+}
+
+// ValidateAll checks the field values on DeleteFavouritesResponse with the
+// rules defined in the proto definition for this message. If any rules are
+// violated, the result is a list of violation errors wrapped in
+// DeleteFavouritesResponseMultiError, or nil if none found.
+func (m *DeleteFavouritesResponse) ValidateAll() error {
+	return m.validate(true)
+}
+
+func (m *DeleteFavouritesResponse) validate(all bool) error {
+	if m == nil {
+		return nil
+	}
+
+	var errors []error
+
+	if len(errors) > 0 {
+		return DeleteFavouritesResponseMultiError(errors)
+	}
+
+	return nil
+}
+
+// DeleteFavouritesResponseMultiError is an error wrapping multiple validation
+// errors returned by DeleteFavouritesResponse.ValidateAll() if the designated
+// constraints aren't met.
+type DeleteFavouritesResponseMultiError []error
+
+// Error returns a concatenation of all the error messages it wraps.
+func (m DeleteFavouritesResponseMultiError) Error() string {
+	msgs := make([]string, 0, len(m))
+	for _, err := range m {
+		msgs = append(msgs, err.Error())
+	}
+	return strings.Join(msgs, "; ")
+}
+
+// AllErrors returns a list of validation violation errors.
+func (m DeleteFavouritesResponseMultiError) AllErrors() []error { return m }
+
+// DeleteFavouritesResponseValidationError is the validation error returned by
+// DeleteFavouritesResponse.Validate if the designated constraints aren't met.
+type DeleteFavouritesResponseValidationError struct {
+	field  string
+	reason string
+	cause  error
+	key    bool
+}
+
+// Field function returns field value.
+func (e DeleteFavouritesResponseValidationError) Field() string { return e.field }
+
+// Reason function returns reason value.
+func (e DeleteFavouritesResponseValidationError) Reason() string { return e.reason }
+
+// Cause function returns cause value.
+func (e DeleteFavouritesResponseValidationError) Cause() error { return e.cause }
+
+// Key function returns key value.
+func (e DeleteFavouritesResponseValidationError) Key() bool { return e.key }
+
+// ErrorName returns error name.
+func (e DeleteFavouritesResponseValidationError) ErrorName() string {
+	return "DeleteFavouritesResponseValidationError"
+}
+
+// Error satisfies the builtin error interface
+func (e DeleteFavouritesResponseValidationError) Error() string {
+	cause := ""
+	if e.cause != nil {
+		cause = fmt.Sprintf(" | caused by: %v", e.cause)
+	}
+
+	key := ""
+	if e.key {
+		key = "key for "
+	}
+
+	return fmt.Sprintf(
+		"invalid %sDeleteFavouritesResponse.%s: %s%s",
+		key,
+		e.field,
+		e.reason,
+		cause)
+}
+
+var _ error = DeleteFavouritesResponseValidationError{}
+
+var _ interface {
+	Field() string
+	Reason() string
+	Key() bool
+	Cause() error
+	ErrorName() string
+} = DeleteFavouritesResponseValidationError{}

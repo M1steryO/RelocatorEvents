@@ -5,21 +5,29 @@ import (
 	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
 )
 
-func (s *serv) GetList(ctx context.Context, params *domain.SearchParams) (*domain.EventsList, error) {
+func getEventsIds(events []*domain.Event) []int64 {
+	ids := make([]int64, len(events))
+	for i, event := range events {
+		ids[i] = event.Id
+	}
+	return ids
+}
+
+func markFavourite(events []*domain.Event, favouriteMap map[int64]bool) {
+	for _, event := range events {
+		event.IsFavourite = favouriteMap[event.Id]
+	}
+}
+
+func (s *serv) GetList(ctx context.Context, userId int64, params *domain.SearchParams) (*domain.EventsList, error) {
 	var (
 		events      []*domain.Event
 		filtersData *domain.FiltersData
 		err         error
 	)
-	//userId, ok := ctx.Value("userId").(int64)
-	//if !ok {
-	//	return nil, errors.New("userId not found in context")
-	//}
 
-	//userCountry, err := s.userClient.GetUserCountry(ctx, userId)
-	//if err != nil {
-	//	return nil, err
-	//}
+	//userCountry, err := s.userClient.GetUserCountry(ctx, userId) //if err != nil { // return nil, err //}
+
 	userCountry := "Грузия"
 
 	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
@@ -35,10 +43,17 @@ func (s *serv) GetList(ctx context.Context, params *domain.SearchParams) (*domai
 
 		return nil
 	})
-
 	if err != nil {
 		return nil, err
 	}
+
+	favsEvents, err := s.favsRepo.CheckList(ctx, getEventsIds(events), userId)
+	if err != nil {
+		return nil, err
+	}
+
+	markFavourite(events, favsEvents)
+
 	return &domain.EventsList{
 		Data:    events,
 		Filters: filtersData,

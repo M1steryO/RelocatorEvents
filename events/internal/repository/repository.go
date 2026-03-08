@@ -26,4 +26,6 @@ type FavouritesRepository interface {
 	Create(ctx context.Context, eventId, userId int64) error
 	List(ctx context.Context, userId int64) ([]int64, error)
 	Delete(ctx context.Context, eventId, userId int64) error
+	Check(ctx context.Context, eventId, userId int64) (bool, error)
+	CheckList(ctx context.Context, eventIds []int64, userId int64) (map[int64]bool, error)
 }
