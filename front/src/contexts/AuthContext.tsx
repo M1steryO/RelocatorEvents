@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useMemo, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import { eventsService } from '../services/eventsService';
@@ -16,7 +16,6 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  storedUserId: number | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   login: (accessToken: string, user: User) => void;
@@ -37,24 +36,6 @@ export const useAuth = () => {
 
 interface AuthProviderProps {
   children: ReactNode;
-}
-
-/** Извлекает userId из payload JWT (sub, user_id, userId, id). */
-function getUserIdFromAccessToken(accessToken: string | null): number | null {
-  if (!accessToken || typeof accessToken !== 'string') return null;
-  try {
-    const parts = accessToken.split('.');
-    if (parts.length !== 3) return null;
-    const payload = JSON.parse(
-      atob(parts[1].replace(/-/g, '+').replace(/_/g, '/'))
-    ) as Record<string, unknown>;
-    const raw = payload.sub ?? payload.user_id ?? payload.userId ?? payload.id;
-    if (raw == null) return null;
-    const n = typeof raw === 'number' ? raw : parseInt(String(raw), 10);
-    return Number.isFinite(n) ? n : null;
-  } catch {
-    return null;
-  }
 }
 
 function readStoredToken(): string | null {
@@ -81,8 +62,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       favouritesService.setAccessToken(stored);
     }
   }, []); // при монтировании прокидываем восстановленный токен в сервисы
-
-  const storedUserId = useMemo(() => getUserIdFromAccessToken(token), [token]);
 
   const login = (accessToken: string, newUser: User) => {
     setToken(accessToken);
@@ -117,8 +96,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextType = {
     user,
     token,
-    storedUserId,
-    isAuthenticated: !!token && !!user,
+    isAuthenticated: !!user,
     isLoading,
     login,
     setAccessToken,

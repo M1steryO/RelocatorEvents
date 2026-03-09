@@ -9,7 +9,7 @@ interface LoadingScreenProps {
 }
 
 export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingScreenProps) => {
-    const { user, setUser, storedUserId } = useAuth();
+    const { user, setUser } = useAuth();
     const [showLoading, setShowLoading] = useState(true);
     const [isClosing, setIsClosing] = useState(false);
     const [showWelcomeText, setShowWelcomeText] = useState(false);
@@ -24,11 +24,11 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     const welcomeTextTimeoutRef = useRef<number | null>(null);
     const fadeInTimeoutRef = useRef<number | null>(null);
 
-    // При загрузке 1-й части вызываем getCurrentUser(userId); если получили юзера — показываем 2-ю часть
+    // При загрузке 1-й части вызываем getCurrentUser(); backend берёт пользователя по refresh-токену в куках
     useEffect(() => {
         if (!showLoading || showWelcomeText || isClosing || welcomeRequestDoneRef.current) return;
         welcomeTextTimeoutRef.current = window.setTimeout(() => {
-            authService.getCurrentUser(storedUserId ?? undefined)
+            authService.getCurrentUser()
                 .then((data) => {
                     welcomeRequestDoneRef.current = true;
                     setWelcomeUserName(data.name);
@@ -55,7 +55,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
             if (welcomeTextTimeoutRef.current) clearTimeout(welcomeTextTimeoutRef.current);
             if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
         };
-    }, [showLoading, showWelcomeText, isClosing, storedUserId, setUser]);
+    }, [showLoading, showWelcomeText, isClosing, setUser]);
 
     const startClosing = useCallback(() => {
         if (fadeOutTimeoutRef.current) clearTimeout(fadeOutTimeoutRef.current);

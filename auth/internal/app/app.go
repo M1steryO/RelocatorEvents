@@ -152,6 +152,7 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 				interceptor.NewRateLimiterInterceptor(rateLimiter).Unary,
 				// interceptor.NewCircuitBreakerInterceptor(circuitBreaker).Unary,
 				otgrpc.OpenTracingServerInterceptor(opentracing.GlobalTracer()),
+				interceptor.AuthInterceptor,
 				interceptor.ErrorCodesInterceptor,
 				interceptor.MetricsInterceptor,
 				interceptor.ValidateInterceptor,

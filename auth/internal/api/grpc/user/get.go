@@ -14,8 +14,14 @@ import (
 
 func (i *Implementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 	if req.Id == 0 {
-		return nil, status.Errorf(codes.InvalidArgument, "invalid argument")
+		userId, ok := ctx.Value("userId").(int64)
+
+		if !ok {
+			return nil, errors.New("missing userId")
+		}
+		req.Id = userId
 	}
+
 	logger.Info("Received", slog.Int64("id:", req.GetId()))
 
 	user, err := i.service.Get(ctx, req.GetId())
