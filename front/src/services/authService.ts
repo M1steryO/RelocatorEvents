@@ -300,7 +300,7 @@ class AuthService {
         };
     }
 
-    async getCurrentUser(userId?: number): Promise<{
+    async getCurrentUser(): Promise<{
         id: number;
         name: string;
         country?: string;

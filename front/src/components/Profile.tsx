@@ -38,17 +38,8 @@ export const Profile = () => {
           authService.setAccessToken(token);
         }
         
-        // Get user id from context
-        const userId = user?.id;
-        if (!userId) {
-          setError('ID пользователя не найден');
-          setIsLoading(false);
-          setAccessChecked(true);
-          return;
-        }
-        
         hasFetchedRef.current = true;
-        const userData = await authService.getCurrentUser(userId);
+        const userData = await authService.getCurrentUser();
         setProfile(userData as UserProfile);
         
         // Update user in AuthContext only if data changed

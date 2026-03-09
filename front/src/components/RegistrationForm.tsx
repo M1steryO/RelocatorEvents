@@ -189,8 +189,8 @@ export const RegistrationForm = ({onSuccess}: RegistrationFormProps) => {
             
             // Load full user data after registration
             try {
-                const userId = (response as any).id;
-                const userData: { id: number; name: string; country?: string; city?: string; interests?: string[]; collections?: string[] } = await authService.getCurrentUser(userId);
+                const userData: { id: number; name: string; country?: string; city?: string; interests?: string[]; collections?: string[] } =
+                    await authService.getCurrentUser();
                 if (userData) {
                     setUser({
                         id: userData.id,
