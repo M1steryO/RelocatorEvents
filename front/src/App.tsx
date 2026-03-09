@@ -72,6 +72,11 @@ function App() {
 
     return (
         <>
+
+
+
+
+
             <LoadingScreen isLoading={isAppLoading} minimumDisplayTime={2000} />
             {!isAppLoading && (
                 <Routes>
@@ -135,47 +140,7 @@ function App() {
         </>
     );
 
-    return (
-        <Routes>
-            <Route 
-                path="/register" 
-                element={
-                    isAuthenticated ? (
-                        <Navigate to="/" replace />
-                    ) : (
-                        <RegistrationForm />
-                    )
-                } 
-            />
-            <Route 
-                path="/profile" 
-                element={
-                    isAuthenticated ? (
-                        <Profile />
-                    ) : (
-                        <Navigate to="/register" replace />
-                    )
-                }
-            />
-            <Route 
-                path="/" 
-                element={
-                    isAuthenticated ? (
-                        <div className="app-container">
-                            <div className="app-header">
-                                <h2>Привет, {user?.name} 👋</h2>
-                                <p>Добро пожаловать в события для релокантов.</p>
-                            </div>
-                            {/* Тут дальше рендерим основной UI */}
-                        </div>
-                    ) : (
-                        <Navigate to="/register" replace />
-                    )
-                } 
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
-    );
+    
 }
 
 export default App;

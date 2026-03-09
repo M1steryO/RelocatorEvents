@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
+import { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { favouritesService } from '../services/favouritesService';
 import { useAuth } from './AuthContext';
@@ -11,7 +11,8 @@ interface FavouritesContextType {
     addFavourite: (eventId: number) => Promise<void>;
     removeFavourite: (eventId: number) => Promise<void>;
     toggleFavourite: (eventId: number) => Promise<void>;
-    refreshFavourites: () => Promise<void>;
+    /** Синхронизировать список id избранного (вызывается со страницы избранного после загрузки списка). */
+    syncFavouriteIds: (ids: number[]) => void;
 }
 
 const FavouritesContext = createContext<FavouritesContextType | undefined>(undefined);
@@ -32,22 +33,13 @@ export const FavouritesProvider = ({ children }: FavouritesProviderProps) => {
     const { isAuthenticated } = useAuth();
     const [favouriteIds, setFavouriteIds] = useState<FavouriteIds>(new Set());
 
-    const refreshFavourites = useCallback(async () => {
-        if (!isAuthenticated) {
-            setFavouriteIds(new Set());
-            return;
-        }
-        try {
-            const events = await favouritesService.listFavourites();
-            setFavouriteIds(new Set(events.map((e) => e.id)));
-        } catch {
-            setFavouriteIds(new Set());
-        }
-    }, [isAuthenticated]);
+    const syncFavouriteIds = useCallback((ids: number[]) => {
+        setFavouriteIds(new Set(ids));
+    }, []);
 
     useEffect(() => {
-        refreshFavourites();
-    }, [refreshFavourites]);
+        if (!isAuthenticated) setFavouriteIds(new Set());
+    }, [isAuthenticated]);
 
     const isFavourite = useCallback((eventId: number) => favouriteIds.has(eventId), [favouriteIds]);
 
@@ -79,7 +71,7 @@ export const FavouritesProvider = ({ children }: FavouritesProviderProps) => {
         addFavourite,
         removeFavourite,
         toggleFavourite,
-        refreshFavourites,
+        syncFavouriteIds,
     };
 
     return (

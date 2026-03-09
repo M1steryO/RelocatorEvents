@@ -75,7 +75,8 @@
 .loading-welcome-container {
     opacity: 0;
     transform: translateY(10px);
-    gap:200px;
+    gap: 211px;
+    
 }
 
 .loading-welcome-container.fade-in {
@@ -92,10 +93,6 @@
     margin: 0;
     text-align: center;
     padding: 18px 20px;
-}
-
-.loading-welcome-name {
-    font-weight: 600;
 }
 
 .loading-logo {

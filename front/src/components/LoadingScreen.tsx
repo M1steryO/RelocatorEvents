@@ -9,7 +9,7 @@ interface LoadingScreenProps {
 }
 
 export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingScreenProps) => {
-    const { user, setUser } = useAuth();
+    const { user, setUser, storedUserId } = useAuth();
     const [showLoading, setShowLoading] = useState(true);
     const [isClosing, setIsClosing] = useState(false);
     const [showWelcomeText, setShowWelcomeText] = useState(false);
@@ -17,17 +17,18 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     const [shouldAnimateWelcome, setShouldAnimateWelcome] = useState(false);
     const [welcomeUserName, setWelcomeUserName] = useState<string | null>(null);
     const welcomeRequestDoneRef = useRef(false);
+    const part2ShownAtRef = useRef<number | null>(null);
     const startTimeRef = useRef<number>(Date.now());
     const timeoutRef = useRef<number | null>(null);
     const fadeOutTimeoutRef = useRef<number | null>(null);
     const welcomeTextTimeoutRef = useRef<number | null>(null);
     const fadeInTimeoutRef = useRef<number | null>(null);
 
-    // При загрузке 1-й части вызываем getCurrentUser(); если получили юзера — показываем 2-ю часть
+    // При загрузке 1-й части вызываем getCurrentUser(userId); если получили юзера — показываем 2-ю часть
     useEffect(() => {
         if (!showLoading || showWelcomeText || isClosing || welcomeRequestDoneRef.current) return;
         welcomeTextTimeoutRef.current = window.setTimeout(() => {
-            authService.getCurrentUser()
+            authService.getCurrentUser(storedUserId ?? undefined)
                 .then((data) => {
                     welcomeRequestDoneRef.current = true;
                     setWelcomeUserName(data.name);
@@ -37,6 +38,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
                         country: data.country,
                         city: data.city,
                     });
+                    part2ShownAtRef.current = Date.now();
                     setIsFadingOut(true);
                     setShowWelcomeText(true);
                     requestAnimationFrame(() => {
@@ -53,7 +55,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
             if (welcomeTextTimeoutRef.current) clearTimeout(welcomeTextTimeoutRef.current);
             if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
         };
-    }, [showLoading, showWelcomeText, isClosing, setUser]);
+    }, [showLoading, showWelcomeText, isClosing, storedUserId, setUser]);
 
     const startClosing = useCallback(() => {
         if (fadeOutTimeoutRef.current) clearTimeout(fadeOutTimeoutRef.current);
@@ -67,13 +69,19 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
         }, 300);
     }, []);
 
-    // Таймаут = минимум времени показа (например 2 с). Уходим только когда прошло не меньше этого времени И загрузка завершена (может быть дольше, если данные ещё грузятся).
+    const PART2_DISPLAY_MS = 2000; // вторая часть (приветствие) показывается минимум 2 секунды
+
+    // Таймаут = минимум времени показа + минимум 2 с для второй части. Закрываем только когда загрузка завершена и прошло нужное время.
     useEffect(() => {
         if (!isLoading) {
             const elapsed = Date.now() - startTimeRef.current;
-            const remaining = Math.max(0, minimumDisplayTime - elapsed);
+            let remaining = Math.max(0, minimumDisplayTime - elapsed);
+            if (part2ShownAtRef.current != null) {
+                const part2Elapsed = Date.now() - part2ShownAtRef.current;
+                remaining = Math.max(remaining, PART2_DISPLAY_MS - part2Elapsed);
+            }
             if (timeoutRef.current) clearTimeout(timeoutRef.current);
-            timeoutRef.current = setTimeout(startClosing, remaining);
+            timeoutRef.current = setTimeout(startClosing, Math.max(0, remaining));
             return () => {
                 if (timeoutRef.current) clearTimeout(timeoutRef.current);
             };
@@ -84,7 +92,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
         }
-    }, [isLoading, minimumDisplayTime, startClosing]);
+    }, [isLoading, minimumDisplayTime, startClosing, showWelcomeText]);
 
     if (!showLoading) {
         return null;

@@ -49,7 +49,7 @@
     border-radius: 50%;
     border: none;
     padding: 0;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgb(255, 255, 255);
     cursor: pointer;
     display: flex;
     align-items: center;

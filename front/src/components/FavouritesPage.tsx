@@ -67,7 +67,7 @@ type OrganizerModalState = { type: 'buy' | 'register'; link: string } | null;
 
 export const FavouritesPage = () => {
     const navigate = useNavigate();
-    const { removeFavourite } = useFavourites();
+    const { removeFavourite, syncFavouriteIds } = useFavourites();
     const [events, setEvents] = useState<DisplayEvent[]>([]);
     const [isLoading, setIsLoading] = useState(true);
     const [organizerModal, setOrganizerModal] = useState<OrganizerModalState>(null);
@@ -77,7 +77,10 @@ export const FavouritesPage = () => {
         const load = async () => {
             try {
                 const list = await favouritesService.listFavourites();
-                if (!cancelled) setEvents(list.map(toDisplayEvent));
+                if (!cancelled) {
+                    setEvents(list.map(toDisplayEvent));
+                    syncFavouriteIds(list.map((e) => e.id));
+                }
             } catch {
                 if (!cancelled) setEvents([]);
             } finally {

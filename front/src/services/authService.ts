@@ -308,7 +308,7 @@ class AuthService {
         interests?: string[];
         collections?: string[];
     }> {
-        const endpoint = userId ? `/v1/user?id=${userId}` : '/v1/user';
+        const endpoint = userId ? `/v1/user/${userId}` : '/v1/user';
         const response = await this.request<{
             user: {
                 id: string;

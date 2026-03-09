@@ -1,8 +1,10 @@
-import { createContext, useContext, useState, useMemo } from 'react';
+import { createContext, useContext, useState, useMemo, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import { eventsService } from '../services/eventsService';
 import { favouritesService } from '../services/favouritesService';
+
+const ACCESS_TOKEN_STORAGE_KEY = 'auth_access_token';
 
 interface User {
   id: number;
@@ -55,15 +57,36 @@ function getUserIdFromAccessToken(accessToken: string | null): number | null {
   }
 }
 
+function readStoredToken(): string | null {
+  if (typeof window === 'undefined') return null;
+  return sessionStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+}
+
+function writeStoredToken(token: string | null) {
+  if (typeof window === 'undefined') return;
+  if (token == null) sessionStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+  else sessionStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+}
+
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUserState] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(() => readStoredToken());
   const isLoading = false;
+
+  useEffect(() => {
+    const stored = readStoredToken();
+    if (stored) {
+      authService.setAccessToken(stored);
+      eventsService.setAccessToken(stored);
+      favouritesService.setAccessToken(stored);
+    }
+  }, []); // при монтировании прокидываем восстановленный токен в сервисы
 
   const storedUserId = useMemo(() => getUserIdFromAccessToken(token), [token]);
 
   const login = (accessToken: string, newUser: User) => {
     setToken(accessToken);
+    writeStoredToken(accessToken);
     setUserState(newUser);
     authService.setAccessToken(accessToken);
     eventsService.setAccessToken(accessToken);
@@ -72,6 +95,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const setAccessToken = (accessToken: string) => {
     setToken(accessToken);
+    writeStoredToken(accessToken);
     authService.setAccessToken(accessToken);
     eventsService.setAccessToken(accessToken);
     favouritesService.setAccessToken(accessToken);
@@ -79,6 +103,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   const logout = () => {
     setToken(null);
+    writeStoredToken(null);
     setUserState(null);
     authService.setAccessToken(null);
     eventsService.setAccessToken(null);

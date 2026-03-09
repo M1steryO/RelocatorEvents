@@ -5,7 +5,7 @@ include:
   - path: ./events/docker-compose.yml
   - path: ./media/docker-compose.yml
   - path: ./gateway/docker-compose.yml
-  - path: ./infrastructure/docker-compose.yml
+  # - path: ./infrastructure/docker-compose.yml
   # - path: ./parser/docker-compose.yml
 
 networks:
