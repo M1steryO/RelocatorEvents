@@ -10,9 +10,10 @@ import (
 )
 
 func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	if !strings.HasPrefix(info.FullMethod, "/user_v1.UserService/") {
+	if !strings.HasPrefix(info.FullMethod, "/user_v1.UserV1/") {
 		return handler(ctx, req)
 	}
+
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
 		return nil, errors.New("metadata is not provided")
