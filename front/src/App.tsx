@@ -16,7 +16,7 @@ import {subscribeToUnauthorized} from "./utils/unauthorized";
 import "./App.css";
 
 function App() {
-    const {user, isAuthenticated, isLoading, logout} = useAuth();
+    const {isAuthenticated, isLoading, logout} = useAuth();
     const [isInitializing, setIsInitializing] = useState(true);
     const [isServiceUnavailable, setIsServiceUnavailable] = useState(false);
     const navigate = useNavigate();
