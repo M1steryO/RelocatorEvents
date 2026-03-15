@@ -10,9 +10,9 @@ import (
 	"github.com/M1steryO/RelocatorEvents/events/internal/interceptor"
 	"github.com/M1steryO/RelocatorEvents/events/internal/metric"
 	"github.com/M1steryO/RelocatorEvents/events/internal/middleware"
-	desc "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
-	favsDesc "github.com/M1steryO/RelocatorEvents/events/pkg/favourites_v1"
-	reviewsDesc "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/events/v1"
+	favsDesc "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/favourites/v1"
+	reviewsDesc "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/reviews/v1"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	kafka2 "github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
@@ -179,8 +179,8 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	desc.RegisterEvent_V1Server(a.grpcServer, a.serviceProvider.EventsImpl(ctx))
-	reviewsDesc.RegisterReviewsV1Server(a.grpcServer, a.serviceProvider.ReviewsImpl(ctx))
+	desc.RegisterEventServiceServer(a.grpcServer, a.serviceProvider.EventsImpl(ctx))
+	reviewsDesc.RegisterReviewsServiceServer(a.grpcServer, a.serviceProvider.ReviewsImpl(ctx))
 
 	return nil
 }
@@ -200,9 +200,9 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	err := desc.RegisterEvent_V1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
+	err := desc.RegisterEventServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
 
-	err = reviewsDesc.RegisterReviewsV1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
+	err = reviewsDesc.RegisterReviewsServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
 
 	err = favsDesc.RegisterFavouritesServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
 

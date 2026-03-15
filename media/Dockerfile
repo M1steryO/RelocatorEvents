@@ -18,4 +18,4 @@ WORKDIR /root/
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/media/source/bin/media .
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/media/source/config ./config
 
-CMD ["./media", "-config-path", "config/local.env"]
+CMD ["./media", "-config-path", "config/prod.env"]

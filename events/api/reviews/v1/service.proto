@@ -1,0 +1,24 @@
+syntax = "proto3";
+
+package github.com.M1steryO.RelocatorEvents.reviews.api.v1;
+option go_package = "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/reviews/v1;reviews";
+
+import "google/api/annotations.proto";
+import "reviews/v1/messages.proto";
+
+
+
+service ReviewsService{
+
+  rpc ListReviews(ListReviewsRequest) returns (ListReviewsResponse){
+    option (google.api.http) = {
+      get: "/reviews/v1";
+    };
+  };
+  rpc CreateReview(CreateReviewRequest) returns (CreateReviewResponse){
+    option (google.api.http) = {
+      post: "/reviews/v1"
+      body: "*"
+    };
+  };
+}

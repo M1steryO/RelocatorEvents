@@ -40,9 +40,6 @@ get-deps:
 	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 
-generate:
-	make generate-media-api
-
 generate-media-api:
 	mkdir -p pkg/api/media/v1
 	# Указываем путь, где искать .proto файлы и их импорты

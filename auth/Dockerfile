@@ -12,4 +12,4 @@ WORKDIR /root/
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/auth/source/bin/auth .
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/auth/source/config ./config
 
-CMD ["./auth", "--config-path", "config/local.env"]
+CMD ["./auth", "--config-path", "config/prod.env"]

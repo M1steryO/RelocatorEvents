@@ -2,15 +2,13 @@ package events
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/events/internal/core/logger"
-	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
-	"log/slog"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/models/events"
 )
 
 func (s *serv) Get(ctx context.Context, eventId, userId int64) (*domain.Event, error) {
 	event, err := s.db.Get(ctx, eventId)
 	if err != nil {
-		logger.Error("error getting event", slog.String("error", err.Error()))
+
 		return nil, err
 	}
 

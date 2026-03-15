@@ -2,8 +2,8 @@ package events
 
 import (
 	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/converters/common"
-	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
-	desc "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/models/events"
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/events/v1"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 	"time"
 )

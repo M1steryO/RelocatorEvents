@@ -2,7 +2,7 @@ package converters
 
 import (
 	"github.com/M1steryO/RelocatorEvents/events/internal/consumer/kafka/events/models"
-	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/models/events"
 	"strings"
 	"time"
 )

@@ -40,10 +40,6 @@ get-deps:
 	go get -u google.golang.org/grpc/cmd/protoc-gen-go-grpc
 
 
-generate:
-	make generate-user-api
-	make generate-auth-api
-	make generate-access-api
 
 generate-user-api:
 	mkdir -p pkg/user_v1
@@ -71,53 +67,7 @@ generate-user-api:
         --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
         api/user_v1/user.proto
 
-generate-auth-api:
-	mkdir -p pkg/auth_v1
-	# Указываем путь, где искать .proto файлы и их импорты
- 	# --go_out: выходная директория для сгенерированных структур Protobuf
- 	# --go_opt: опции для Go-генератора
-	# paths=source_relative - сохраняет структуру директорий как в исходниках
-	# Указываем путь к плагину protoc-gen-go (генератор Go-кода)
- 	# Генерируем Go-код для gRPC сервисов
-   # --go-grpc_out: выходная директория для gRPC-кода
-   # --go-grpc_opt: опции для gRPC-генератора
-   # paths=source_relative - аналогично для gRPC-кода
-   # Указываем путь к плагину protoc-gen-go-grpc (генератор gRPC-кода)
-   # Исходный .proto файл для компиляции
-	protoc --proto_path api/auth_v1 --proto_path vendor.protogen\
-        --go_out pkg/auth_v1 \
-        --go_opt=paths=source_relative \
-        --plugin=protoc-gen-go=bin/protoc-gen-go \
-        --go-grpc_out=pkg/auth_v1 \
-        --go-grpc_opt=paths=source_relative \
-        --plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
-        --grpc-gateway_out=pkg/auth_v1 --grpc-gateway_opt=paths=source_relative \
-        --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
-        api/auth_v1/auth.proto
 
-generate-access-api:
-	mkdir -p pkg/access_v1
-	# Указываем путь, где искать .proto файлы и их импорты
- 	# --go_out: выходная директория для сгенерированных структур Protobuf
- 	# --go_opt: опции для Go-генератора
-	# paths=source_relative - сохраняет структуру директорий как в исходниках
-	# Указываем путь к плагину protoc-gen-go (генератор Go-кода)
- 	# Генерируем Go-код для gRPC сервисов
-   # --go-grpc_out: выходная директория для gRPC-кода
-   # --go-grpc_opt: опции для gRPC-генератора
-   # paths=source_relative - аналогично для gRPC-кода
-   # Указываем путь к плагину protoc-gen-go-grpc (генератор gRPC-кода)
-   # Исходный .proto файл для компиляции
-	protoc --proto_path api/access_v1 --proto_path vendor.protogen\
-        --go_out pkg/access_v1 \
-        --go_opt=paths=source_relative \
-        --plugin=protoc-gen-go=bin/protoc-gen-go \
-        --go-grpc_out=pkg/access_v1 \
-        --go-grpc_opt=paths=source_relative \
-        --plugin=protoc-gen-go-grpc=bin/protoc-gen-go-grpc \
-        --grpc-gateway_out=pkg/access_v1 --grpc-gateway_opt=paths=source_relative \
-        --plugin=protoc-gen-grpc-gateway=bin/protoc-gen-grpc-gateway \
-        api/access_v1/access.proto
 
 local-migration-status:
 	${LOCAL_BIN}/goose -dir ${LOCAL_MIGRATION_DIR} postgres ${LOCAL_MIGRATION_DSN} status -v

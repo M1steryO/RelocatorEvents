@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package github.com.M1steryO.RelocatorEvents.favourites.api.v1;
+option go_package = "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/favourites/v1;favourites";
+
+import "google/api/annotations.proto";
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+
+
+message Event {
+  int64 id = 1 [json_name = "id"];
+  string title = 2 [json_name = "title"];
+  google.protobuf.StringValue description = 3 [json_name = "description"];
+  string link = 4 [json_name = "link"];
+
+  google.protobuf.FloatValue rating = 5 [json_name = "rating"];
+  google.protobuf.Int32Value min_age = 6 [json_name = "min_age"];
+
+  google.protobuf.Int32Value min_price = 7 [json_name = "min_price"];
+
+  google.protobuf.Timestamp starts_at = 8 [json_name = "starts_at"];
+
+  google.protobuf.StringValue image_url = 9 [json_name = "image_url"];
+
+  google.protobuf.Timestamp created_at = 10 [json_name = "created_at"];
+
+  google.protobuf.StringValue currency = 11 [json_name = "currency"];
+
+}
+
+message ListFavouritesRequest{
+}
+
+message ListFavouritesResponse{
+  repeated Event events = 1;
+}
+
+message AddFavouritesRequest{
+  int64 event_id = 1;
+}
+
+message AddFavouritesResponse {
+
+}
+
+message DeleteFavouritesRequest{
+  int64 event_id = 1;
+}
+
+message DeleteFavouritesResponse {
+
+}

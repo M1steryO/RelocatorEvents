@@ -1,7 +1,7 @@
 package converters
 
 import (
-	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/models/reviews"
 	"github.com/jackc/pgconn"
 )
 

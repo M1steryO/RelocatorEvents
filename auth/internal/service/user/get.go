@@ -2,7 +2,7 @@ package user
 
 import (
 	"context"
-	domain "github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
+	domain "github.com/M1steryO/RelocatorEvents/auth/internal/models/user"
 )
 
 func (s *serv) Get(ctx context.Context, id int64) (*domain.User, error) {

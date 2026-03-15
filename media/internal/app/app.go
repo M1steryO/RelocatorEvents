@@ -9,7 +9,7 @@ import (
 	"github.com/M1steryO/RelocatorEvents/media/internal/core/utils/rate_limiter"
 	"github.com/M1steryO/RelocatorEvents/media/internal/interceptor"
 	"github.com/M1steryO/RelocatorEvents/media/internal/metric"
-	"github.com/M1steryO/RelocatorEvents/media/pkg/api/media/v1"
+	"github.com/M1steryO/RelocatorEvents/media/pkg/api/proto/media/v1"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"

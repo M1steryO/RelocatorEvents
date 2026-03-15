@@ -2,10 +2,7 @@ package reviews
 
 import (
 	"context"
-	"errors"
-	"github.com/M1steryO/RelocatorEvents/events/internal/core/logger"
-	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
-	"log/slog"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/models/reviews"
 )
 
 func (s *serv) Create(ctx context.Context, eventId, authorId int64, review *domain.Review) (int64, error) {
@@ -37,30 +34,8 @@ func (s *serv) Create(ctx context.Context, eventId, authorId int64, review *doma
 	})
 
 	if err != nil {
-		if errors.Is(err, domain.ErrReviewExists) {
-			logger.Warn(
-				"review already exists",
-				slog.Int64("event_id", eventId),
-				slog.Int64("author_id", authorId),
-			)
-			return 0, err
-		}
-
-		logger.Error(
-			"failed to create review",
-			slog.Int64("event_id", eventId),
-			slog.Int64("author_id", authorId),
-			slog.Any("err", err.Error()),
-		)
 		return 0, err
 	}
-
-	logger.Info(
-		"review created",
-		slog.Int64("review_id", reviewID),
-		slog.Int64("event_id", eventId),
-		slog.Int64("author_id", authorId),
-	)
 
 	return reviewID, nil
 }

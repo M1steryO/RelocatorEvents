@@ -2,30 +2,30 @@ package auth
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/service/user/model/auth"
-	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/utils/jwt"
-	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
-	"google.golang.org/grpc/codes"
-	"google.golang.org/grpc/status"
+	"errors"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/core/logger"
+	models "github.com/M1steryO/RelocatorEvents/auth/internal/models/auth"
+	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
+	"github.com/M1steryO/platform_common/pkg/sys"
+	"github.com/M1steryO/platform_common/pkg/sys/codes"
+
+	"log/slog"
 )
 
 func (i *Implementation) GetRefreshToken(ctx context.Context, req *descAuth.GetRefreshTokenRequest) (*descAuth.GetRefreshTokenResponse, error) {
-	claims, err := jwtUtils.VerifyToken(
-		req.GetOldRefreshToken(),
-		i.jwtConfig.RefreshSecret(),
-	)
+	newRefreshToken, err := i.authService.GetRefreshToken(ctx, req.GetOldRefreshToken())
+
 	if err != nil {
-		return nil, status.Errorf(codes.Aborted, "invalid refresh to	ken: %s", err.Error())
+		var credentialsError *models.CredentialsError
+		if errors.As(err, &credentialsError) {
+			logger.Warn("invalid credentials", slog.Any("err", err))
+			return nil, sys.NewCommonError(err.Error(), codes.InvalidArgument)
+		}
+		logger.Error("failed to get refresh token", slog.Any("err", err))
+		return nil, sys.NewCommonError("internal error", codes.Internal)
 	}
-	refreshToken, err := jwtUtils.GenerateToken(auth.UserInfo{
-		Id:   claims.Id,
-		Role: claims.Role,
-	}, i.jwtConfig.RefreshSecret(),
-		i.jwtConfig.RefreshExpiration())
-	if err != nil {
-		return nil, err
-	}
+
 	return &descAuth.GetRefreshTokenResponse{
-		RefreshToken: refreshToken,
+		RefreshToken: newRefreshToken,
 	}, nil
 }

@@ -34,7 +34,7 @@ services:
   media-server-container:
     build:
       context: .
-      dockerfile: ./Dockerfile
+      dockerfile: ./Dockerfile.local
     depends_on:
       minio-init:
         condition: service_completed_successfully

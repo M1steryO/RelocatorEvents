@@ -1,6 +1,6 @@
 package reviews
 
-import domainReviews "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
+import domainReviews "github.com/M1steryO/RelocatorEvents/events/internal/models/reviews"
 
 type ListReviewsResult struct {
 	Reviews      []*domainReviews.Review

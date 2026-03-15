@@ -1,13 +1,13 @@
 package user
 
 import (
+	"github.com/M1steryO/RelocatorEvents/auth/internal/core/utils/telegram"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/service"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/telegram"
-	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 )
 
 type Implementation struct {
-	desc.UnimplementedUserV1Server
+	desc.UnimplementedUserServiceServer
 	service      service.UserService
 	telegramAuth *telegram.TelegramAuthenticator
 }

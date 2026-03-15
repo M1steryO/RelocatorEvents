@@ -2,11 +2,11 @@ package reviews
 
 import (
 	"github.com/M1steryO/RelocatorEvents/events/internal/service"
-	desc "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
+	desc "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/reviews/v1"
 )
 
 type ReviewsImplementation struct {
-	desc.UnimplementedReviewsV1Server
+	desc.UnimplementedReviewsServiceServer
 	service service.ReviewService
 }
 

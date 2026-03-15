@@ -4,13 +4,12 @@ import (
 	"context"
 	"flag"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/config"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/core/logger"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/core/utils/rate_limiter"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/interceptor"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/metric"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/rate_limiter"
-	descAccess "github.com/M1steryO/RelocatorEvents/auth/pkg/access_v1"
-	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
-	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
+	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -163,9 +162,8 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	desc.RegisterUserV1Server(a.grpcServer, a.serviceProvider.UserImpl(ctx))
-	descAuth.RegisterAuthV1Server(a.grpcServer, a.serviceProvider.AuthImpl(ctx))
-	descAccess.RegisterAccessV1Server(a.grpcServer, a.serviceProvider.AccessImpl(ctx))
+	desc.RegisterUserServiceServer(a.grpcServer, a.serviceProvider.UserImpl(ctx))
+	descAuth.RegisterAuthServiceServer(a.grpcServer, a.serviceProvider.AuthImpl(ctx))
 
 	return nil
 }
@@ -189,15 +187,11 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	err := desc.RegisterUserV1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
+	err := descAuth.RegisterAuthServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
 	if err != nil {
 		return err
 	}
-	err = descAccess.RegisterAccessV1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
-	if err != nil {
-		return err
-	}
-	err = descAccess.RegisterAccessV1HandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
+	err = desc.RegisterUserServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
 	if err != nil {
 		return err
 	}

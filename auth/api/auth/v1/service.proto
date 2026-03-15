@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+import "auth/v1/messages.proto";
+import "google/api/annotations.proto";
+
+
+package github.com.M1steryO.RelocatorEvents.auth.api.v1;
+
+option go_package = "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1;auth";
+
+
+service AuthService{
+  rpc Login(LoginRequest) returns (LoginResponse);
+
+  rpc TelegramLogin(TelegramLoginRequest) returns (TelegramLoginReponse);
+  rpc Check(CheckRequest) returns (CheckResponse);
+
+  rpc GetRefreshToken(GetRefreshTokenRequest) returns (GetRefreshTokenResponse){
+    option (google.api.http) = {
+      get: "/auth/v1/get-refresh-token"
+    };
+  };
+  rpc GetAccessToken(GetAccessTokenRequest) returns (GetAccessTokenResponse){
+    option (google.api.http) = {
+      get: "/auth/v1/get-access-token"
+    };
+  };
+}

@@ -1,0 +1,37 @@
+syntax = "proto3";
+
+package github.com.M1steryO.RelocatorEvents.events.api.v1;
+option go_package = "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/events/v1;events";
+
+import "google/api/annotations.proto";
+import "events/v1/messages.proto";
+
+
+service EventService{
+  rpc GetEvent(GetRequest) returns (GetResponse){
+    option (google.api.http) = {
+      get: "/events/v1/{id}";
+    };
+  };
+  rpc ListEvents(ListEventsRequest) returns (ListEventsResponse){
+    option (google.api.http) = {
+      get: "/events/v1/list";
+    };
+  };
+  rpc ListFavourites(ListFavouritesRequest) returns (ListFavouritesResponse){
+    option (google.api.http) = {
+      get: "/events/v1/favourites/list";
+    };
+  };
+  rpc AddFavourites(AddFavouritesRequest) returns (AddFavouritesResponse){
+    option (google.api.http) = {
+      post: "/events/v1/favourites";
+      body: "*"
+    };
+  };
+  rpc DeleteFavourites(DeleteFavouritesRequest) returns (DeleteFavouritesResponse){
+    option (google.api.http) = {
+      delete: "/events/v1/favourites/{event_id}";
+    };
+  };
+}

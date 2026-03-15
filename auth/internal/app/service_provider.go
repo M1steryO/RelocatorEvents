@@ -2,15 +2,15 @@ package app
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/access"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/auth"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/user"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/config"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/core/utils/telegram"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/repository"
 	db "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/service"
+	authSvc "github.com/M1steryO/RelocatorEvents/auth/internal/service/auth"
 	serv "github.com/M1steryO/RelocatorEvents/auth/internal/service/user"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/utils/telegram"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	dbclient "github.com/M1steryO/platform_common/pkg/db"
 	"github.com/M1steryO/platform_common/pkg/db/pg"
@@ -32,12 +32,12 @@ type serviceProvider struct {
 	txManager      dbclient.TxManager
 
 	userService service.UserService
+	authService service.AuthService
 
 	telegramAuth *telegram.TelegramAuthenticator
 
-	userImpl   *user.Implementation
-	authImpl   *auth.Implementation
-	accessImpl *access.Implementation
+	userImpl *user.Implementation
+	authImpl *auth.Implementation
 }
 
 func newServiceProvider() *serviceProvider {
@@ -187,14 +187,15 @@ func (s *serviceProvider) TelegramAuth(ctx context.Context) *telegram.TelegramAu
 func (s *serviceProvider) AuthImpl(ctx context.Context) *auth.Implementation {
 	if s.authImpl == nil {
 
-		s.authImpl = auth.NewImplementation(s.UserService(ctx), s.TelegramAuth(ctx), s.JWTConfig())
+		s.authImpl = auth.NewImplementation(s.AuthService(ctx))
 	}
 	return s.authImpl
 }
 
-func (s *serviceProvider) AccessImpl(ctx context.Context) *access.Implementation {
-	if s.accessImpl == nil {
-		s.accessImpl = access.NewImplementation(s.UserService(ctx))
+func (s *serviceProvider) AuthService(ctx context.Context) service.AuthService {
+	if s.authService == nil {
+
+		s.authService = authSvc.NewAuthService(s.UserService(ctx), s.TelegramAuth(ctx), s.JWTConfig())
 	}
-	return s.accessImpl
+	return s.authService
 }

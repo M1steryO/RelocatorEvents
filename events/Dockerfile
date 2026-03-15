@@ -17,4 +17,4 @@ WORKDIR /root/
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/events/source/bin/events .
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/events/source/config ./config
 
-CMD ["./events", "-config-path", "config/local.env"]
+CMD ["./events", "-config-path", "config/prod.env"]

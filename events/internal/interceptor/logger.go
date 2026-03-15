@@ -15,7 +15,10 @@ func LoggerInterceptor(ctx context.Context, req interface{}, info *grpc.UnarySer
 	if err != nil {
 		logger.Error(err.Error(), slog.String("method", info.FullMethod), slog.Any("req", req))
 	}
-	logger.Info("request", slog.String("method", info.FullMethod), slog.Any("req", req), slog.Any("duration", time.Since(now).Milliseconds()))
+	logger.Info("request",
+		slog.String("method", info.FullMethod),
+		slog.Any("req", req),
+		slog.Any("duration", time.Since(now).Milliseconds()))
 
 	return resp, err
 }

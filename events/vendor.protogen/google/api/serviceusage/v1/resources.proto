@@ -16,7 +16,7 @@ syntax = "proto3";
 
 package google.api.serviceusage.v1;
 
-import "google/api/events.proto";
+import "google/api/messages.proto";
 import "google/api/documentation.proto";
 import "google/api/endpoint.proto";
 import "google/api/monitored_resource.proto";

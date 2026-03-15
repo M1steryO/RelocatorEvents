@@ -17,14 +17,14 @@ func (s *serv) Create(ctx context.Context, user *dto.CreateUser) (int64, error) 
 
 	var id int64
 	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
-		repoUser := user.ToRepo(user.TelegramId)
+		domainUser := user.ToDomain(user.TelegramId)
 
-		id, err = s.db.Create(ctx, repoUser)
+		id, err = s.db.Create(ctx, domainUser)
 		if err != nil {
 			return err
 		}
 
-		err = s.db.CreateUserData(ctx, id, user.TelegramUsername, repoUser.Info)
+		err = s.db.CreateUserData(ctx, id, user.TelegramUsername, &domainUser.Info)
 		if err != nil {
 			return err
 		}

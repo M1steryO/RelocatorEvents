@@ -1,0 +1,83 @@
+syntax = "proto3";
+
+package github.com.M1steryO.RelocatorEvents.user.api.v1;
+
+option go_package = "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1;user";
+
+import "google/protobuf/timestamp.proto";
+import "google/protobuf/wrappers.proto";
+import "google/protobuf/empty.proto";
+
+enum Role{
+  USER = 0;
+  ADMIN = 1;
+}
+
+
+message User {
+  int64 id = 1;
+  UserInfo info = 2;
+  google.protobuf.Timestamp created_at = 3;
+  google.protobuf.Timestamp updated_at = 4;
+}
+
+message UserInfo {
+  string name = 1;
+  google.protobuf.StringValue email = 2;
+
+  google.protobuf.Int64Value telegram_id = 3;
+  string telegram_username = 4;
+
+  string country = 5;
+  string city = 6;
+
+  repeated Interest interests = 7;
+}
+
+message Interest {
+  string code = 2;
+  string title = 3;
+}
+
+message UpdateUserInfo {
+  google.protobuf.StringValue name = 1;
+  google.protobuf.StringValue email = 2;
+}
+
+message CreateRequest {
+  UserInfo info = 1;
+  string password = 2;
+  string password_confirm = 3;
+  string telegram_token = 4 [json_name = "telegram_token"];
+}
+
+message CreateResponse {
+  int64 id = 1;
+  string refresh_token = 2;
+  string access_token = 3;
+}
+
+message GetRequest {
+  int64 id = 1;
+}
+
+message GetResponse {
+  User user = 1;
+}
+
+message UpdateRequest {
+  int64 id = 1;
+  UpdateUserInfo info = 2;
+}
+
+message DeleteRequest {
+  int64 id = 1;
+}
+
+message GetUserByTelegramIdRequest{
+  int64 telegram_id = 1;
+}
+
+message GetUserByTelegramIdResponse{
+  User user = 1;
+}

@@ -19,7 +19,7 @@ services:
   auth_migrator:
     build:
       context: .
-      dockerfile: migration.Dockerfile
+      dockerfile: migration.Dockerfile.local
     restart: on-failure
     
     environment:

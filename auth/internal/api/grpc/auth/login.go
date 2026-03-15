@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
+	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
 )
 
 func (i *Implementation) Login(ctx context.Context, req *descAuth.LoginRequest) (*descAuth.LoginResponse, error) {

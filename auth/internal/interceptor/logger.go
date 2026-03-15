@@ -2,7 +2,7 @@ package interceptor
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/core/logger"
 	"google.golang.org/grpc"
 	"log/slog"
 	"time"

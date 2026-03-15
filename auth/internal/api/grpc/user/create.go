@@ -4,12 +4,12 @@ import (
 	"context"
 	"errors"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/converter"
-	create_user "github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/validate/user"
-	domain "github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
-	authModel "github.com/M1steryO/RelocatorEvents/auth/internal/service/user/model/auth"
-	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/utils/jwt"
-	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
+	createUser "github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/user/validate"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/core/logger"
+	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/core/utils/jwt"
+	authModel "github.com/M1steryO/RelocatorEvents/auth/internal/models/auth"
+	domain "github.com/M1steryO/RelocatorEvents/auth/internal/models/user"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 	"github.com/M1steryO/platform_common/pkg/sys"
 	"github.com/M1steryO/platform_common/pkg/sys/codes"
 	"github.com/M1steryO/platform_common/pkg/sys/validate"
@@ -27,14 +27,20 @@ const accessTokenSecretKey = "W4/X+LLjehdxptt4YgGFCvMpq5ewptpZZYRHY6A72g01"
 const accessTokenExpiration = 10 * time.Minute
 
 func (i *Implementation) Create(ctx context.Context, req *desc.CreateRequest) (*desc.CreateResponse, error) {
-	var telegramId int64
+	var telegramId *int64
 
-	err := validate.Validate(ctx, create_user.ValidateUserData(req, &telegramId, i.telegramAuth))
+	err := validate.Validate(ctx, createUser.ValidateUserData(req, telegramId, i.telegramAuth))
 	if err != nil {
+		if errors.Is(err, createUser.ErrInvalidTelegramToken) {
+			return nil, sys.NewCommonError("invalid telegram token", codes.InvalidArgument)
+		}
+		if errors.Is(err, createUser.ErrPasswordNotMatch) {
+			return nil, sys.NewCommonError("passwords not match", codes.InvalidArgument)
+		}
 		return nil, err
 	}
 
-	id, err := i.service.Create(ctx, converter.ToCreateUserDtoInfoFromApi(req, &telegramId))
+	id, err := i.service.Create(ctx, converter.ToCreateUserDtoInfoFromApi(req, telegramId))
 	if err != nil {
 		if errors.Is(err, domain.ErrUserExists) {
 			return nil, sys.NewCommonError("user already exists", codes.AlreadyExists)

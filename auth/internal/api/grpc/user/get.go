@@ -4,12 +4,10 @@ import (
 	"context"
 	"errors"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/converter"
-	domain "github.com/M1steryO/RelocatorEvents/auth/internal/domain/user"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/logger"
-	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
+	domain "github.com/M1steryO/RelocatorEvents/auth/internal/models/user"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"log/slog"
 )
 
 func (i *Implementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
@@ -21,8 +19,6 @@ func (i *Implementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.G
 		}
 		req.Id = userId
 	}
-
-	logger.Info("Received", slog.Int64("id:", req.GetId()))
 
 	user, err := i.service.Get(ctx, req.GetId())
 

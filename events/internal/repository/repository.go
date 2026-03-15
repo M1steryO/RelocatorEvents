@@ -2,8 +2,8 @@ package repository
 
 import (
 	"context"
-	domainEvents "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
-	domainReviews "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
+	domainEvents "github.com/M1steryO/RelocatorEvents/events/internal/models/events"
+	domainReviews "github.com/M1steryO/RelocatorEvents/events/internal/models/reviews"
 )
 
 type EventRepository interface {

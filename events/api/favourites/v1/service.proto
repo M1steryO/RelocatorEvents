@@ -1,0 +1,28 @@
+syntax = "proto3";
+
+package github.com.M1steryO.RelocatorEvents.favourites.api.v1;
+option go_package = "github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/favourites/v1;favourites";
+
+import "google/api/annotations.proto";
+import "favourites/v1/messages.proto";
+
+
+
+service FavouritesService{
+  rpc ListFavourites(ListFavouritesRequest) returns (ListFavouritesResponse){
+    option (google.api.http) = {
+      get: "/favourites/v1";
+    };
+  };
+  rpc AddFavourites(AddFavouritesRequest) returns (AddFavouritesResponse){
+    option (google.api.http) = {
+      post: "/favourites/v1";
+      body: "*"
+    };
+  };
+  rpc DeleteFavourites(DeleteFavouritesRequest) returns (DeleteFavouritesResponse){
+    option (google.api.http) = {
+      delete: "/favourites/v1/{event_id}";
+    };
+  };
+}

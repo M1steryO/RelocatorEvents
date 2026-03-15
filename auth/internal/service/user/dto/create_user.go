@@ -1,7 +1,7 @@
 package dto
 
 import (
-	repoModel "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user/model"
+	domain "github.com/M1steryO/RelocatorEvents/auth/internal/models/user"
 )
 
 type CreateUser struct {
@@ -20,20 +20,20 @@ type CreateUser struct {
 	ConfirmPassword string
 }
 
-func (c CreateUser) ToRepo(telegramId *int64) *repoModel.User {
-	convertedInterests := make([]repoModel.UserInterest, len(c.Interests))
+func (c CreateUser) ToDomain(telegramId *int64) *domain.User {
+	convertedInterests := make([]domain.Interest, len(c.Interests))
 	for i, interest := range c.Interests {
-		convertedInterests[i] = repoModel.UserInterest{
+		convertedInterests[i] = domain.Interest{
 			Code: interest,
 		}
 	}
 
-	return &repoModel.User{
-		Info: &repoModel.UserInfo{
+	return &domain.User{
+		Info: domain.UserInfo{
 			Name:  c.Name,
 			Email: c.Email,
 
-			TelegramId:       telegramId,
+			TelegramID:       telegramId,
 			TelegramUsername: c.TelegramUsername,
 
 			City:    c.City,

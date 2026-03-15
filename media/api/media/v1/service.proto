@@ -1,11 +1,10 @@
 syntax = "proto3";
 
-import "messages.proto";
+import "media/v1/messages.proto";
 import "google/api/annotations.proto";
 
 package github.com.M1steryO.RelocatorEvents.media.api.v1;
-
-option go_package = "/pkg/api/media/v1;media";
+option go_package = "github.com/M1steryO/RelocatorEvents/events/pkg/api/media/v1;media";
 
 
 service MediaService{

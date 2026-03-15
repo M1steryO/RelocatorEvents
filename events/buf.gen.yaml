@@ -1,0 +1,31 @@
+# Подробнее: https://buf.build/docs/configuration/v2/buf-gen-yaml
+version: v2
+
+# Перечисляем какие плагины необходимо использовать для генерации
+plugins:
+  # protoc-gen-go - генерация go типов для message и enum (https://github.com/protocolbuffers/protobuf-go)
+  - local: bin/protoc-gen-go
+    out: pkg/api/proto
+    opt:
+      - paths=source_relative
+
+  - local: bin/protoc-gen-go-grpc
+    out: pkg/api/proto
+    opt:
+      - paths=source_relative
+
+  - local: bin/protoc-gen-validate
+    out: pkg/api/proto
+    opt:
+      - paths=source_relative
+      - lang=go
+
+  - local: bin/protoc-gen-grpc-gateway
+    out: pkg/api/proto
+    opt:
+      - paths=source_relative
+
+
+
+inputs:
+  - directory: api

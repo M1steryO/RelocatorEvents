@@ -2,7 +2,7 @@ package reviews
 
 import (
 	"context"
-	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/reviews"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/models/reviews"
 	"github.com/M1steryO/RelocatorEvents/events/internal/repository/reviews/converters"
 	"github.com/M1steryO/RelocatorEvents/events/internal/repository/reviews/model"
 	"github.com/M1steryO/platform_common/pkg/db"

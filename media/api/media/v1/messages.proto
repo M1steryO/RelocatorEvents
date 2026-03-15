@@ -2,7 +2,7 @@ syntax = "proto3";
 
 package github.com.M1steryO.RelocatorEvents.media.api.v1;
 
-option go_package = "/pkg/api/media/v1;media";
+option go_package = "github.com/M1steryO/RelocatorEvents/events/pkg/api/media/v1;media";
 
 message GetReviewPresignedUrlRequest{
   string object_name = 1;

@@ -2,7 +2,7 @@ package events
 
 import (
 	"context"
-	domain "github.com/M1steryO/RelocatorEvents/events/internal/domain/events"
+	domain "github.com/M1steryO/RelocatorEvents/events/internal/models/events"
 )
 
 func (s *serv) FavouritesList(ctx context.Context, userId int64) ([]*domain.Event, error) {

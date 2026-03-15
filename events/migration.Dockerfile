@@ -12,7 +12,7 @@ WORKDIR /root
 
 ADD migrations/*.sql migrations/
 ADD migration.sh .
-ADD ./config/local.env .
+ADD ./config/prod.env .
 
 RUN chmod +x migration.sh
 

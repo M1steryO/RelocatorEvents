@@ -16,7 +16,7 @@ syntax = "proto3";
 
 package google.api;
 
-import "google/api/events.proto";
+import "google/api/messages.proto";
 import "google/api/backend.proto";
 import "google/api/billing.proto";
 import "google/api/client.proto";

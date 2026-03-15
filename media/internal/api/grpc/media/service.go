@@ -2,7 +2,7 @@ package media
 
 import (
 	"github.com/M1steryO/RelocatorEvents/media/internal/service"
-	"github.com/M1steryO/RelocatorEvents/media/pkg/api/media/v1"
+	"github.com/M1steryO/RelocatorEvents/media/pkg/api/proto/media/v1"
 )
 
 type MediaImpl struct {

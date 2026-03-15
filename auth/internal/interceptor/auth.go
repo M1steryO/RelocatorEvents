@@ -10,7 +10,7 @@ import (
 )
 
 func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
-	if !strings.HasPrefix(info.FullMethod, "/user_v1.UserV1/") {
+	if !strings.HasPrefix(info.FullMethod, "/user.UserV1/") || strings.HasPrefix(info.FullMethod, "/user.UserV1/Create") {
 		return handler(ctx, req)
 	}
 

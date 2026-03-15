@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/M1steryO/RelocatorEvents/media/internal/core/logger"
 	"github.com/M1steryO/RelocatorEvents/media/internal/domain"
-	desc "github.com/M1steryO/RelocatorEvents/media/pkg/api/media/v1"
+	desc "github.com/M1steryO/RelocatorEvents/media/pkg/api/proto/media/v1"
 )
 
 func (i *MediaImpl) GetReviewPresignedUrl(ctx context.Context, req *desc.GetReviewPresignedUrlRequest) (*desc.GetReviewPresignedUrlResponse, error) {
@@ -17,6 +17,7 @@ func (i *MediaImpl) GetReviewPresignedUrl(ctx context.Context, req *desc.GetRevi
 	if err != nil {
 		return nil, err
 	}
+
 	logger.Info("pre-signed url successfully received", "url", outputObject.Url, "userId", userId)
 	return &desc.GetReviewPresignedUrlResponse{
 		PresignedUrl: outputObject.Url,

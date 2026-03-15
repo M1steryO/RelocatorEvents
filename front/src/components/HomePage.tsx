@@ -130,7 +130,7 @@ export const HomePage = () => {
     const restoredFromSessionRef = useRef(false);
     const skipNextDebounceRef = useRef(false);
 
-    const tabs = ['ДЛЯ ВАС', 'ПОГРУЗИТЕСЬ В НОВУЮ КУЛЬТУРУ', 'ПОПУЛЯРНО'];
+    const tabs = ['ДЛЯ ВАС', 'ПОГРУЗИТЕСЬ В НОВУЮ КУЛЬТУРУ', 'Популярно у местных жителей'];
 
     // Map sort option to API sort parameter
     const getSortParam = (sort: string): string => {
@@ -238,9 +238,12 @@ export const HomePage = () => {
         }
 
         try {
+            const isFirstTab = activeTab === tabs[0];
             const params: GetListRequest = {
                 q: debouncedSearchQuery || undefined,
-                sort: getSortParam(currentSort),
+                // Для первой вкладки используем выбранную сортировку,
+                // для остальных — всегда random
+                sort: isFirstTab ? getSortParam(currentSort) : 'random',
                 limit: PAGE_LIMIT,
                 offset: nextOffset,
                 ...appliedFilters,
@@ -291,7 +294,7 @@ export const HomePage = () => {
         setOffset(0);
         setHasMore(true);
         fetchEventsPage(0, true);
-    }, [debouncedSearchQuery, currentSort, appliedFilters, isInitialized]);
+    }, [debouncedSearchQuery, currentSort, appliedFilters, activeTab, isInitialized]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -308,7 +311,7 @@ export const HomePage = () => {
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, currentSort, appliedFilters]);
+    }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, currentSort, appliedFilters, activeTab]);
 
     // Сохраняем состояние ленты и позицию скролла при размонтировании
     useEffect(() => {
