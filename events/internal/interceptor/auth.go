@@ -14,26 +14,38 @@ import (
 func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
 	md, ok := metadata.FromIncomingContext(ctx)
 	if !ok {
-		return nil, sys.NewCommonError("metadata is not provided", codes.Unauthenticated)
+		logger.Info("step 1: incoming metadata missing")
+		return nil, sys.NewCommonError("metadata is not provided: no incoming context", codes.Unauthenticated)
 	}
 
+	logger.Info(fmt.Sprintf("step 2: full metadata: %+v", md))
+
 	userIdMetadata, ok := md["x-user-id"]
-	logger.Info(fmt.Sprint(userIdMetadata))
 	if !ok {
-		logger.Info("x-user-id is not provided")
-		return nil, sys.NewCommonError("metadata is not provided", codes.Unauthenticated)
+		logger.Info("step 3: x-user-id key missing")
+		return nil, sys.NewCommonError("metadata is not provided: x-user-id missing", codes.Unauthenticated)
 	}
+
+	logger.Info(fmt.Sprintf("step 4: x-user-id raw: %+v", userIdMetadata))
+
 	if len(userIdMetadata) != 1 {
-		logger.Info("x-user-id is not provided 2")
-		return nil, sys.NewCommonError("metadata is not provided", codes.Unauthenticated)
+		logger.Info(fmt.Sprintf("step 5: invalid x-user-id count: %d", len(userIdMetadata)))
+		return nil, sys.NewCommonError("metadata is not provided: invalid x-user-id count", codes.Unauthenticated)
 	}
 
 	userId, err := strconv.ParseInt(userIdMetadata[0], 10, 64)
 	if err != nil {
-		logger.Info("x-user-id is not provided 3")
-		return nil, sys.NewCommonError("metadata is not provided", codes.Unauthenticated)
+		logger.Info(fmt.Sprintf("step 6: parse error: %v", err))
+		return nil, sys.NewCommonError("metadata is not provided: invalid x-user-id value", codes.Unauthenticated)
 	}
 
+	logger.Info(fmt.Sprintf("step 7: parsed userId = %d", userId))
+
 	ctx = context.WithValue(ctx, "userId", userId)
-	return handler(ctx, req)
+
+	logger.Info("step 8: before handler")
+	resp, err := handler(ctx, req)
+	logger.Info(fmt.Sprintf("step 9: after handler, err = %v", err))
+
+	return resp, err
 }
