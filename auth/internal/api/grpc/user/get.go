@@ -7,16 +7,29 @@ import (
 	domain "github.com/M1steryO/RelocatorEvents/auth/internal/models/user"
 	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"strconv"
 )
 
 func (i *Implementation) Get(ctx context.Context, req *desc.GetRequest) (*desc.GetResponse, error) {
 	if req.Id == 0 {
-		userId, ok := ctx.Value("userId").(int64)
-
+		md, ok := metadata.FromIncomingContext(ctx)
 		if !ok {
-			return nil, errors.New("missing userId")
+			return nil, errors.New("metadata is not provided")
 		}
+		userIdMetadata, ok := md["x-user-id"]
+		if !ok {
+			return nil, errors.New("metadata is not provided")
+		}
+		if len(userIdMetadata) != 1 {
+			return nil, errors.New("metadata is not provided")
+		}
+		userId, err := strconv.ParseInt(userIdMetadata[0], 10, 64)
+		if err != nil {
+			return nil, errors.New("metadata is not provided")
+		}
+
 		req.Id = userId
 	}
 
