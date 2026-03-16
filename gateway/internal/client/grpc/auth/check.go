@@ -2,12 +2,12 @@ package auth
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
+	authProto "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/domain/auth"
 )
 
 func (c *authServiceClient) Check(ctx context.Context, accessToken, refreshToken, initData string) (*auth.AuthData, error) {
-	req := &auth_v1.CheckRequest{
+	req := &authProto.CheckRequest{
 		RefreshToken:     refreshToken,
 		AccessToken:      accessToken,
 		TelegramInitData: initData,

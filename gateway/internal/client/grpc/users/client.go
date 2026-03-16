@@ -1,12 +1,12 @@
 package users
 
-import desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
+import desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 
 type userServiceClient struct {
-	client desc.UserV1Client
+	client desc.UserServiceClient
 }
 
-func NewUserServiceClient(client desc.UserV1Client) *userServiceClient {
+func NewUserServiceClient(client desc.UserServiceClient) *userServiceClient {
 	return &userServiceClient{client: client}
 
 }

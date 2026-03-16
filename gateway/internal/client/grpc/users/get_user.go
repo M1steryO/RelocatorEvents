@@ -2,7 +2,7 @@ package users
 
 import (
 	"context"
-	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 )
 
 func (c *userServiceClient) GetUserCountry(ctx context.Context, userId int64) (string, error) {

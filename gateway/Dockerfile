@@ -13,4 +13,4 @@ WORKDIR /root/
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/gateway/source/bin/gateway .
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/gateway/source/config ./config
 
-CMD ["./gateway", "-config-path", "config/local.env"]
+CMD ["./gateway", "-config-path", "config/prod.env"]

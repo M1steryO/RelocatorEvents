@@ -2,15 +2,15 @@ package http
 
 import (
 	"context"
-	auth "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
-	user "github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
-	events "github.com/M1steryO/RelocatorEvents/events/pkg/events_v1"
-	favourites "github.com/M1steryO/RelocatorEvents/events/pkg/favourites_v1"
-	reviews "github.com/M1steryO/RelocatorEvents/events/pkg/reviews_v1"
+	"github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
+	"github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
+	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/events/v1"
+	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/favourites/v1"
+	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/reviews/v1"
 	grpcClients "github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/config"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/http/middleware"
-	media "github.com/M1steryO/RelocatorEvents/media/pkg/api/media/v1"
+	"github.com/M1steryO/RelocatorEvents/media/pkg/api/proto/media/v1"
 	"google.golang.org/grpc/metadata"
 	"strconv"
 	"strings"
@@ -67,19 +67,19 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 		grpc.WithTransportCredentials(insecure.NewCredentials()),
 	}
 
-	if err := auth.RegisterAuthV1HandlerFromEndpoint(ctx, gw, deps.AuthCfg.GetAddress(), opts); err != nil {
+	if err := auth.RegisterAuthServiceHandlerFromEndpoint(ctx, gw, deps.AuthCfg.GetAddress(), opts); err != nil {
 		return nil, err
 	}
 
-	if err := user.RegisterUserV1HandlerFromEndpoint(ctx, gw, deps.AuthCfg.GetAddress(), opts); err != nil {
+	if err := user.RegisterUserServiceHandlerFromEndpoint(ctx, gw, deps.AuthCfg.GetAddress(), opts); err != nil {
 		return nil, err
 	}
 
-	if err := events.RegisterEvent_V1HandlerFromEndpoint(ctx, gw, deps.EventsCfg.GetAddress(), opts); err != nil {
+	if err := events.RegisterEventServiceHandlerFromEndpoint(ctx, gw, deps.EventsCfg.GetAddress(), opts); err != nil {
 		return nil, err
 	}
 
-	if err := reviews.RegisterReviewsV1HandlerFromEndpoint(ctx, gw, deps.EventsCfg.GetAddress(), opts); err != nil {
+	if err := reviews.RegisterReviewsServiceHandlerFromEndpoint(ctx, gw, deps.EventsCfg.GetAddress(), opts); err != nil {
 		return nil, err
 	}
 

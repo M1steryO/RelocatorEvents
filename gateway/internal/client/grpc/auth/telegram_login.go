@@ -2,7 +2,7 @@ package auth
 
 import (
 	"context"
-	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
+	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/domain/auth"
 )
 

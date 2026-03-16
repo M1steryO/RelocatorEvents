@@ -1,8 +1,8 @@
 package app
 
 import (
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
+	authProto "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
+	userProto "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 	grpcClients "github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc/auth"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc/users"
@@ -104,7 +104,7 @@ func (s *serviceProvider) AuthServiceClient() grpcClients.AuthServiceClient {
 		if err != nil {
 			log.Fatalf("failed to connect to auth service: %s", err.Error())
 		}
-		s.authServiceClient = auth.NewAuthServiceClient(auth_v1.NewAuthV1Client(conn))
+		s.authServiceClient = auth.NewAuthServiceClient(authProto.NewAuthServiceClient(conn))
 	}
 	return s.authServiceClient
 }
@@ -118,7 +118,7 @@ func (s *serviceProvider) UserServiceClient() grpcClients.UserServiceClient {
 		if err != nil {
 			log.Fatalf("failed to connect to auth service: %s", err.Error())
 		}
-		s.userServiceClient = users.NewUserServiceClient(user_v1.NewUserV1Client(conn))
+		s.userServiceClient = users.NewUserServiceClient(userProto.NewUserServiceClient(conn))
 	}
 	return s.userServiceClient
 }

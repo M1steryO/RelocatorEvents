@@ -2,12 +2,12 @@ package auth
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/auth_v1"
+	authProto "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/domain/auth"
 )
 
 func (c *authServiceClient) GetAccessToken(ctx context.Context, refreshToken string) (auth.AuthData, error) {
-	req := &auth_v1.GetAccessTokenRequest{
+	req := &authProto.GetAccessTokenRequest{
 		RefreshToken: refreshToken,
 	}
 	resp, err := c.client.GetAccessToken(ctx, req)
