@@ -3,7 +3,7 @@ module github.com/M1steryO/RelocatorEvents/events
 go 1.25
 
 require (
-	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260205155523-c7d9c55e8bcc
+	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260316193401-315b058c6a7c
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/confluentinc/confluent-kafka-go/v2 v2.13.0
 	github.com/envoyproxy/protoc-gen-validate v1.3.0

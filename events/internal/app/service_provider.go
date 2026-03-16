@@ -2,12 +2,10 @@ package app
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/access_v1"
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/user_v1"
+	"github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/events"
 	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/reviews"
 	grpcClients "github.com/M1steryO/RelocatorEvents/events/internal/client/grpc"
-	"github.com/M1steryO/RelocatorEvents/events/internal/client/grpc/auth"
 	"github.com/M1steryO/RelocatorEvents/events/internal/client/grpc/users"
 	"github.com/M1steryO/RelocatorEvents/events/internal/config"
 	eventsConsumer "github.com/M1steryO/RelocatorEvents/events/internal/consumer/kafka/events"
@@ -42,7 +40,6 @@ type serviceProvider struct {
 	reviewRepository repository.ReviewRepository
 	favsRepository   repository.FavouritesRepository
 
-	authServiceClient grpcClients.AuthServiceClient
 	userServiceClient grpcClients.UserServiceClient
 
 	dbClient  dbclient.Client
@@ -238,20 +235,6 @@ func (s *serviceProvider) AuthServiceConfig() config.AuthServiceConfig {
 	return s.authServiceConfig
 }
 
-func (s *serviceProvider) AuthServiceClient() grpcClients.AuthServiceClient {
-	if s.authServiceClient == nil {
-		conn, err := grpc.NewClient(
-			s.AuthServiceConfig().GetAddress(),
-			grpc.WithTransportCredentials(insecure.NewCredentials()),
-			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())))
-		if err != nil {
-			log.Fatalf("failed to connect to auth service: %s", err.Error())
-		}
-		s.authServiceClient = auth.NewAuthServiceClient(access_v1.NewAccessV1Client(conn))
-	}
-	return s.authServiceClient
-}
-
 func (s *serviceProvider) UserServiceClient() grpcClients.UserServiceClient {
 	if s.userServiceClient == nil {
 		conn, err := grpc.NewClient(
@@ -261,7 +244,7 @@ func (s *serviceProvider) UserServiceClient() grpcClients.UserServiceClient {
 		if err != nil {
 			log.Fatalf("failed to connect to auth service: %s", err.Error())
 		}
-		s.userServiceClient = users.NewUserServiceClient(user_v1.NewUserV1Client(conn))
+		s.userServiceClient = users.NewUserServiceClient(user.NewUserServiceClient(conn))
 	}
 	return s.userServiceClient
 }
