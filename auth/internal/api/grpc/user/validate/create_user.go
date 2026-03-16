@@ -38,7 +38,7 @@ func ValidateUserData(req *desc.CreateRequest, telegramId *int64, telegramAuth *
 				return ErrInvalidTelegramToken
 			}
 			logger.Info("get telegram id from token: ", "id", tgId)
-			*telegramId = tgId
+			telegramId = &tgId
 
 			return nil
 		}
