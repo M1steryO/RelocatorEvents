@@ -9,10 +9,10 @@ const getEnv = (key: string, fallback: string): string => {
 };
 
 /** Base URL of the main API (auth, events, reviews). */
-// export const API_BASE_URL = getEnv('VITE_API_BASE_URL', 'http://158.160.78.14:50043');
+export const API_BASE_URL = getEnv('VITE_API_BASE_URL', 'http://158.160.78.14:50043');
 
 // // /** Base URL for media files (review images/videos). */
-// export const MEDIA_BASE_URL = getEnv('VITE_MEDIA_BASE_URL', 'http://158.160.78.14:9000/media');
+export const MEDIA_BASE_URL = getEnv('VITE_MEDIA_BASE_URL', 'http://158.160.78.14:9000/media');
 
 // export const API_BASE_URL = getEnv('VITE_API_BASE_URL', 'http://localhost:50043');
 
