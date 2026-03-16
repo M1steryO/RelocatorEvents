@@ -95,6 +95,7 @@ jobs:
           docker buildx create --use
           docker buildx build --no-cache --push --tag $REGISTRY/$IMAGE_NAME:$TAG_NAME -f auth/Dockerfile auth/
 
+
   deploy-image:
     runs-on: ubuntu-latest
     needs: build-and-push-image
