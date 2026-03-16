@@ -5,7 +5,7 @@ on:
     branches: [main, master]
     paths:
       - "parser/**"
-      - ".github/workflows/parser.yml"
+      - ".github/workflows/parser.yaml"
   pull_request:
     branches: [main, master]
     paths:
@@ -57,4 +57,3 @@ jobs:
             | xargs -r docker rmi -f || true
             docker image prune -f || true
 
-            

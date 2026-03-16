@@ -5,7 +5,7 @@ on:
     branches: [main, master]
     paths:
       - "events/**"
-      - ".github/workflows/events.yml"
+      - ".github/workflows/events.yaml"
   pull_request:
     branches: [main, master]
     paths:
@@ -117,5 +117,4 @@ jobs:
             | xargs -r docker rmi -f || true
             
 
-        
         

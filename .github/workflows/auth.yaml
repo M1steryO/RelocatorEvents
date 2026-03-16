@@ -5,7 +5,7 @@ on:
     branches: [main, master]
     paths:
       - "auth/**"
-      - ".github/workflows/auth.yml"
+      - ".github/workflows/auth.yaml"
   pull_request:
     branches: [main, master]
     paths:
