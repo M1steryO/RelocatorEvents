@@ -10,7 +10,6 @@ VALUES ('theater', 'Театр'),
        ('movies', 'Кино'),
 
        ('excursions', 'Экскурсии'),
-       ('kids_activities', 'Детям'),
        ('english_language', 'На английском'),
        ('native_language', 'На родном языке');
 
