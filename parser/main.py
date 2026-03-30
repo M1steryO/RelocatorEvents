@@ -11,17 +11,17 @@ LINKS = {
     "Грузия": {
         "yolo.ge": (
             {
-                # "https://yolo.ge/ru/posters/musical": "music",
-                # "https://yolo.ge/ru/posters/theater": "theater",
-                # "https://yolo.ge/ru/posters/festivals": "festivals",
-                # "https://yolo.ge/ru/posters/gastronomic": "gastronomic",
-                # "https://yolo.ge/ru/posters/cafe": "cafe",
-                # "https://yolo.ge/ru/posters/exhibition": "exhibition",
+                "https://yolo.ge/ru/posters/musical": "music",
+                "https://yolo.ge/ru/posters/theater": "theater",
+                "https://yolo.ge/ru/posters/festivals": "festivals",
+                "https://yolo.ge/ru/posters/gastronomic": "gastronomic",
+                "https://yolo.ge/ru/posters/cafe": "cafe",
+                "https://yolo.ge/ru/posters/exhibition": "exhibition",
                 "https://yolo.ge/ru/posters/kids": "kids",
-                # "https://yolo.ge/ru/posters/education": "education",
-                # "https://yolo.ge/ru/posters/nightlife": "nightlife",
-                # "https://yolo.ge/ru/posters/sports": "sports",
-                # "https://yolo.ge/ru/posters/movies": "movies",
+                "https://yolo.ge/ru/posters/education": "education",
+                "https://yolo.ge/ru/posters/nightlife": "nightlife",
+                "https://yolo.ge/ru/posters/sports": "sports",
+                "https://yolo.ge/ru/posters/movies": "movies",
 
             },
             parse_georgia,
