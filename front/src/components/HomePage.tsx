@@ -111,7 +111,7 @@ export const HomePage = () => {
     const PAGE_LIMIT = 20;
     const [searchQuery, setSearchQuery] = useState('');
     const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState('ДЛЯ ВАС');
+    const [activeTab, setActiveTab] = useState('Вечер для новых друзей');
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
     const [currentSort, setCurrentSort] = useState('popular');
@@ -130,7 +130,14 @@ export const HomePage = () => {
     const restoredFromSessionRef = useRef(false);
     const skipNextDebounceRef = useRef(false);
 
-    const tabs = ['ДЛЯ ВАС', 'ПОГРУЗИТЕСЬ В НОВУЮ КУЛЬТУРУ', 'Популярно у местных жителей'];
+    const tabs: Array<{ label: string; categories: string[] }> = [
+        { label: 'Вечер для новых друзей', categories: ['nightlife', 'gastronomic'] },
+        { label: 'Начните знакомство с городом', categories: ['excursions'] },
+        { label: 'Рядом с вами', categories: ['excursions'] },
+        { label: 'Для всей семьи', categories: ['kids_activities'] },
+        { label: 'На английском', categories: ['english_language'] },
+        { label: 'На родном языке', categories: ['native_language'] },
+    ];
 
     // Map sort option to API sort parameter
     const getSortParam = (sort: string): string => {
@@ -238,7 +245,8 @@ export const HomePage = () => {
         }
 
         try {
-            const isFirstTab = activeTab === tabs[0];
+            const isFirstTab = activeTab === tabs[0].label;
+            const activeTabConfig = tabs.find((tab) => tab.label === activeTab);
             const params: GetListRequest = {
                 q: debouncedSearchQuery || undefined,
                 // Для первой вкладки используем выбранную сортировку,
@@ -247,6 +255,7 @@ export const HomePage = () => {
                 limit: PAGE_LIMIT,
                 offset: nextOffset,
                 ...appliedFilters,
+                category: activeTabConfig?.categories,
             };
             const requestKey = JSON.stringify(params);
             const now = Date.now();
@@ -422,11 +431,11 @@ export const HomePage = () => {
             <div className="tabs-navigation">
                 {tabs.map((tab) => (
                     <button
-                        key={tab}
-                        className={`tab-button ${activeTab === tab ? 'active' : ''}`}
-                        onClick={() => setActiveTab(tab)}
+                        key={tab.label}
+                        className={`tab-button ${activeTab === tab.label ? 'active' : ''}`}
+                        onClick={() => setActiveTab(tab.label)}
                     >
-                        {tab}
+                        {tab.label}
                     </button>
                 ))}
             </div>
