@@ -134,7 +134,7 @@ export const HomePage = () => {
         { label: 'Вечер для новых друзей', categories: ['nightlife', 'gastronomic'] },
         { label: 'Начните знакомство с городом', categories: ['excursions'] },
         { label: 'Рядом с вами', categories: ['excursions'] },
-        { label: 'Для всей семьи', categories: ['kids_activities'] },
+        { label: 'Для всей семьи', categories: ['kids'] },
         { label: 'На английском', categories: ['english_language'] },
         { label: 'На родном языке', categories: ['native_language'] },
     ];
