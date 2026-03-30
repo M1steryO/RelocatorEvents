@@ -162,7 +162,7 @@ export const EventDetailPage = () => {
                 if (response.event.address) {
                     setAddress(response.event.address);
                     setVenueName(response.event.address.venue_name);
-                    setFullAddress(response.event.address.fullAddress);
+                    setFullAddress(response.event.address.full_address);
                     setCity(response.event.address.city);
                     setDistrict(response.event.address.district);
                     setLatitude(response.event.address.latitude);

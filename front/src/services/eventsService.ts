@@ -36,7 +36,7 @@ export interface Event {
 
 export interface Address {
     venue_name?: string;
-    fullAddress?: string;
+    full_address?: string;
     country?: string;
     city?: string;
     district?: string;
@@ -226,7 +226,7 @@ class EventsService {
             // Формируем объект address из данных ответа
             const address: Address | undefined = responseData.address || (responseData.venue_name || responseData.fullAddress || responseData.city ? {
                 venue_name: responseData.venue_name,
-                fullAddress: responseData.fullAddress,
+                full_address: responseData.fullAddress,
                 city: responseData.city,
                 country: responseData.country,
                 district: responseData.district,
