@@ -3,7 +3,7 @@ package http
 import (
 	"context"
 	"github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
+	"github.com/M1steryO/RelocatorEvents/users/pkg/api/proto/user/v1"
 	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/events/v1"
 	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/favourites/v1"
 	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/reviews/v1"
@@ -26,6 +26,7 @@ import (
 type Deps struct {
 	Auth      grpcClients.AuthServiceClient
 	AuthCfg   config.AuthServiceConfig
+	UsersCfg  config.UsersServiceConfig
 	EventsCfg config.EventsServiceConfig
 	MediaCfg  config.MediaServiceConfig
 	CORS      *middleware.CORS
@@ -71,7 +72,7 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 		return nil, err
 	}
 
-	if err := user.RegisterUserServiceHandlerFromEndpoint(ctx, gw, deps.AuthCfg.GetAddress(), opts); err != nil {
+	if err := user.RegisterUserServiceHandlerFromEndpoint(ctx, gw, deps.UsersCfg.GetAddress(), opts); err != nil {
 		return nil, err
 	}
 

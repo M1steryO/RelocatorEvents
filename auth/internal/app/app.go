@@ -9,7 +9,6 @@ import (
 	"github.com/M1steryO/RelocatorEvents/auth/internal/interceptor"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/metric"
 	descAuth "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
-	desc "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
 	"github.com/M1steryO/platform_common/pkg/closer"
 	grpcMiddleware "github.com/grpc-ecosystem/go-grpc-middleware"
 	"github.com/grpc-ecosystem/grpc-gateway/v2/runtime"
@@ -161,7 +160,6 @@ func (a *App) initGRPCServer(ctx context.Context) error {
 
 	reflection.Register(a.grpcServer)
 
-	desc.RegisterUserServiceServer(a.grpcServer, a.serviceProvider.UserImpl(ctx))
 	descAuth.RegisterAuthServiceServer(a.grpcServer, a.serviceProvider.AuthImpl(ctx))
 
 	return nil
@@ -190,11 +188,6 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 	if err != nil {
 		return err
 	}
-	err = desc.RegisterUserServiceHandlerFromEndpoint(ctx, mux, a.serviceProvider.GRPCConfig().Address(), opts)
-	if err != nil {
-		return err
-	}
-
 	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// CORS заголовки
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:5173")

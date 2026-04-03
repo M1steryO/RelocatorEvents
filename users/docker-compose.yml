@@ -1,0 +1,24 @@
+services:
+  users_migrator:
+    build:
+      context: .
+      dockerfile: migration.Dockerfile.local
+    restart: on-failure
+    depends_on:
+      auth_pg:
+        condition: service_healthy
+    networks: [reloca]
+
+  users-server-container:
+    build:
+      context: .
+      dockerfile: ./Dockerfile.local
+    ports:
+      - "50052:50052"
+      - "50054:50054"
+    depends_on:
+      auth_pg:
+        condition: service_healthy
+      users_migrator:
+        condition: service_completed_successfully
+    networks: [reloca]

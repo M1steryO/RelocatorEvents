@@ -2,6 +2,7 @@ name: relocatorevents
 
 include:
   - path: ./auth/docker-compose.yml
+  - path: ./users/docker-compose.yml
   - path: ./events/docker-compose.yml
   - path: ./media/docker-compose.yml
   - path: ./gateway/docker-compose.yml

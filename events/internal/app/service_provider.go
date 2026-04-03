@@ -2,7 +2,7 @@ package app
 
 import (
 	"context"
-	"github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
+	"github.com/M1steryO/RelocatorEvents/users/pkg/api/proto/user/v1"
 	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/events"
 	"github.com/M1steryO/RelocatorEvents/events/internal/api/grpc/reviews"
 	grpcClients "github.com/M1steryO/RelocatorEvents/events/internal/client/grpc"
@@ -34,7 +34,8 @@ type serviceProvider struct {
 	loggerConfig      config.LoggerConfig
 	promConfig        config.PromConfig
 	kafkaConfig       config.KafkaConfig
-	authServiceConfig config.AuthServiceConfig
+	authServiceConfig  config.AuthServiceConfig
+	usersServiceConfig config.UsersServiceConfig
 
 	eventRepository  repository.EventRepository
 	reviewRepository repository.ReviewRepository
@@ -235,14 +236,25 @@ func (s *serviceProvider) AuthServiceConfig() config.AuthServiceConfig {
 	return s.authServiceConfig
 }
 
+func (s *serviceProvider) UsersServiceConfig() config.UsersServiceConfig {
+	if s.usersServiceConfig == nil {
+		cfg, err := config.NewUsersServiceConfig()
+		if err != nil {
+			log.Fatalf("failed to get users service config: %s", err.Error())
+		}
+		s.usersServiceConfig = cfg
+	}
+	return s.usersServiceConfig
+}
+
 func (s *serviceProvider) UserServiceClient() grpcClients.UserServiceClient {
 	if s.userServiceClient == nil {
 		conn, err := grpc.NewClient(
-			s.AuthServiceConfig().GetAddress(),
+			s.UsersServiceConfig().GetAddress(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())))
 		if err != nil {
-			log.Fatalf("failed to connect to auth service: %s", err.Error())
+			log.Fatalf("failed to connect to users service: %s", err.Error())
 		}
 		s.userServiceClient = users.NewUserServiceClient(user.NewUserServiceClient(conn))
 	}

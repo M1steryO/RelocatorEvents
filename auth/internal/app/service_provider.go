@@ -2,47 +2,41 @@ package app
 
 import (
 	"context"
+	"log"
+
 	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/auth"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/api/grpc/user"
+	usersclient "github.com/M1steryO/RelocatorEvents/auth/internal/client/grpc/users"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/config"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/core/utils/telegram"
-	"github.com/M1steryO/RelocatorEvents/auth/internal/repository"
-	db "github.com/M1steryO/RelocatorEvents/auth/internal/repository/user"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/service"
 	authSvc "github.com/M1steryO/RelocatorEvents/auth/internal/service/auth"
-	serv "github.com/M1steryO/RelocatorEvents/auth/internal/service/user"
+	userproto "github.com/M1steryO/RelocatorEvents/users/pkg/api/proto/user/v1"
 	"github.com/M1steryO/platform_common/pkg/closer"
-	dbclient "github.com/M1steryO/platform_common/pkg/db"
-	"github.com/M1steryO/platform_common/pkg/db/pg"
-	"github.com/M1steryO/platform_common/pkg/db/transaction"
-	"log"
+	"github.com/grpc-ecosystem/grpc-opentracing/go/otgrpc"
+	"github.com/opentracing/opentracing-go"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 type serviceProvider struct {
-	dbConfig       config.DBConfig
-	grpcConfig     config.GRPCConfig
-	httpConfig     config.HTTPConfig
-	loggerConfig   config.LoggerConfig
-	promConfig     config.PromConfig
-	telegramConfig config.TelegramConfig
-	jwtConfig      config.JWTConfig
-
-	userRepository repository.UserRepository
-	dbClient       dbclient.Client
-	txManager      dbclient.TxManager
-
-	userService service.UserService
-	authService service.AuthService
-
-	telegramAuth *telegram.TelegramAuthenticator
-
-	userImpl *user.Implementation
-	authImpl *auth.Implementation
+	grpcConfig       config.GRPCConfig
+	httpConfig       config.HTTPConfig
+	loggerConfig     config.LoggerConfig
+	promConfig       config.PromConfig
+	telegramConfig   config.TelegramConfig
+	jwtConfig        config.JWTConfig
+	usersServiceCfg  config.UsersServiceConfig
+	usersGRPCConn    *grpc.ClientConn
+	userService      service.UserService
+	authService      service.AuthService
+	telegramAuth     *telegram.TelegramAuthenticator
+	authImpl         *auth.Implementation
 }
 
 func newServiceProvider() *serviceProvider {
 	return &serviceProvider{}
 }
+
 func (s *serviceProvider) TelegramConfig() config.TelegramConfig {
 	if s.telegramConfig == nil {
 		cfg, err := config.NewTelegramConfig()
@@ -63,19 +57,6 @@ func (s *serviceProvider) LoggerConfig() config.LoggerConfig {
 		s.loggerConfig = cfg
 	}
 	return s.loggerConfig
-}
-
-func (s *serviceProvider) DBConfig() config.DBConfig {
-	if s.dbConfig == nil {
-		cfg, err := config.NewDBConfig()
-		if err != nil {
-			log.Fatalf("failed to get pg config: %s", err.Error())
-		}
-
-		s.dbConfig = cfg
-	}
-
-	return s.dbConfig
 }
 
 func (s *serviceProvider) HTTPConfig() config.HTTPConfig {
@@ -111,28 +92,31 @@ func (s *serviceProvider) JWTConfig() config.JWTConfig {
 	return s.jwtConfig
 }
 
-func (s *serviceProvider) DBCClient(ctx context.Context) dbclient.Client {
-	if s.dbClient == nil {
-		cl, err := pg.New(ctx, s.DBConfig().GetDSN())
+func (s *serviceProvider) UsersServiceConfig() config.UsersServiceConfig {
+	if s.usersServiceCfg == nil {
+		cfg, err := config.NewUsersServiceConfig()
 		if err != nil {
-			log.Fatalf("failed to connect to db: %s", err.Error())
+			log.Fatalf("failed to get users service config: %s", err.Error())
 		}
-		err = cl.DB().Ping(ctx)
-		if err != nil {
-			log.Fatalf("failed to ping db: %s", err.Error())
-		}
-		s.dbClient = cl
-		closer.Add(cl.Close)
+		s.usersServiceCfg = cfg
 	}
-	return s.dbClient
-
+	return s.usersServiceCfg
 }
 
-func (s *serviceProvider) TxManager(ctx context.Context) dbclient.TxManager {
-	if s.txManager == nil {
-		s.txManager = transaction.NewTxManager(s.DBCClient(ctx).DB())
+func (s *serviceProvider) UsersGRPCConn(ctx context.Context) *grpc.ClientConn {
+	if s.usersGRPCConn == nil {
+		conn, err := grpc.NewClient(
+			s.UsersServiceConfig().GetAddress(),
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
+			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())),
+		)
+		if err != nil {
+			log.Fatalf("failed to connect to users service: %s", err.Error())
+		}
+		s.usersGRPCConn = conn
+		closer.Add(conn.Close)
 	}
-	return s.txManager
+	return s.usersGRPCConn
 }
 
 func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
@@ -148,32 +132,13 @@ func (s *serviceProvider) GRPCConfig() config.GRPCConfig {
 	return s.grpcConfig
 }
 
-func (s *serviceProvider) UserRepository(ctx context.Context) repository.UserRepository {
-	if s.userRepository == nil {
-		s.userRepository = db.NewUserRepository(s.DBCClient(ctx))
-	}
-
-	return s.userRepository
-}
-
 func (s *serviceProvider) UserService(ctx context.Context) service.UserService {
 	if s.userService == nil {
-		s.userService = serv.NewUserService(
-			s.UserRepository(ctx),
-			s.TxManager(ctx),
-		)
+		cli := userproto.NewUserServiceClient(s.UsersGRPCConn(ctx))
+		s.userService = usersclient.NewUserService(cli)
 	}
 
 	return s.userService
-}
-
-func (s *serviceProvider) UserImpl(ctx context.Context) *user.Implementation {
-	if s.userImpl == nil {
-
-		s.userImpl = user.NewUserImplementation(s.UserService(ctx), s.TelegramAuth(ctx))
-	}
-
-	return s.userImpl
 }
 
 func (s *serviceProvider) TelegramAuth(ctx context.Context) *telegram.TelegramAuthenticator {

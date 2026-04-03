@@ -32,8 +32,8 @@ services:
     ports:
       - "50061:50061"
     build:
-      context: .
-      dockerfile: ./Dockerfile.local
+      context: ..
+      dockerfile: events/Dockerfile.local
     depends_on:
       auth_pg:
         condition: service_healthy

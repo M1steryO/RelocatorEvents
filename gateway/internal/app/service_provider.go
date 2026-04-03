@@ -2,7 +2,7 @@ package app
 
 import (
 	authProto "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
-	userProto "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/user/v1"
+	userProto "github.com/M1steryO/RelocatorEvents/users/pkg/api/proto/user/v1"
 	grpcClients "github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc/auth"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/client/grpc/users"
@@ -19,8 +19,9 @@ type serviceProvider struct {
 	telegramConfig      config.TelegramConfig
 	loggerConfig        config.LoggerConfig
 	authServiceConfig   config.AuthServiceConfig
-	eventsServiceConfig config.AuthServiceConfig
+	eventsServiceConfig config.EventsServiceConfig
 	mediaServiceConfig  config.MediaServiceConfig
+	usersServiceConfig  config.UsersServiceConfig
 
 	authServiceClient grpcClients.AuthServiceClient
 	userServiceClient grpcClients.UserServiceClient
@@ -95,6 +96,17 @@ func (s *serviceProvider) MediaServiceConfig() config.MediaServiceConfig {
 	return s.mediaServiceConfig
 }
 
+func (s *serviceProvider) UsersServiceConfig() config.UsersServiceConfig {
+	if s.usersServiceConfig == nil {
+		cfg, err := config.NewUsersServiceConfig()
+		if err != nil {
+			log.Fatalf("failed to get users service config: %s", err.Error())
+		}
+		s.usersServiceConfig = cfg
+	}
+	return s.usersServiceConfig
+}
+
 func (s *serviceProvider) AuthServiceClient() grpcClients.AuthServiceClient {
 	if s.authServiceClient == nil {
 		conn, err := grpc.NewClient(
@@ -112,11 +124,11 @@ func (s *serviceProvider) AuthServiceClient() grpcClients.AuthServiceClient {
 func (s *serviceProvider) UserServiceClient() grpcClients.UserServiceClient {
 	if s.userServiceClient == nil {
 		conn, err := grpc.NewClient(
-			s.AuthServiceConfig().GetAddress(),
+			s.UsersServiceConfig().GetAddress(),
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 			grpc.WithUnaryInterceptor(otgrpc.OpenTracingClientInterceptor(opentracing.GlobalTracer())))
 		if err != nil {
-			log.Fatalf("failed to connect to auth service: %s", err.Error())
+			log.Fatalf("failed to connect to users service: %s", err.Error())
 		}
 		s.userServiceClient = users.NewUserServiceClient(userProto.NewUserServiceClient(conn))
 	}

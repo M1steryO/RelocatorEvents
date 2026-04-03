@@ -99,6 +99,7 @@ func (a *App) initHTTPServer(ctx context.Context) error {
 		CORS:      cors,
 		Auth:      a.serviceProvider.AuthServiceClient(),
 		AuthCfg:   a.serviceProvider.AuthServiceConfig(),
+		UsersCfg:  a.serviceProvider.UsersServiceConfig(),
 		EventsCfg: a.serviceProvider.EventsServiceConfig(),
 		MediaCfg:  a.serviceProvider.MediaServiceConfig(),
 	})
