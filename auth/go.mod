@@ -5,7 +5,7 @@ go 1.24.0
 toolchain go1.24.2
 
 require (
-	github.com/M1steryO/RelocatorEvents/users v0.0.0
+	github.com/M1steryO/RelocatorEvents/users v0.0.0-20260403171720-b43465fe18be
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/fatih/color v1.18.0
@@ -22,8 +22,6 @@ require (
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 )
-
-replace github.com/M1steryO/RelocatorEvents/users => ../users
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect

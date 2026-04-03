@@ -2,7 +2,6 @@ FROM golang:1.24-alpine AS builder
 
 WORKDIR /src
 COPY auth /src/auth
-COPY users /src/users
 WORKDIR /src/auth
 
 RUN go mod download

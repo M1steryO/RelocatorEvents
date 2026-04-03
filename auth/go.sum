@@ -1,5 +1,7 @@
 cloud.google.com/go v0.26.0/go.mod h1:aQUYkXzVsufM+DwF1aE+0xfcU+56JwCaLick0ClmMTw=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/M1steryO/RelocatorEvents/users v0.0.0-20260403171720-b43465fe18be h1:rrcUDkHA9Tu4TkDMubeVxqZWzIypNs4Jpn8DwBnRX/M=
+github.com/M1steryO/RelocatorEvents/users v0.0.0-20260403171720-b43465fe18be/go.mod h1:CWX5/v/2AdIYrZy4R97iA2T1Ubs5YuB6UrY1gRMV4q8=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2 h1:RJRGxQmBiuthNbuXj7MN7C2NStL45Ckfo89CXkOc+qY=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2/go.mod h1:sY5taDuxCRvhPTf/pFEqShY+rHvH6VG8UM/ATXoB1aI=
 github.com/benbjohnson/clock v1.1.0/go.mod h1:J11/hYXuz8f4ySSvYwY0FKfm+ezbsZBKZxNJlLklBHA=
