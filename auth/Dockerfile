@@ -10,8 +10,7 @@ RUN go build -o ./bin/auth cmd/auth/main.go
 
 FROM alpine:latest
 
-WORKDIR /root/
-
+WORKDIR /root
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/auth/source/bin/auth .
 COPY --from=builder /m1stery18/github.com/RelocatorEvents/auth/source/config ./config
 
