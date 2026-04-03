@@ -3,8 +3,7 @@ module github.com/M1steryO/RelocatorEvents/events
 go 1.25
 
 require (
-	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260316193401-315b058c6a7c
-	github.com/M1steryO/RelocatorEvents/users v0.0.0
+	github.com/M1steryO/RelocatorEvents/users v0.0.0-20260403171720-b43465fe18be
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/confluentinc/confluent-kafka-go/v2 v2.13.0
 	github.com/envoyproxy/protoc-gen-validate v1.3.0
@@ -19,13 +18,10 @@ require (
 	github.com/pkg/errors v0.9.1
 	github.com/prometheus/client_golang v1.23.2
 	github.com/sony/gobreaker v1.0.0
-	golang.org/x/net v0.49.0
 	google.golang.org/genproto/googleapis/api v0.0.0-20260203192932-546029d2fa20
 	google.golang.org/grpc v1.78.0
 	google.golang.org/protobuf v1.36.11
 )
-
-replace github.com/M1steryO/RelocatorEvents/users => ../users
 
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
@@ -44,8 +40,10 @@ require (
 	github.com/prometheus/client_model v0.6.2 // indirect
 	github.com/prometheus/common v0.66.1 // indirect
 	github.com/prometheus/procfs v0.16.1 // indirect
+	github.com/stretchr/objx v0.5.2 // indirect
 	go.yaml.in/yaml/v2 v2.4.2 // indirect
 	golang.org/x/crypto v0.47.0 // indirect
+	golang.org/x/net v0.49.0 // indirect
 	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/text v0.33.0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260128011058-8636f8732409 // indirect
