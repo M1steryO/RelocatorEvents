@@ -126,6 +126,8 @@ func (s *repo) GetList(ctx context.Context, params *domain.SearchParams, country
 				q.Query += " ORDER BY RANDOM()"
 				break
 			}
+		} else {
+			q.Query += " ORDER BY created_at DESC"
 		}
 		if params.Offset != nil {
 			q.Query += fmt.Sprintf(" OFFSET $%d", idx)

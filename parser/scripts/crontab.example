@@ -1,0 +1,7 @@
+# Вручную (или после переноса сервера) проще переустановить:
+#   ./parser/scripts/install-parser-cron.sh
+# либо под root:
+#   sudo ./parser/scripts/install-parser-cron.sh --system
+#
+# Расписание по умолчанию: 12:00 и 20:00. Свой вариант:
+#   PARSER_CRON_SCHEDULE='0 9,21 * * *' ./install-parser-cron.sh
