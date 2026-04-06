@@ -12,4 +12,4 @@ COPY --from=builder /src/auth/bin/auth .
 COPY --from=builder /src/auth/config ./config
 
 CMD ["./auth", "--config-path", "config/prod.env"]
-CMD ["./auth", "--config-path", "config/prod.env"]
+
