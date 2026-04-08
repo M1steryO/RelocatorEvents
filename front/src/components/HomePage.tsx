@@ -130,6 +130,7 @@ export const HomePage = () => {
     const [isInitialized, setIsInitialized] = useState(false);
     const [isUserInterestsReady, setIsUserInterestsReady] = useState(false);
     const [isTabOverrideActive, setIsTabOverrideActive] = useState(false);
+    const tabOverrideBaseInterestsRef = useRef<string[] | null>(null);
     const restoredFromSessionRef = useRef(false);
     const skipNextDebounceRef = useRef(false);
 
@@ -480,15 +481,49 @@ export const HomePage = () => {
                 {tabs.map((tab) => (
                     <button
                         key={tab.label}
-                        className={`tab-button ${activeTab === tab.label ? 'active' : ''}`}
+                        className={`tab-button ${isTabOverrideActive && activeTab === tab.label ? 'active' : ''}`}
                         onClick={() => {
                             // Повторный клик по активному табу снимает tab-фильтр
                             if (isTabOverrideActive && activeTab === tab.label) {
                                 setIsTabOverrideActive(false);
+                                const baseInterests = tabOverrideBaseInterestsRef.current ?? [];
+                                setAppliedFilters((prev) => {
+                                    const next = { ...prev };
+                                    if (baseInterests.length > 0) {
+                                        next.category = baseInterests;
+                                    } else {
+                                        delete next.category;
+                                    }
+                                    return next;
+                                });
+                                setUiFilters((prev) => ({
+                                    cities: prev?.cities || [],
+                                    districts: prev?.districts || [],
+                                    priceRange: prev?.priceRange || [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
+                                    dateType: prev?.dateType ?? null,
+                                    weekdays: prev?.weekdays ?? false,
+                                    exactDate: prev?.exactDate || '',
+                                    formats: prev?.formats || [],
+                                    interests: baseInterests,
+                                }));
                                 return;
+                            }
+                            if (!isTabOverrideActive) {
+                                tabOverrideBaseInterestsRef.current = uiFilters?.interests ?? appliedFilters.category ?? [];
                             }
                             setActiveTab(tab.label);
                             setIsTabOverrideActive(true);
+                            setAppliedFilters((prev) => ({ ...prev, category: tab.categories }));
+                            setUiFilters((prev) => ({
+                                cities: prev?.cities || [],
+                                districts: prev?.districts || [],
+                                priceRange: prev?.priceRange || [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
+                                dateType: prev?.dateType ?? null,
+                                weekdays: prev?.weekdays ?? false,
+                                exactDate: prev?.exactDate || '',
+                                formats: prev?.formats || [],
+                                interests: tab.categories,
+                            }));
                         }}
                     >
                         {tab.label}
@@ -581,6 +616,7 @@ export const HomePage = () => {
                 initialFilters={uiFilters}
                 onApply={(filters) => {
                     setIsTabOverrideActive(false);
+                    tabOverrideBaseInterestsRef.current = null;
                     setUiFilters(filters);
                     const apiFilters: GetListRequest = {};
 
