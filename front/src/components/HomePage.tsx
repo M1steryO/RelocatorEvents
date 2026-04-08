@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventsService } from '../services/eventsService';
+import { authService } from '../services/authService';
 import type { Event as ServerEvent, GetListRequest, FiltersData } from '../services/eventsService';
 import { FiltersModal, type FiltersState } from './FiltersModal';
 import { SortModal } from './SortModal';
 import { NotFoundCard } from './NotFoundCard';
 import { useFavourites } from '../contexts/FavouritesContext';
-import { useAuth } from '../contexts/AuthContext';
 import './HomePage.css';
 
 interface DisplayEvent {
@@ -108,7 +108,6 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
 
 export const HomePage = () => {
     const navigate = useNavigate();
-    const { user } = useAuth();
     const { isFavourite, toggleFavourite } = useFavourites();
     const PAGE_LIMIT = 20;
     const [searchQuery, setSearchQuery] = useState('');
@@ -129,15 +128,16 @@ export const HomePage = () => {
     const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
     const lastRequestRef = useRef<{ key: string; time: number } | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
+    const [isUserInterestsReady, setIsUserInterestsReady] = useState(false);
+    const [isTabOverrideActive, setIsTabOverrideActive] = useState(false);
     const restoredFromSessionRef = useRef(false);
     const skipNextDebounceRef = useRef(false);
-    const autoAppliedUserInterestsRef = useRef(false);
 
     const tabs: Array<{ label: string; categories: string[] }> = [
         { label: 'Вечер для новых друзей', categories: ['nightlife', 'gastronomic'] },
         { label: 'Начните знакомство с городом', categories: ['excursions'] },
         { label: 'Рядом с вами', categories: ['excursions'] },
-        { label: 'Для всей семьи', categories: ['kids'] },
+        { label: 'Для всей семьи', categories: ['kids_activities'] },
         { label: 'На английском', categories: ['english_language'] },
         { label: 'На родном языке', categories: ['native_language'] },
     ];
@@ -220,6 +220,52 @@ export const HomePage = () => {
         }
     }, []);
 
+    // Старт HomePage: категории из /v1/user (info.interests[].code)
+    // До инициализации этих категорий первый запрос списка не отправляем.
+    useEffect(() => {
+        if (!isInitialized) {
+            return;
+        }
+        if (!isUserInterestsReady) {
+            return;
+        }
+        if (restoredFromSessionRef.current) {
+            setIsUserInterestsReady(true);
+            return;
+        }
+
+        let cancelled = false;
+        const loadUserInterests = async () => {
+            try {
+                const userData = await authService.getCurrentUser();
+                if (cancelled) return;
+                const interestCodes = (userData.interests || []).filter(Boolean);
+                if (interestCodes.length > 0) {
+                    setAppliedFilters((prev) => ({ ...prev, category: interestCodes }));
+                    setUiFilters((prev) => ({
+                        cities: prev?.cities || [],
+                        districts: prev?.districts || [],
+                        priceRange: prev?.priceRange || [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
+                        dateType: prev?.dateType ?? null,
+                        weekdays: prev?.weekdays ?? false,
+                        exactDate: prev?.exactDate || '',
+                        formats: prev?.formats || [],
+                        interests: interestCodes,
+                    }));
+                }
+            } catch {
+                // неавторизованный пользователь или ошибка — просто не предзаполняем
+            } finally {
+                if (!cancelled) setIsUserInterestsReady(true);
+            }
+        };
+
+        loadUserInterests();
+        return () => {
+            cancelled = true;
+        };
+    }, [isInitialized, availableFilters?.min_price, availableFilters?.max_price]);
+
     // Debounce search input to avoid sending requests on every keystroke
     useEffect(() => {
         if (!isInitialized) {
@@ -250,6 +296,8 @@ export const HomePage = () => {
         try {
             const isFirstTab = activeTab === tabs[0].label;
             const activeTabConfig = tabs.find((tab) => tab.label === activeTab);
+            const categoriesFromFilters = appliedFilters.category;
+            const categoriesFromTab = isTabOverrideActive ? activeTabConfig?.categories : undefined;
             const params: GetListRequest = {
                 q: debouncedSearchQuery || undefined,
                 // Для первой вкладки используем выбранную сортировку,
@@ -258,7 +306,7 @@ export const HomePage = () => {
                 limit: PAGE_LIMIT,
                 offset: nextOffset,
                 ...appliedFilters,
-                category: activeTabConfig?.categories,
+                category: categoriesFromTab ?? categoriesFromFilters,
             };
             const requestKey = JSON.stringify(params);
             const now = Date.now();
@@ -306,53 +354,11 @@ export const HomePage = () => {
         setOffset(0);
         setHasMore(true);
         fetchEventsPage(0, true);
-    }, [debouncedSearchQuery, currentSort, appliedFilters, activeTab, isInitialized]);
-
-    // Автоматически применяем категории по интересам пользователя на главной
-    // только один раз и только если пользователь еще не выбирал интересы вручную.
-    useEffect(() => {
-        if (!isInitialized || autoAppliedUserInterestsRef.current) {
-            return;
-        }
-
-        const userInterests = user?.interests ?? [];
-        if (userInterests.length === 0) {
-            return;
-        }
-
-        if ((uiFilters?.interests?.length ?? 0) > 0 || (appliedFilters.category?.length ?? 0) > 0) {
-            autoAppliedUserInterestsRef.current = true;
-            return;
-        }
-
-        setUiFilters((prev) => {
-            if (prev) {
-                return {
-                    ...prev,
-                    interests: userInterests,
-                };
-            }
-            return {
-                cities: [],
-                districts: [],
-                priceRange: [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
-                dateType: null,
-                weekdays: false,
-                exactDate: '',
-                formats: [],
-                interests: userInterests,
-            };
-        });
-        setAppliedFilters((prev) => ({
-            ...prev,
-            category: userInterests,
-        }));
-        autoAppliedUserInterestsRef.current = true;
-    }, [isInitialized, user?.interests, uiFilters, appliedFilters.category, availableFilters]);
+    }, [debouncedSearchQuery, currentSort, appliedFilters, activeTab, isInitialized, isUserInterestsReady]);
 
     useEffect(() => {
         const handleScroll = () => {
-            if (isLoading || isLoadingMore || !hasMore) {
+            if (isLoading || isLoadingMore || !hasMore || !isUserInterestsReady) {
                 return;
             }
 
@@ -365,7 +371,7 @@ export const HomePage = () => {
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, currentSort, appliedFilters, activeTab]);
+    }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, currentSort, appliedFilters, activeTab, isUserInterestsReady]);
 
     // Сохраняем состояние ленты и позицию скролла при размонтировании
     useEffect(() => {
@@ -478,7 +484,21 @@ export const HomePage = () => {
                     <button
                         key={tab.label}
                         className={`tab-button ${activeTab === tab.label ? 'active' : ''}`}
-                        onClick={() => setActiveTab(tab.label)}
+                        onClick={() => {
+                            setActiveTab(tab.label);
+                            setIsTabOverrideActive(true);
+                            setAppliedFilters((prev) => ({ ...prev, category: tab.categories }));
+                            setUiFilters((prev) => ({
+                                cities: prev?.cities || [],
+                                districts: prev?.districts || [],
+                                priceRange: prev?.priceRange || [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
+                                dateType: prev?.dateType ?? null,
+                                weekdays: prev?.weekdays ?? false,
+                                exactDate: prev?.exactDate || '',
+                                formats: prev?.formats || [],
+                                interests: tab.categories,
+                            }));
+                        }}
                     >
                         {tab.label}
                     </button>
@@ -569,6 +589,7 @@ export const HomePage = () => {
                 availableFilters={availableFilters || undefined}
                 initialFilters={uiFilters}
                 onApply={(filters) => {
+                    setIsTabOverrideActive(false);
                     setUiFilters(filters);
                     const apiFilters: GetListRequest = {};
 

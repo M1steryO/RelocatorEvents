@@ -318,7 +318,7 @@ class AuthService {
                     telegramInitData?: string;
                     country?: string;
                     city?: string;
-                    interests?: string[];
+                    interests?: Array<string | { code?: string; title?: string }>;
                     role?: string;
                 };
                 createdAt?: string;
@@ -326,13 +326,23 @@ class AuthService {
             };
         }>(endpoint);
         
+        const rawInterests = response.user.info.interests || [];
+        const normalizedInterests = rawInterests
+            .map((interest) => {
+                if (typeof interest === 'string') {
+                    return interest;
+                }
+                return interest?.code || '';
+            })
+            .filter((code): code is string => Boolean(code));
+
         // Transform server response to expected format
         return {
             id: parseInt(response.user.id, 10),
             name: response.user.info.name,
             country: response.user.info.country || undefined,
             city: response.user.info.city || undefined,
-            interests: response.user.info.interests || [],
+            interests: normalizedInterests,
             collections: [], // Collections not in response, keeping for compatibility
         };
     }
