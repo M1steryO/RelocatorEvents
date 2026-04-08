@@ -226,9 +226,6 @@ export const HomePage = () => {
         if (!isInitialized) {
             return;
         }
-        if (!isUserInterestsReady) {
-            return;
-        }
         if (restoredFromSessionRef.current) {
             setIsUserInterestsReady(true);
             return;
@@ -298,11 +295,11 @@ export const HomePage = () => {
             const activeTabConfig = tabs.find((tab) => tab.label === activeTab);
             const categoriesFromFilters = appliedFilters.category;
             const categoriesFromTab = isTabOverrideActive ? activeTabConfig?.categories : undefined;
+            const shouldUseRandomByTab = isTabOverrideActive && !isFirstTab;
             const params: GetListRequest = {
                 q: debouncedSearchQuery || undefined,
-                // Для первой вкладки используем выбранную сортировку,
-                // для остальных — всегда random
-                sort: isFirstTab ? getSortParam(currentSort) : 'random',
+                // random только при активном tab-override и не для первой вкладки
+                sort: shouldUseRandomByTab ? 'random' : getSortParam(currentSort),
                 limit: PAGE_LIMIT,
                 offset: nextOffset,
                 ...appliedFilters,
@@ -485,19 +482,13 @@ export const HomePage = () => {
                         key={tab.label}
                         className={`tab-button ${activeTab === tab.label ? 'active' : ''}`}
                         onClick={() => {
+                            // Повторный клик по активному табу снимает tab-фильтр
+                            if (isTabOverrideActive && activeTab === tab.label) {
+                                setIsTabOverrideActive(false);
+                                return;
+                            }
                             setActiveTab(tab.label);
                             setIsTabOverrideActive(true);
-                            setAppliedFilters((prev) => ({ ...prev, category: tab.categories }));
-                            setUiFilters((prev) => ({
-                                cities: prev?.cities || [],
-                                districts: prev?.districts || [],
-                                priceRange: prev?.priceRange || [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
-                                dateType: prev?.dateType ?? null,
-                                weekdays: prev?.weekdays ?? false,
-                                exactDate: prev?.exactDate || '',
-                                formats: prev?.formats || [],
-                                interests: tab.categories,
-                            }));
                         }}
                     >
                         {tab.label}
