@@ -49,6 +49,7 @@ export const Profile = () => {
             name: userData.name,
             country: userData.country,
             city: userData.city,
+            interests: userData.interests,
           };
           
           // Only update if data actually changed
@@ -57,7 +58,8 @@ export const Profile = () => {
             user.id !== newUserData.id ||
             user.name !== newUserData.name ||
             user.country !== newUserData.country ||
-            user.city !== newUserData.city
+            user.city !== newUserData.city ||
+            JSON.stringify(user.interests || []) !== JSON.stringify(newUserData.interests || [])
           ) {
             setUser(newUserData);
           }

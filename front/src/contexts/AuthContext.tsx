@@ -11,6 +11,7 @@ interface User {
   name: string;
   country?: string;
   city?: string;
+  interests?: string[];
 }
 
 interface AuthContextType {

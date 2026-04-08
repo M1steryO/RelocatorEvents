@@ -6,6 +6,7 @@ import { FiltersModal, type FiltersState } from './FiltersModal';
 import { SortModal } from './SortModal';
 import { NotFoundCard } from './NotFoundCard';
 import { useFavourites } from '../contexts/FavouritesContext';
+import { useAuth } from '../contexts/AuthContext';
 import './HomePage.css';
 
 interface DisplayEvent {
@@ -107,6 +108,7 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
 
 export const HomePage = () => {
     const navigate = useNavigate();
+    const { user } = useAuth();
     const { isFavourite, toggleFavourite } = useFavourites();
     const PAGE_LIMIT = 20;
     const [searchQuery, setSearchQuery] = useState('');
@@ -129,6 +131,7 @@ export const HomePage = () => {
     const [isInitialized, setIsInitialized] = useState(false);
     const restoredFromSessionRef = useRef(false);
     const skipNextDebounceRef = useRef(false);
+    const autoAppliedUserInterestsRef = useRef(false);
 
     const tabs: Array<{ label: string; categories: string[] }> = [
         { label: 'Вечер для новых друзей', categories: ['nightlife', 'gastronomic'] },
@@ -304,6 +307,48 @@ export const HomePage = () => {
         setHasMore(true);
         fetchEventsPage(0, true);
     }, [debouncedSearchQuery, currentSort, appliedFilters, activeTab, isInitialized]);
+
+    // Автоматически применяем категории по интересам пользователя на главной
+    // только один раз и только если пользователь еще не выбирал интересы вручную.
+    useEffect(() => {
+        if (!isInitialized || autoAppliedUserInterestsRef.current) {
+            return;
+        }
+
+        const userInterests = user?.interests ?? [];
+        if (userInterests.length === 0) {
+            return;
+        }
+
+        if ((uiFilters?.interests?.length ?? 0) > 0 || (appliedFilters.category?.length ?? 0) > 0) {
+            autoAppliedUserInterestsRef.current = true;
+            return;
+        }
+
+        setUiFilters((prev) => {
+            if (prev) {
+                return {
+                    ...prev,
+                    interests: userInterests,
+                };
+            }
+            return {
+                cities: [],
+                districts: [],
+                priceRange: [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
+                dateType: null,
+                weekdays: false,
+                exactDate: '',
+                formats: [],
+                interests: userInterests,
+            };
+        });
+        setAppliedFilters((prev) => ({
+            ...prev,
+            category: userInterests,
+        }));
+        autoAppliedUserInterestsRef.current = true;
+    }, [isInitialized, user?.interests, uiFilters, appliedFilters.category, availableFilters]);
 
     useEffect(() => {
         const handleScroll = () => {

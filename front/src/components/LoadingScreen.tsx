@@ -37,6 +37,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
                         name: data.name,
                         country: data.country,
                         city: data.city,
+                        interests: data.interests,
                     });
                     part2ShownAtRef.current = Date.now();
                     setIsFadingOut(true);

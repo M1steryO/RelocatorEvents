@@ -197,6 +197,7 @@ export const RegistrationForm = ({onSuccess}: RegistrationFormProps) => {
                         name: userData.name,
                         country: userData.country,
                         city: userData.city,
+                        interests: userData.interests,
                     });
                 }
             } catch (error) {
