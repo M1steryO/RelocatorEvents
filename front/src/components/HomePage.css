@@ -162,6 +162,7 @@
 
 .tab-button:hover {
     color: #414141;
+    border-bottom: 2px solid transparent;
 }
 
 .tab-button.active {
