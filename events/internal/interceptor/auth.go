@@ -45,6 +45,7 @@ func AuthInterceptor(ctx context.Context, req interface{}, info *grpc.UnaryServe
 
 	logger.Info("step 8: before handler")
 	resp, err := handler(ctx, req)
+
 	logger.Info(fmt.Sprintf("step 9: after handler, err = %v", err))
 
 	return resp, err
