@@ -139,7 +139,11 @@ export const FavouritesPage = () => {
                         <div
                             key={event.id}
                             className="event-card"
-                            onClick={() => navigate(`/events/${event.id}`)}
+                            onClick={() =>
+                                navigate(`/events/${event.id}`, {
+                                    state: { from: '/favourites' },
+                                })
+                            }
                             style={{ cursor: 'pointer' }}
                         >
                             <div className="event-image-container">

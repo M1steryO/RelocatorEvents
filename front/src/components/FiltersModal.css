@@ -16,6 +16,8 @@
 .filters-modal-overlay.closing {
     animation: fadeOut 0.3s ease-out forwards;
     opacity: 0;
+    /* Иначе невидимый слой перехватывает касания (чёрный экран до первого тапа) */
+    pointer-events: none;
 }
 
 .filters-modal {

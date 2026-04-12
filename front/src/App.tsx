@@ -1,6 +1,6 @@
 // src/App.tsx
-import {useEffect, useState} from "react";
-import {Routes, Route, Navigate, useNavigate} from "react-router-dom";
+import { useEffect, useState, useLayoutEffect } from 'react';
+import { Routes, Route, Navigate, useNavigate, useLocation } from 'react-router-dom';
 import {useAuth} from "./contexts/AuthContext";
 import {RegistrationForm} from "./components/RegistrationForm";
 import {Profile} from "./components/Profile";
@@ -16,10 +16,18 @@ import {subscribeToUnauthorized} from "./utils/unauthorized";
 import "./App.css";
 
 function App() {
-    const {isAuthenticated, isLoading, logout} = useAuth();
+    const { isAuthenticated, isLoading, logout } = useAuth();
     const [isInitializing, setIsInitializing] = useState(true);
     const [isServiceUnavailable, setIsServiceUnavailable] = useState(false);
     const navigate = useNavigate();
+    const location = useLocation();
+
+    // После перехода (в т.ч. назад с карточки мероприятия): снять блокировку скролла и «залипшую» подложку из index.html.
+    useLayoutEffect(() => {
+        document.body.style.removeProperty('overflow');
+        document.documentElement.style.removeProperty('overflow');
+        document.getElementById('app-loading-cover')?.remove();
+    }, [location.pathname]);
 
     // При полной перезагрузке страницы сбрасываем сохранённую ленту — восстанавливаем только при возврате со страницы мероприятия (SPA-переход).
     useEffect(() => {

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { eventsService } from '../services/eventsService';
 import type { Event, Address } from '../services/eventsService';
 import { NotFoundCard } from './NotFoundCard';
 import { useFavourites } from '../contexts/FavouritesContext';
+import { sanitizeInternalPath } from '../utils/navigation';
 import './EventDetailPage.css';
 
 let yandexMapsPromise: Promise<any> | null = null;
@@ -107,6 +108,7 @@ const getCurrencySymbol = (currency?: string): string => {
 
 export const EventDetailPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { id } = useParams();
     const { isFavourite, toggleFavourite } = useFavourites();
     const [event, setEvent] = useState<Event | null>(null);
@@ -133,7 +135,9 @@ export const EventDetailPage = () => {
     const lastLoadedEventRef = useRef<string | null>(null);
     const handleOpenReviews = () => {
         if (!eventId) return;
-        navigate(`/events/${eventId}/reviews`);
+        navigate(`/events/${eventId}/reviews`, {
+            state: { from: `/events/${eventId}` },
+        });
     };
 
     useEffect(() => {
@@ -246,7 +250,11 @@ export const EventDetailPage = () => {
     }, []);
 
     const handleBack = () => {
-        navigate(-1);
+        // В Telegram Mini App navigate(-1) / history.back() часто даёт пустой чёрный кадр.
+        const from = sanitizeInternalPath(
+            (location.state as { from?: string } | null)?.from,
+        );
+        navigate(from ?? '/');
     };
 
     if (isLoading) {
@@ -497,7 +505,11 @@ export const EventDetailPage = () => {
                                 key={item.id}
                                 type="button"
                                 className="recommendations-item"
-                                onClick={() => navigate(`/events/${item.id}`)}
+                                onClick={() =>
+                                    navigate(`/events/${item.id}`, {
+                                        state: { from: location.pathname },
+                                    })
+                                }
                             >
                                 <img
                                     src={item.image_url || '/event-no-img.png'}

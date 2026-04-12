@@ -133,7 +133,12 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
         if (isOpen) {
             setIsClosing(false);
             document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = '';
         }
+        return () => {
+            document.body.style.overflow = '';
+        };
     }, [isOpen]);
 
     useEffect(() => {

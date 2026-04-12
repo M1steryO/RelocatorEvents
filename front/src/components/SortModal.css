@@ -16,6 +16,7 @@
 .sort-modal-overlay.closing {
     animation: fadeOut 0.3s ease-out forwards;
     opacity: 0;
+    pointer-events: none;
 }
 
 .sort-modal {

@@ -2,6 +2,10 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { BrowserRouter } from 'react-router-dom'
 import './index.css'
+
+if (typeof window !== 'undefined' && 'scrollRestoration' in window.history) {
+    window.history.scrollRestoration = 'manual'
+}
 import App from './App.tsx'
 import { AuthProvider } from './contexts/AuthContext.tsx'
 import { FavouritesProvider } from './contexts/FavouritesContext.tsx'

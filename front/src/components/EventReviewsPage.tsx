@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import { MEDIA_BASE_URL } from '../config';
 import { useAuth } from '../contexts/AuthContext';
 import { eventsService } from '../services/eventsService';
@@ -9,6 +9,7 @@ import type { Review as ApiReview } from '../services/reviewsService';
 import { MediaType } from '../services/reviewsService';
 import './EventReviewsPage.css';
 import { NotFoundCard } from './NotFoundCard';
+import { sanitizeInternalPath } from '../utils/navigation';
 
 interface ReviewItem {
     id: string;
@@ -73,6 +74,7 @@ const getReviewNoun = (count: number) => {
 
 export const EventReviewsPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { id } = useParams();
     useAuth();
     const [event, setEvent] = useState<Event | null>(null);
@@ -164,7 +166,18 @@ export const EventReviewsPage = () => {
             setIsAddingReview(false);
             return;
         }
-        navigate(-1);
+        const from = sanitizeInternalPath(
+            (location.state as { from?: string } | null)?.from,
+        );
+        if (from) {
+            navigate(from);
+            return;
+        }
+        if (eventId) {
+            navigate(`/events/${eventId}`);
+            return;
+        }
+        navigate('/');
     };
 
     const hasReviews = reviewsSummary.reviews_count > 0 || reviews.length > 0;

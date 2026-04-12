@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
+import { useState, useEffect, useRef, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventsService } from '../services/eventsService';
 import { authService } from '../services/authService';
@@ -311,27 +311,42 @@ export const HomePage = () => {
         }
     };
 
-    // Снимок ленты уже применён в useState (см. parseHomeFeedSnapshot) — без первого кадра «пустой загрузки».
-    // Скролл до отрисовки, чтобы не мигать верхом страницы.
-    useLayoutEffect(() => {
+    // Снимок ленты уже в useState (parseHomeFeedSnapshot). Скролл только после paint:
+    // синхронный scrollTo + position:sticky в iOS / Telegram WebView даёт чёрный прямоугольник
+    // до следующего тапа; откладываем и повторяем после layout (картинки карточек).
+    useEffect(() => {
         if (!homeSnapshot?.hasRestorableEvents) {
             return;
         }
-        const y = homeSnapshot.scrollY;
-        if (y > 0) {
-            window.scrollTo(0, y);
-        }
-    }, [homeSnapshot]);
-
-    useEffect(() => {
-        if (!homeSnapshot?.hasRestorableEvents || (homeSnapshot.scrollY ?? 0) <= 0) {
+        const y = homeSnapshot.scrollY ?? 0;
+        if (y <= 0) {
             return;
         }
-        const y = homeSnapshot.scrollY;
-        const id = window.requestAnimationFrame(() => {
-            window.scrollTo(0, y);
+
+        let cancelled = false;
+        const apply = () => {
+            if (cancelled) {
+                return;
+            }
+            window.scrollTo({ top: y, left: 0, behavior: 'auto' });
+        };
+
+        let raf2 = 0;
+        const raf1 = window.requestAnimationFrame(() => {
+            raf2 = window.requestAnimationFrame(apply);
         });
-        return () => window.cancelAnimationFrame(id);
+        const t1 = window.setTimeout(apply, 80);
+        const t2 = window.setTimeout(apply, 280);
+
+        return () => {
+            cancelled = true;
+            window.cancelAnimationFrame(raf1);
+            if (raf2) {
+                window.cancelAnimationFrame(raf2);
+            }
+            window.clearTimeout(t1);
+            window.clearTimeout(t2);
+        };
     }, [homeSnapshot]);
 
     useEffect(() => {
@@ -722,7 +737,11 @@ export const HomePage = () => {
                         <div
                             key={event.id}
                             className="event-card"
-                            onClick={() => navigate(`/events/${event.id}`)}
+                            onClick={() =>
+                                navigate(`/events/${event.id}`, {
+                                    state: { from: '/' },
+                                })
+                            }
                             style={{ cursor: 'pointer' }}
                         >
                             <div className={`event-image-container ${loadedImages[event.id] && !imageErrors[event.id] ? 'loaded' : 'loading'}`}>
