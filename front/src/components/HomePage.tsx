@@ -129,10 +129,13 @@ export const HomePage = () => {
     const lastRequestRef = useRef<{ key: string; time: number } | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
     const [isUserInterestsReady, setIsUserInterestsReady] = useState(false);
+    const [userProfileCity, setUserProfileCity] = useState<string | null>(null);
     const [isTabOverrideActive, setIsTabOverrideActive] = useState(false);
     const tabOverrideBaseInterestsRef = useRef<string[] | null>(null);
     const restoredFromSessionRef = useRef(false);
     const skipNextDebounceRef = useRef(false);
+    const defaultUserCityAppliedRef = useRef(false);
+    const profileCityNotInFiltersRef = useRef(false);
 
     const tabs: Array<{ label: string; categories: string[] }> = [
         { label: 'Вечер для новых друзей', categories: ['nightlife', 'gastronomic'] },
@@ -237,6 +240,8 @@ export const HomePage = () => {
             try {
                 const userData = await authService.getCurrentUser();
                 if (cancelled) return;
+                const trimmedCity = (userData.city || '').trim();
+                setUserProfileCity(trimmedCity || null);
                 const interestCodes = (userData.interests || []).filter(Boolean);
                 if (interestCodes.length > 0) {
                     setAppliedFilters((prev) => ({ ...prev, category: interestCodes }));
@@ -263,6 +268,65 @@ export const HomePage = () => {
             cancelled = true;
         };
     }, [isInitialized, availableFilters?.min_price, availableFilters?.max_price]);
+
+    // Город из профиля: в запрос и в UI фильтра, если он есть в списке cities с ответа списка
+    useEffect(() => {
+        if (!isInitialized || !isUserInterestsReady) {
+            return;
+        }
+        if (!userProfileCity) {
+            return;
+        }
+        if (defaultUserCityAppliedRef.current || profileCityNotInFiltersRef.current) {
+            return;
+        }
+
+        const cities = availableFilters?.cities;
+        if (!cities?.length) {
+            return;
+        }
+
+        if (!cities.includes(userProfileCity)) {
+            profileCityNotInFiltersRef.current = true;
+            return;
+        }
+
+        const hasAnyCitySelected =
+            Boolean(appliedFilters.city) || (uiFilters?.cities?.length ?? 0) > 0;
+        if (hasAnyCitySelected) {
+            defaultUserCityAppliedRef.current = true;
+            return;
+        }
+
+        defaultUserCityAppliedRef.current = true;
+        setAppliedFilters((prev) => ({ ...prev, city: userProfileCity }));
+        setUiFilters((prev) => {
+            const minP = availableFilters?.min_price ?? 0;
+            const maxP = availableFilters?.max_price ?? 10000;
+            const base: FiltersState =
+                prev ?? {
+                    cities: [],
+                    districts: [],
+                    priceRange: [minP, maxP],
+                    dateType: null,
+                    weekdays: false,
+                    exactDate: '',
+                    formats: [],
+                    interests: [],
+                };
+            return {
+                ...base,
+                cities: [userProfileCity],
+            };
+        });
+    }, [
+        isInitialized,
+        isUserInterestsReady,
+        userProfileCity,
+        availableFilters,
+        appliedFilters.city,
+        uiFilters?.cities,
+    ]);
 
     // Debounce search input to avoid sending requests on every keystroke
     useEffect(() => {
@@ -426,6 +490,7 @@ export const HomePage = () => {
 
     return (
         <div className="home-page">
+            <div className="home-page-sticky-top">
             {/* Header */}
             <header className="home-header">
                 <div className="logo-container">
@@ -529,6 +594,7 @@ export const HomePage = () => {
                         {tab.label}
                     </button>
                 ))}
+            </div>
             </div>
 
             {/* Events Feed */}

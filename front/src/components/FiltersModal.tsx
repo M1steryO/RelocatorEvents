@@ -384,7 +384,10 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
             });
         });
         filters.interests.forEach(code => {
-            const label = interestsList?.find(c => c.code === code)?.title ?? getInterestLabel(code);
+            const fromApi = interestsList
+                ?.find((c) => (c.code || '').toLowerCase() === code.toLowerCase())
+                ?.title?.trim();
+            const label = fromApi && fromApi.length > 0 ? fromApi : getInterestLabel(code);
             list.push({
                 id: `interest-${code}`,
                 label,
