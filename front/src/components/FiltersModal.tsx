@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect } from 'react';
 import { getInterestLabel } from '../constants/interests';
 import type { Category, FiltersData } from '../services/eventsService';
 import './FiltersModal.css';
@@ -105,7 +105,9 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
     const [exactDateError, setExactDateError] = useState(false);
     const [showExactDateInput, setShowExactDateInput] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
+    const [modalMaxHeightPx, setModalMaxHeightPx] = useState<number | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+    const exactDateInputRef = useRef<HTMLInputElement>(null);
     const showCitiesSection = !availableFilters?.cities || availableFilters.cities.length > 0;
     const interestsList = availableFilters?.categories;
     const showInterestsSection = Boolean(interestsList?.length);
@@ -178,6 +180,40 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [isOpen, isClosing, handleClose]);
+
+    useEffect(() => {
+        if (!isOpen || typeof window === 'undefined' || !window.visualViewport) {
+            setModalMaxHeightPx(null);
+            return;
+        }
+        const vv = window.visualViewport;
+        const update = () => {
+            const innerH = window.innerHeight;
+            const cap = Math.min(Math.round(innerH * 0.9), Math.round(vv.height));
+            setModalMaxHeightPx(cap);
+        };
+        update();
+        vv.addEventListener('resize', update);
+        vv.addEventListener('scroll', update);
+        return () => {
+            vv.removeEventListener('resize', update);
+            vv.removeEventListener('scroll', update);
+            setModalMaxHeightPx(null);
+        };
+    }, [isOpen]);
+
+    const scrollExactDateIntoView = useCallback(() => {
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => {
+                exactDateInputRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+            });
+        });
+    }, []);
+
+    useLayoutEffect(() => {
+        if (!isOpen || !showExactDateInput) return;
+        scrollExactDateIntoView();
+    }, [isOpen, showExactDateInput, scrollExactDateIntoView]);
 
     const toggleCity = (city: string) => {
         setFilters(prev => ({
@@ -406,7 +442,11 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
 
     return (
         <div className={`filters-modal-overlay ${isClosing ? 'closing' : ''}`}>
-            <div className={`filters-modal ${isClosing ? 'closing' : ''}`} ref={modalRef}>
+            <div
+                className={`filters-modal ${isClosing ? 'closing' : ''}`}
+                ref={modalRef}
+                style={modalMaxHeightPx != null ? { maxHeight: `${modalMaxHeightPx}px` } : undefined}
+            >
                 <div className="filters-header">
                     <h2 className="filters-title">Фильтры</h2>
                 </div>
@@ -633,11 +673,13 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                             ) : (
                                 <div className="date-input-wrapper">
                                     <input
+                                        ref={exactDateInputRef}
                                         type="text"
                                         className={`date-input ${exactDateError ? 'error' : ''}`}
                                         placeholder="ДД.ММ.ГГГГ"
                                         value={filters.exactDate}
                                         onChange={handleDateInputChange}
+                                        onFocus={scrollExactDateIntoView}
                                         onBlur={() => {
                                             // При потере фокуса проверяем, если поле пустое, скрываем его
                                             if (!filters.exactDate) {
