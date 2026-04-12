@@ -471,7 +471,7 @@ export const EventDetailPage = () => {
                         </svg>
                         АДРЕС
                     </div>
-                    <div className="event-detail-value">{fullAddress || event.link || 'Адрес уточняется'}</div>
+                    <div className="event-detail-value">{fullAddress || 'Адрес уточняется'}</div>
                 </div>
             </div>
 

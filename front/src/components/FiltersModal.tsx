@@ -91,6 +91,47 @@ const validateExactDateError = (value: string): boolean => {
     return false;
 };
 
+/** Только цифры — пошаговая маска DD.MM.YYYY (когда точек ещё нет). */
+const formatDateDigitsOnly = (digits: string): string => {
+    const d = digits.replace(/\D/g, '').slice(0, 8);
+    if (d.length === 0) return '';
+    if (d.length <= 2) return d;
+    if (d.length <= 4) return `${d.slice(0, 2)}.${d.slice(2)}`;
+    return `${d.slice(0, 2)}.${d.slice(2, 4)}.${d.slice(4, 8)}`;
+};
+
+/**
+ * Сохраняет точки и сегменты день/месяц/год, чтобы можно было править середину строки
+ * (раньше все цифры склеивались заново и ломали ввод).
+ */
+const sanitizeExactDateInput = (input: string): string => {
+    let s = input.replace(/[^\d.]/g, '').replace(/\.{2,}/g, '.');
+    if (!s) return '';
+
+    if (!s.includes('.')) {
+        return formatDateDigitsOnly(s);
+    }
+
+    const rawParts = s.split('.');
+    const day = (rawParts[0] || '').replace(/\D/g, '').slice(0, 2);
+    const month = rawParts.length >= 2 ? (rawParts[1] || '').replace(/\D/g, '').slice(0, 2) : '';
+    const yearFromParts =
+        rawParts.length >= 3 ? rawParts.slice(2).map((p) => p.replace(/\D/g, '')).join('') : '';
+    const year = yearFromParts.slice(0, 4);
+
+    let out = day;
+
+    if (rawParts.length >= 2) {
+        out += `.${month}`;
+    }
+
+    if (rawParts.length >= 3) {
+        out += `.${year}`;
+    }
+
+    return out.slice(0, 10);
+};
+
 export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initialFilters }: FiltersModalProps) => {
     const [filters, setFilters] = useState<FiltersState>(() => {
         if (initialFilters) {
@@ -311,78 +352,21 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
     const handleExactDateChange = (value: string) => {
         setFilters(prev => ({ ...prev, exactDate: value }));
 
-        // Validate date format DD.MM.YYYY
-        const dateRegex = /^(\d{2})\.(\d{2})\.(\d{4})$/;
-
-
         if (!value || value.length === 0) {
             setExactDateError(false);
             return;
         }
 
-        if (!dateRegex.test(value)) {
-            setExactDateError(true);
+        if (value.length < 10) {
+            setExactDateError(false);
             return;
         }
 
-        // Проверяем корректность даты
-        const [, day, month, year] = value.match(dateRegex) || [];
-        const dayNum = parseInt(day);
-        const monthNum = parseInt(month);
-        const yearNum = parseInt(year);
-
-        // Проверка диапазонов
-        if (monthNum < 1 || monthNum > 12) {
-            setExactDateError(true);
-            return;
-        }
-
-        if (dayNum < 1 || dayNum > 31) {
-            setExactDateError(true);
-            return;
-        }
-
-        if (yearNum < 1900 || yearNum > 2100) {
-            setExactDateError(true);
-            return;
-        }
-
-        // Проверка корректности даты через Date
-        const date = new Date(yearNum, monthNum - 1, dayNum);
-        const isValid = date.getDate() === dayNum &&
-            date.getMonth() === monthNum - 1 &&
-            date.getFullYear() === yearNum;
-
-        if (!isValid) {
-            setExactDateError(true);
-            return;
-        }
-
-        // Дата мероприятия — только сегодня и будущее
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        setExactDateError(date < today);
-    };
-
-    const formatDateInput = (value: string) => {
-        // Remove all non-digits
-        const digits = value.replace(/\D/g, '');
-
-        // Format as DD.MM.YYYY
-        if (digits.length <= 2) {
-            return digits;
-        } else if (digits.length <= 4) {
-            return `${digits.slice(0, 2)}.${digits.slice(2)}`;
-        } else {
-            return `${digits.slice(0, 2)}.${digits.slice(2, 4)}.${digits.slice(4, 8)}`;
-        }
+        setExactDateError(validateExactDateError(value));
     };
 
     const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const formatted = formatDateInput(e.target.value);
-        if (formatted.length <= 10) {
-            handleExactDateChange(formatted);
-        }
+        handleExactDateChange(sanitizeExactDateInput(e.target.value));
     };
 
     // Кнопка disabled если:
