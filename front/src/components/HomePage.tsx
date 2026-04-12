@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef, useMemo, useLayoutEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventsService } from '../services/eventsService';
 import { authService } from '../services/authService';
@@ -106,39 +106,192 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
     };
 };
 
+/**
+ * При смене подборки (таб) не теряем город/район/цену и прочие поля UI:
+ * если в uiFilters пусто, подставляем из уже применённого запроса (appliedFilters).
+ */
+const mergeUiFiltersForTabOverride = (
+    prev: FiltersState | null,
+    applied: GetListRequest,
+    available: FiltersData | null | undefined,
+    nextInterests: string[],
+): FiltersState => {
+    const minP = available?.min_price ?? 0;
+    const maxP = available?.max_price ?? 10000;
+    if (!prev) {
+        return {
+            cities: applied.city ? [applied.city] : [],
+            districts: applied.district ? [applied.district] : [],
+            priceRange:
+                applied.min_price !== undefined || applied.max_price !== undefined
+                    ? [applied.min_price ?? minP, applied.max_price ?? maxP]
+                    : [minP, maxP],
+            dateType: null,
+            weekdays: false,
+            exactDate: '',
+            formats:
+                applied.event_type === 'online'
+                    ? ['Онлайн']
+                    : applied.event_type === 'offline'
+                        ? ['Офлайн']
+                        : [],
+            interests: nextInterests,
+        };
+    }
+
+    const cities =
+        prev.cities.length > 0 ? prev.cities : applied.city ? [applied.city] : [];
+    const districts =
+        prev.districts.length > 0
+            ? prev.districts
+            : applied.district
+                ? [applied.district]
+                : [];
+
+    return {
+        ...prev,
+        cities,
+        districts,
+        interests: nextInterests,
+    };
+};
+
+const DEFAULT_HOME_TAB = 'Вечер для новых друзей';
+
+type StoredHomeFeedRaw = {
+    didLoad?: boolean;
+    searchQuery?: string;
+    debouncedSearchQuery?: string;
+    activeTab?: string;
+    currentSort?: string;
+    events?: DisplayEvent[];
+    offset?: number;
+    hasMore?: boolean;
+    appliedFilters?: GetListRequest;
+    uiFilters?: FiltersState | null;
+    availableFilters?: FiltersData | null;
+    loadedImages?: Record<number, boolean>;
+    imageErrors?: Record<number, boolean>;
+    scrollY?: number;
+};
+
+type HomeFeedSnapshot = {
+    hasRestorableEvents: boolean;
+    scrollY: number;
+    events: DisplayEvent[];
+    offset: number;
+    hasMore: boolean;
+    searchQuery: string;
+    debouncedSearchQuery: string;
+    activeTab: string;
+    currentSort: string;
+    appliedFilters: GetListRequest;
+    uiFilters: FiltersState | null;
+    availableFilters: FiltersData | null;
+    loadedImages: Record<number, boolean>;
+    imageErrors: Record<number, boolean>;
+};
+
+function parseHomeFeedSnapshot(): HomeFeedSnapshot | null {
+    if (typeof window === 'undefined') {
+        return null;
+    }
+    try {
+        const raw = sessionStorage.getItem('homeFeedState');
+        if (!raw) {
+            return null;
+        }
+        const state = JSON.parse(raw) as StoredHomeFeedRaw;
+        const hasRestorableEvents =
+            Boolean(state.didLoad) &&
+            Array.isArray(state.events) &&
+            state.events.length > 0;
+        const restoredEvents = hasRestorableEvents ? (state.events ?? []) : [];
+        return {
+            hasRestorableEvents,
+            scrollY: state.scrollY ?? 0,
+            events: restoredEvents,
+            offset: hasRestorableEvents
+                ? (state.offset ?? restoredEvents.length)
+                : 0,
+            hasMore: state.hasMore ?? true,
+            searchQuery: state.searchQuery ?? '',
+            debouncedSearchQuery:
+                state.debouncedSearchQuery ?? state.searchQuery ?? '',
+            activeTab: state.activeTab || DEFAULT_HOME_TAB,
+            currentSort: state.currentSort || 'popular',
+            appliedFilters: state.appliedFilters ?? {},
+            uiFilters: state.uiFilters ?? null,
+            availableFilters: state.availableFilters ?? null,
+            loadedImages: state.loadedImages ?? {},
+            imageErrors: state.imageErrors ?? {},
+        };
+    } catch (error) {
+        console.error('Failed to parse home feed snapshot:', error);
+        return null;
+    }
+}
+
 export const HomePage = () => {
     const navigate = useNavigate();
     const { isFavourite, toggleFavourite } = useFavourites();
     const PAGE_LIMIT = 20;
-    const [searchQuery, setSearchQuery] = useState('');
-    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState('');
-    const [activeTab, setActiveTab] = useState('Вечер для новых друзей');
+
+    const homeSnapshot = useMemo(() => parseHomeFeedSnapshot(), []);
+
+    const [searchQuery, setSearchQuery] = useState(
+        () => homeSnapshot?.searchQuery ?? '',
+    );
+    const [debouncedSearchQuery, setDebouncedSearchQuery] = useState(
+        () => homeSnapshot?.debouncedSearchQuery ?? '',
+    );
+    const [activeTab, setActiveTab] = useState(
+        () => homeSnapshot?.activeTab ?? DEFAULT_HOME_TAB,
+    );
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
-    const [currentSort, setCurrentSort] = useState('popular');
-    const [events, setEvents] = useState<DisplayEvent[]>([]);
-    const [isLoading, setIsLoading] = useState(true);
+    const [currentSort, setCurrentSort] = useState(
+        () => homeSnapshot?.currentSort ?? 'popular',
+    );
+    const [events, setEvents] = useState<DisplayEvent[]>(
+        () => homeSnapshot?.events ?? [],
+    );
+    const [isLoading, setIsLoading] = useState(
+        () => !homeSnapshot?.hasRestorableEvents,
+    );
     const [isLoadingMore, setIsLoadingMore] = useState(false);
-    const [offset, setOffset] = useState(0);
-    const [hasMore, setHasMore] = useState(true);
-    const [appliedFilters, setAppliedFilters] = useState<GetListRequest>({});
-    const [uiFilters, setUiFilters] = useState<FiltersState | null>(null);
-    const [availableFilters, setAvailableFilters] = useState<FiltersData | null>(null);
-    const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>({});
-    const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+    const [offset, setOffset] = useState(() => homeSnapshot?.offset ?? 0);
+    const [hasMore, setHasMore] = useState(() => homeSnapshot?.hasMore ?? true);
+    const [appliedFilters, setAppliedFilters] = useState<GetListRequest>(
+        () => homeSnapshot?.appliedFilters ?? {},
+    );
+    const [uiFilters, setUiFilters] = useState<FiltersState | null>(
+        () => homeSnapshot?.uiFilters ?? null,
+    );
+    const [availableFilters, setAvailableFilters] = useState<FiltersData | null>(
+        () => homeSnapshot?.availableFilters ?? null,
+    );
+    const [loadedImages, setLoadedImages] = useState<Record<number, boolean>>(
+        () => homeSnapshot?.loadedImages ?? {},
+    );
+    const [imageErrors, setImageErrors] = useState<Record<number, boolean>>(
+        () => homeSnapshot?.imageErrors ?? {},
+    );
     const lastRequestRef = useRef<{ key: string; time: number } | null>(null);
     const [isInitialized, setIsInitialized] = useState(false);
     const [isUserInterestsReady, setIsUserInterestsReady] = useState(false);
     const [userProfileCity, setUserProfileCity] = useState<string | null>(null);
     const [isTabOverrideActive, setIsTabOverrideActive] = useState(false);
     const tabOverrideBaseInterestsRef = useRef<string[] | null>(null);
-    const restoredFromSessionRef = useRef(false);
-    const skipNextDebounceRef = useRef(false);
+    const restoredFromSessionRef = useRef(
+        homeSnapshot?.hasRestorableEvents ?? false,
+    );
+    const skipNextDebounceRef = useRef(homeSnapshot?.hasRestorableEvents ?? false);
     const defaultUserCityAppliedRef = useRef(false);
     const profileCityNotInFiltersRef = useRef(false);
 
     const tabs: Array<{ label: string; categories: string[] }> = [
-        { label: 'Вечер для новых друзей', categories: ['nightlife', 'gastronomic'] },
+        { label: DEFAULT_HOME_TAB, categories: ['nightlife', 'gastronomic'] },
         { label: 'Начните знакомство с городом', categories: ['excursions'] },
         { label: 'Рядом с вами', categories: ['excursions'] },
         { label: 'Для всей семьи', categories: ['kids_activities'] },
@@ -158,70 +311,31 @@ export const HomePage = () => {
         }
     };
 
-    // Restore feed state and scroll position from sessionStorage on first mount (или мок для теста)
-    useEffect(() => {
-        if (typeof window === 'undefined') {
-            setIsInitialized(true);
+    // Снимок ленты уже применён в useState (см. parseHomeFeedSnapshot) — без первого кадра «пустой загрузки».
+    // Скролл до отрисовки, чтобы не мигать верхом страницы.
+    useLayoutEffect(() => {
+        if (!homeSnapshot?.hasRestorableEvents) {
             return;
         }
-
-        try {
-            const raw = sessionStorage.getItem('homeFeedState');
-            if (raw) {
-                const state = JSON.parse(raw) as {
-                    didLoad?: boolean;
-                    searchQuery?: string;
-                    debouncedSearchQuery?: string;
-                    activeTab?: string;
-                    currentSort?: string;
-                    events?: DisplayEvent[];
-                    offset?: number;
-                    hasMore?: boolean;
-                    appliedFilters?: GetListRequest;
-                    uiFilters?: FiltersState | null;
-                    availableFilters?: FiltersData | null;
-                    loadedImages?: Record<number, boolean>;
-                    imageErrors?: Record<number, boolean>;
-                    scrollY?: number;
-                };
-
-                setSearchQuery(state.searchQuery ?? '');
-                setDebouncedSearchQuery(state.debouncedSearchQuery ?? state.searchQuery ?? '');
-                if (state.activeTab) {
-                    setActiveTab(state.activeTab);
-                }
-                if (state.currentSort) {
-                    setCurrentSort(state.currentSort);
-                }
-                setAppliedFilters(state.appliedFilters ?? {});
-                setUiFilters(state.uiFilters ?? null);
-                setAvailableFilters(state.availableFilters ?? null);
-
-                // Восстанавливаем список и скролл только если ранее реально загрузили мероприятия.
-                // Иначе (пустой список / первый визит) — не помечаем как restore, чтобы ушёл запрос за списком.
-                const hasRestorableEvents = state.didLoad && Array.isArray(state.events) && state.events.length > 0;
-                if (hasRestorableEvents) {
-                    const restoredEvents = state.events ?? [];
-                    setEvents(restoredEvents);
-                    setOffset(state.offset ?? restoredEvents.length);
-                    setHasMore(state.hasMore ?? true);
-                    setLoadedImages(state.loadedImages ?? {});
-                    setImageErrors(state.imageErrors ?? {});
-                    setIsLoading(false);
-                    restoredFromSessionRef.current = true;
-                    skipNextDebounceRef.current = true;
-
-                    const scrollY = state.scrollY ?? 0;
-                    window.requestAnimationFrame(() => {
-                        window.scrollTo(0, scrollY);
-                    });
-                }
-            }
-        } catch (error) {
-            console.error('Failed to restore home feed state:', error);
-        } finally {
-            setIsInitialized(true);
+        const y = homeSnapshot.scrollY;
+        if (y > 0) {
+            window.scrollTo(0, y);
         }
+    }, [homeSnapshot]);
+
+    useEffect(() => {
+        if (!homeSnapshot?.hasRestorableEvents || (homeSnapshot.scrollY ?? 0) <= 0) {
+            return;
+        }
+        const y = homeSnapshot.scrollY;
+        const id = window.requestAnimationFrame(() => {
+            window.scrollTo(0, y);
+        });
+        return () => window.cancelAnimationFrame(id);
+    }, [homeSnapshot]);
+
+    useEffect(() => {
+        setIsInitialized(true);
     }, []);
 
     // Старт HomePage: категории из /v1/user (info.interests[].code)
@@ -416,7 +530,7 @@ export const HomePage = () => {
         setOffset(0);
         setHasMore(true);
         fetchEventsPage(0, true);
-    }, [debouncedSearchQuery, currentSort, appliedFilters, activeTab, isInitialized, isUserInterestsReady]);
+    }, [debouncedSearchQuery, currentSort, appliedFilters, activeTab, isTabOverrideActive, isInitialized, isUserInterestsReady]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -433,7 +547,7 @@ export const HomePage = () => {
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, currentSort, appliedFilters, activeTab, isUserInterestsReady]);
+    }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, currentSort, appliedFilters, activeTab, isTabOverrideActive, isUserInterestsReady]);
 
     // Сохраняем состояние ленты и позицию скролла при размонтировании
     useEffect(() => {
@@ -561,16 +675,14 @@ export const HomePage = () => {
                                     }
                                     return next;
                                 });
-                                setUiFilters((prev) => ({
-                                    cities: prev?.cities || [],
-                                    districts: prev?.districts || [],
-                                    priceRange: prev?.priceRange || [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
-                                    dateType: prev?.dateType ?? null,
-                                    weekdays: prev?.weekdays ?? false,
-                                    exactDate: prev?.exactDate || '',
-                                    formats: prev?.formats || [],
-                                    interests: baseInterests,
-                                }));
+                                setUiFilters((prev) =>
+                                    mergeUiFiltersForTabOverride(
+                                        prev,
+                                        appliedFilters,
+                                        availableFilters,
+                                        baseInterests,
+                                    ),
+                                );
                                 return;
                             }
                             if (!isTabOverrideActive) {
@@ -579,16 +691,14 @@ export const HomePage = () => {
                             setActiveTab(tab.label);
                             setIsTabOverrideActive(true);
                             setAppliedFilters((prev) => ({ ...prev, category: tab.categories }));
-                            setUiFilters((prev) => ({
-                                cities: prev?.cities || [],
-                                districts: prev?.districts || [],
-                                priceRange: prev?.priceRange || [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
-                                dateType: prev?.dateType ?? null,
-                                weekdays: prev?.weekdays ?? false,
-                                exactDate: prev?.exactDate || '',
-                                formats: prev?.formats || [],
-                                interests: tab.categories,
-                            }));
+                            setUiFilters((prev) =>
+                                mergeUiFiltersForTabOverride(
+                                    prev,
+                                    appliedFilters,
+                                    availableFilters,
+                                    tab.categories,
+                                ),
+                            );
                         }}
                     >
                         {tab.label}
