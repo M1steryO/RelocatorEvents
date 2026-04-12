@@ -336,9 +336,9 @@ export const HomePage = () => {
 
     const tabs: Array<{ label: string; categories: string[] }> = [
         { label: DEFAULT_HOME_TAB, categories: ['nightlife', 'gastronomic'] },
-        { label: 'Начните знакомство с городом', categories: ['excursions'] },
-        { label: 'Рядом с вами', categories: ['excursions'] },
-        { label: 'Для всей семьи', categories: ['kids_activities'] },
+        { label: 'Начните знакомство с городом', categories: ['exhibition', 'theater'] },
+        { label: 'Рядом с вами', categories: ['cafe', 'festivals'] },
+        { label: 'Для всей семьи', categories: ['kids'] },
         { label: 'На английском', categories: ['english_language'] },
         { label: 'На родном языке', categories: ['native_language'] },
     ];
@@ -578,7 +578,7 @@ export const HomePage = () => {
             const params: GetListRequest = {
                 q: debouncedSearchQuery || undefined,
                 // random только при активном tab-override и не для первой вкладки
-                sort: shouldUseRandomByTab ? 'random' : getSortParam(currentSort),
+                sort: shouldUseRandomByTab ? '' : getSortParam(currentSort),
                 limit: PAGE_LIMIT,
                 offset: nextOffset,
                 ...appliedFilters,
