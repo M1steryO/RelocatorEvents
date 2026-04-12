@@ -511,6 +511,18 @@
     color: #fca5a5;
 }
 
+.date-input[type="date"] {
+    width: auto;
+    min-width: 172px;
+    max-width: 100%;
+    cursor: pointer;
+}
+
+.date-input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.85;
+}
+
 .filters-footer {
     display: flex;
     gap: 12px;

@@ -91,58 +91,34 @@ const validateExactDateError = (value: string): boolean => {
     return false;
 };
 
-/** Только цифры — пошаговая маска DD.MM.YYYY (когда точек ещё нет). */
-const formatDateDigitsOnly = (digits: string): string => {
-    const d = digits.replace(/\D/g, '').slice(0, 8);
-    if (d.length === 0) return '';
-    if (d.length <= 2) return d;
-    if (d.length <= 4) return `${d.slice(0, 2)}.${d.slice(2)}`;
-    return `${d.slice(0, 2)}.${d.slice(2, 4)}.${d.slice(4, 8)}`;
+const pad2 = (n: number) => String(n).padStart(2, '0');
+
+/** Сегодня в локальной зоне — YYYY-MM-DD для min у input[type=date]. */
+const todayIsoLocal = (): string => {
+    const d = new Date();
+    return `${d.getFullYear()}-${pad2(d.getMonth() + 1)}-${pad2(d.getDate())}`;
 };
 
-/**
- * Сохраняет точки и сегменты день/месяц/год, чтобы можно было править середину строки
- * (раньше все цифры склеивались заново и ломали ввод).
- */
-const sanitizeExactDateInput = (input: string): string => {
-    let s = input.replace(/[^\d.]/g, '').replace(/\.{2,}/g, '.');
-    if (!s) return '';
+/** DD.MM.YYYY → YYYY-MM-DD для value у input[type=date]. */
+const exactDateToIso = (ddMmYyyy: string): string => {
+    const m = /^(\d{2})\.(\d{2})\.(\d{4})$/.exec(ddMmYyyy.trim());
+    if (!m) return '';
+    return `${m[3]}-${m[2]}-${m[1]}`;
+};
 
-    if (!s.includes('.')) {
-        return formatDateDigitsOnly(s);
-    }
+/** YYYY-MM-DD из календаря → DD.MM.YYYY в состоянии фильтров. */
+const isoToExactDate = (iso: string): string => {
+    const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso);
+    if (!m) return '';
+    return `${m[3]}.${m[2]}.${m[1]}`;
+};
 
-    const rawParts = s.split('.');
-
-    // Ровно два сегмента: после первой точки часто идут и месяц, и год подряд (12.032025),
-    // без второй точки — иначе лишние цифры обрезались и год не вводился.
-    if (rawParts.length === 2) {
-        const day = (rawParts[0] || '').replace(/\D/g, '').slice(0, 2);
-        const tail = (rawParts[1] || '').replace(/\D/g, '');
-        const month = tail.slice(0, 2);
-        const year = tail.slice(2, 6);
-        if (year.length > 0) {
-            return `${day}.${month}.${year}`.slice(0, 10);
-        }
-        if (tail.length > 0) {
-            return `${day}.${month}`.slice(0, 10);
-        }
-        return `${day}.`.slice(0, 10);
-    }
-
-    const day = (rawParts[0] || '').replace(/\D/g, '').slice(0, 2);
-    const month = (rawParts[1] || '').replace(/\D/g, '').slice(0, 2);
-    const year = rawParts
-        .slice(2)
-        .map((p) => p.replace(/\D/g, ''))
-        .join('')
-        .slice(0, 4);
-
-    let out = `${day}.${month}`;
-    if (rawParts.length >= 3) {
-        out += `.${year}`;
-    }
-    return out.slice(0, 10);
+/** Value для input[type=date]: только если дата ≥ сегодня (иначе пусто — min нарушен). */
+const exactDateToIsoForDateInput = (ddMmYyyy: string): string => {
+    const iso = exactDateToIso(ddMmYyyy);
+    if (!iso) return '';
+    const min = todayIsoLocal();
+    return iso >= min ? iso : '';
 };
 
 export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initialFilters }: FiltersModalProps) => {
@@ -362,31 +338,20 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
         });
     };
 
-    const handleExactDateChange = (value: string) => {
-        setFilters(prev => ({ ...prev, exactDate: value }));
-
-        if (!value || value.length === 0) {
+    const handleNativeDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const iso = e.target.value;
+        if (!iso) {
+            setFilters((prev) => ({ ...prev, exactDate: '' }));
             setExactDateError(false);
             return;
         }
-
-        if (value.length < 10) {
-            setExactDateError(false);
-            return;
-        }
-
-        setExactDateError(validateExactDateError(value));
+        setFilters((prev) => ({ ...prev, exactDate: isoToExactDate(iso) }));
+        setExactDateError(false);
     };
 
-    const handleDateInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        handleExactDateChange(sanitizeExactDateInput(e.target.value));
-    };
-
-    // Кнопка disabled если:
-    // 1. Поле ввода даты открыто и дата не введена полностью (меньше 10 символов)
-    // 2. Или поле ввода даты открыто и дата некорректна
+    // Кнопка disabled если календарь открыт, но дата ещё не выбрана или ошибка (восстановленный невалидный ввод)
     const isApplyDisabled = showExactDateInput && (
-        filters.exactDate.length < 10 ||
+        filters.exactDate.trim().length < 10 ||
         exactDateError
     );
 
@@ -709,19 +674,18 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                 <div className="date-input-wrapper">
                                     <input
                                         ref={exactDateInputRef}
-                                        type="text"
+                                        type="date"
                                         className={`date-input ${exactDateError ? 'error' : ''}`}
-                                        placeholder="ДД.ММ.ГГГГ"
-                                        value={filters.exactDate}
-                                        onChange={handleDateInputChange}
+                                        aria-label="Выберите дату мероприятия"
+                                        min={todayIsoLocal()}
+                                        value={exactDateToIsoForDateInput(filters.exactDate)}
+                                        onChange={handleNativeDateChange}
                                         onFocus={scrollExactDateIntoView}
                                         onBlur={() => {
-                                            // При потере фокуса проверяем, если поле пустое, скрываем его
                                             if (!filters.exactDate) {
                                                 setShowExactDateInput(false);
                                             }
                                         }}
-                                        maxLength={10}
                                         autoFocus
                                     />
                                 </div>
