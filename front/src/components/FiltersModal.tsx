@@ -107,6 +107,8 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
     const [isClosing, setIsClosing] = useState(false);
     const [modalMaxHeightPx, setModalMaxHeightPx] = useState<number | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
+    const filtersContentRef = useRef<HTMLDivElement>(null);
+    const dateSectionRef = useRef<HTMLDivElement>(null);
     const exactDateInputRef = useRef<HTMLInputElement>(null);
     const showCitiesSection = !availableFilters?.cities || availableFilters.cities.length > 0;
     const interestsList = availableFilters?.categories;
@@ -181,6 +183,28 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
         };
     }, [isOpen, isClosing, handleClose]);
 
+    const alignDateSectionInScrollArea = useCallback(() => {
+        const container = filtersContentRef.current;
+        const target = dateSectionRef.current;
+        if (!container || !target) return;
+
+        const bottomPadding = 56;
+        const topPadding = 12;
+
+        for (let i = 0; i < 3; i++) {
+            const cr = container.getBoundingClientRect();
+            const tr = target.getBoundingClientRect();
+            const deltaDown = tr.bottom - cr.bottom + bottomPadding;
+            if (deltaDown > 0) {
+                container.scrollTop += deltaDown;
+            }
+            const deltaUp = cr.top - tr.top + topPadding;
+            if (deltaUp > 0) {
+                container.scrollTop -= deltaUp;
+            }
+        }
+    }, []);
+
     useEffect(() => {
         if (!isOpen || typeof window === 'undefined' || !window.visualViewport) {
             setModalMaxHeightPx(null);
@@ -192,23 +216,37 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
             const cap = Math.min(Math.round(innerH * 0.9), Math.round(vv.height));
             setModalMaxHeightPx(cap);
         };
-        update();
-        vv.addEventListener('resize', update);
-        vv.addEventListener('scroll', update);
+        const onVv = () => {
+            update();
+            if (showExactDateInput) {
+                queueMicrotask(() => {
+                    requestAnimationFrame(() => {
+                        alignDateSectionInScrollArea();
+                        window.setTimeout(alignDateSectionInScrollArea, 140);
+                    });
+                });
+            }
+        };
+        onVv();
+        vv.addEventListener('resize', onVv);
+        vv.addEventListener('scroll', onVv);
         return () => {
-            vv.removeEventListener('resize', update);
-            vv.removeEventListener('scroll', update);
+            vv.removeEventListener('resize', onVv);
+            vv.removeEventListener('scroll', onVv);
             setModalMaxHeightPx(null);
         };
-    }, [isOpen]);
+    }, [isOpen, showExactDateInput, alignDateSectionInScrollArea]);
 
     const scrollExactDateIntoView = useCallback(() => {
+        const run = () => alignDateSectionInScrollArea();
         requestAnimationFrame(() => {
             requestAnimationFrame(() => {
-                exactDateInputRef.current?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+                run();
+                window.setTimeout(run, 160);
+                window.setTimeout(run, 320);
             });
         });
-    }, []);
+    }, [alignDateSectionInScrollArea]);
 
     useLayoutEffect(() => {
         if (!isOpen || !showExactDateInput) return;
@@ -487,7 +525,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                     </div>
                 )}
 
-                <div className="filters-content">
+                <div className="filters-content" ref={filtersContentRef}>
                     {/* Город */}
                     {showCitiesSection && (
                         <div className="filter-section">
@@ -592,7 +630,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                     </div>
 
                     {/* Дата */}
-                    <div className="filter-section">
+                    <div className="filter-section filter-section-date" ref={dateSectionRef}>
                         <label className="filter-label">Дата</label>
                         <div className="date-options">
                             <div className="date-radio-group">
