@@ -349,6 +349,19 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
         setExactDateError(false);
     };
 
+    /** На десктопе с мышью открываем нативный календарь по всему полю (не только по иконке). */
+    const handleDateInputClick = useCallback((e: React.MouseEvent<HTMLInputElement>) => {
+        if (typeof window !== 'undefined' && !window.matchMedia('(pointer: fine)').matches) {
+            return;
+        }
+        const el = e.currentTarget;
+        try {
+            el.showPicker?.();
+        } catch {
+            // Нет user gesture или API не поддерживается
+        }
+    }, []);
+
     // Кнопка disabled если календарь открыт, но дата ещё не выбрана или ошибка (восстановленный невалидный ввод)
     const isApplyDisabled = showExactDateInput && (
         filters.exactDate.trim().length < 10 ||
@@ -680,6 +693,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                         min={todayIsoLocal()}
                                         value={exactDateToIsoForDateInput(filters.exactDate)}
                                         onChange={handleNativeDateChange}
+                                        onClick={handleDateInputClick}
                                         onFocus={scrollExactDateIntoView}
                                         onBlur={() => {
                                             if (!filters.exactDate) {
