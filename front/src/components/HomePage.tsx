@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react';
+import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventsService } from '../services/eventsService';
 import { authService } from '../services/authService';
@@ -322,6 +322,12 @@ export const HomePage = () => {
             : null,
     );
     const latestScrollYRef = useRef(0);
+
+    const scrollFeedToTop = useCallback(() => {
+        latestScrollYRef.current = 0;
+        window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    }, []);
+
     const defaultUserCityAppliedRef = useRef(false);
     const profileCityNotInFiltersRef = useRef(false);
 
@@ -754,6 +760,7 @@ export const HomePage = () => {
                         key={tab.label}
                         className={`tab-button ${isTabOverrideActive && activeTab === tab.label ? 'active' : ''}`}
                         onClick={() => {
+                            scrollFeedToTop();
                             // Повторный клик по активному табу снимает tab-фильтр
                             if (isTabOverrideActive && activeTab === tab.label) {
                                 setIsTabOverrideActive(false);
@@ -887,6 +894,7 @@ export const HomePage = () => {
                 availableFilters={availableFilters || undefined}
                 initialFilters={uiFilters}
                 onApply={(filters) => {
+                    scrollFeedToTop();
                     setIsTabOverrideActive(false);
                     tabOverrideBaseInterestsRef.current = null;
                     setUiFilters(filters);
@@ -942,9 +950,8 @@ export const HomePage = () => {
                 isOpen={isSortOpen}
                 onClose={() => setIsSortOpen(false)}
                 onApply={(sortOption) => {
+                    scrollFeedToTop();
                     setCurrentSort(sortOption);
-                    console.log('Applied sort:', sortOption);
-                    // Здесь можно добавить логику применения сортировки
                 }}
                 currentSort={currentSort}
             />
