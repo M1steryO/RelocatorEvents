@@ -113,22 +113,35 @@ const sanitizeExactDateInput = (input: string): string => {
     }
 
     const rawParts = s.split('.');
-    const day = (rawParts[0] || '').replace(/\D/g, '').slice(0, 2);
-    const month = rawParts.length >= 2 ? (rawParts[1] || '').replace(/\D/g, '').slice(0, 2) : '';
-    const yearFromParts =
-        rawParts.length >= 3 ? rawParts.slice(2).map((p) => p.replace(/\D/g, '')).join('') : '';
-    const year = yearFromParts.slice(0, 4);
 
-    let out = day;
-
-    if (rawParts.length >= 2) {
-        out += `.${month}`;
+    // Ровно два сегмента: после первой точки часто идут и месяц, и год подряд (12.032025),
+    // без второй точки — иначе лишние цифры обрезались и год не вводился.
+    if (rawParts.length === 2) {
+        const day = (rawParts[0] || '').replace(/\D/g, '').slice(0, 2);
+        const tail = (rawParts[1] || '').replace(/\D/g, '');
+        const month = tail.slice(0, 2);
+        const year = tail.slice(2, 6);
+        if (year.length > 0) {
+            return `${day}.${month}.${year}`.slice(0, 10);
+        }
+        if (tail.length > 0) {
+            return `${day}.${month}`.slice(0, 10);
+        }
+        return `${day}.`.slice(0, 10);
     }
 
+    const day = (rawParts[0] || '').replace(/\D/g, '').slice(0, 2);
+    const month = (rawParts[1] || '').replace(/\D/g, '').slice(0, 2);
+    const year = rawParts
+        .slice(2)
+        .map((p) => p.replace(/\D/g, ''))
+        .join('')
+        .slice(0, 4);
+
+    let out = `${day}.${month}`;
     if (rawParts.length >= 3) {
         out += `.${year}`;
     }
-
     return out.slice(0, 10);
 };
 
