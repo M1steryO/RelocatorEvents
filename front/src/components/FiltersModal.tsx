@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback, useMemo, useLayoutEffect } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { getInterestLabel } from '../constants/interests';
 import type { Category, FiltersData } from '../services/eventsService';
 import './FiltersModal.css';
@@ -135,11 +135,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
     const [exactDateError, setExactDateError] = useState(false);
     const [showExactDateInput, setShowExactDateInput] = useState(false);
     const [isClosing, setIsClosing] = useState(false);
-    const [modalMaxHeightPx, setModalMaxHeightPx] = useState<number | null>(null);
     const modalRef = useRef<HTMLDivElement>(null);
-    const filtersContentRef = useRef<HTMLDivElement>(null);
-    const dateSectionRef = useRef<HTMLDivElement>(null);
-    const exactDateInputRef = useRef<HTMLInputElement>(null);
     const showCitiesSection = !availableFilters?.cities || availableFilters.cities.length > 0;
     const interestsList = availableFilters?.categories;
     const showInterestsSection = Boolean(interestsList?.length);
@@ -212,76 +208,6 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, [isOpen, isClosing, handleClose]);
-
-    const alignDateSectionInScrollArea = useCallback(() => {
-        const container = filtersContentRef.current;
-        const target = dateSectionRef.current;
-        if (!container || !target) return;
-
-        const bottomPadding = 56;
-        const topPadding = 12;
-
-        for (let i = 0; i < 3; i++) {
-            const cr = container.getBoundingClientRect();
-            const tr = target.getBoundingClientRect();
-            const deltaDown = tr.bottom - cr.bottom + bottomPadding;
-            if (deltaDown > 0) {
-                container.scrollTop += deltaDown;
-            }
-            const deltaUp = cr.top - tr.top + topPadding;
-            if (deltaUp > 0) {
-                container.scrollTop -= deltaUp;
-            }
-        }
-    }, []);
-
-    useEffect(() => {
-        if (!isOpen || typeof window === 'undefined' || !window.visualViewport) {
-            setModalMaxHeightPx(null);
-            return;
-        }
-        const vv = window.visualViewport;
-        const update = () => {
-            const innerH = window.innerHeight;
-            const cap = Math.min(Math.round(innerH * 0.9), Math.round(vv.height));
-            setModalMaxHeightPx(cap);
-        };
-        const onVv = () => {
-            update();
-            if (showExactDateInput) {
-                queueMicrotask(() => {
-                    requestAnimationFrame(() => {
-                        alignDateSectionInScrollArea();
-                        window.setTimeout(alignDateSectionInScrollArea, 140);
-                    });
-                });
-            }
-        };
-        onVv();
-        vv.addEventListener('resize', onVv);
-        vv.addEventListener('scroll', onVv);
-        return () => {
-            vv.removeEventListener('resize', onVv);
-            vv.removeEventListener('scroll', onVv);
-            setModalMaxHeightPx(null);
-        };
-    }, [isOpen, showExactDateInput, alignDateSectionInScrollArea]);
-
-    const scrollExactDateIntoView = useCallback(() => {
-        const run = () => alignDateSectionInScrollArea();
-        requestAnimationFrame(() => {
-            requestAnimationFrame(() => {
-                run();
-                window.setTimeout(run, 160);
-                window.setTimeout(run, 320);
-            });
-        });
-    }, [alignDateSectionInScrollArea]);
-
-    useLayoutEffect(() => {
-        if (!isOpen || !showExactDateInput) return;
-        scrollExactDateIntoView();
-    }, [isOpen, showExactDateInput, scrollExactDateIntoView]);
 
     const toggleCity = (city: string) => {
         setFilters(prev => ({
@@ -455,11 +381,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
 
     return (
         <div className={`filters-modal-overlay ${isClosing ? 'closing' : ''}`}>
-            <div
-                className={`filters-modal ${isClosing ? 'closing' : ''}`}
-                ref={modalRef}
-                style={modalMaxHeightPx != null ? { maxHeight: `${modalMaxHeightPx}px` } : undefined}
-            >
+            <div className={`filters-modal ${isClosing ? 'closing' : ''}`} ref={modalRef}>
                 <div className="filters-header">
                     <h2 className="filters-title">Фильтры</h2>
                 </div>
@@ -500,7 +422,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                     </div>
                 )}
 
-                <div className="filters-content" ref={filtersContentRef}>
+                <div className="filters-content">
                     {/* Город */}
                     {showCitiesSection && (
                         <div className="filter-section">
@@ -605,7 +527,7 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                     </div>
 
                     {/* Дата */}
-                    <div className="filter-section filter-section-date" ref={dateSectionRef}>
+                    <div className="filter-section">
                         <label className="filter-label">Дата</label>
                         <div className="date-options">
                             <div className="date-radio-group">
@@ -686,7 +608,6 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                             ) : (
                                 <div className="date-input-wrapper">
                                     <input
-                                        ref={exactDateInputRef}
                                         type="date"
                                         className={`date-input ${exactDateError ? 'error' : ''}`}
                                         aria-label="Выберите дату мероприятия"
@@ -694,7 +615,6 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                         value={exactDateToIsoForDateInput(filters.exactDate)}
                                         onChange={handleNativeDateChange}
                                         onClick={handleDateInputClick}
-                                        onFocus={scrollExactDateIntoView}
                                         onBlur={() => {
                                             if (!filters.exactDate) {
                                                 setShowExactDateInput(false);
