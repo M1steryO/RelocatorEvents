@@ -158,11 +158,28 @@ const mergeUiFiltersForTabOverride = (
 
 const DEFAULT_HOME_TAB = 'Вечер для новых друзей';
 
+function feedRequestKey(parts: {
+    debouncedSearchQuery: string;
+    currentSort: string;
+    activeTab: string;
+    isTabOverrideActive: boolean;
+    appliedFilters: GetListRequest;
+}): string {
+    return JSON.stringify({
+        q: parts.debouncedSearchQuery,
+        sort: parts.currentSort,
+        tab: parts.activeTab,
+        tabOverride: parts.isTabOverrideActive,
+        filters: parts.appliedFilters,
+    });
+}
+
 type StoredHomeFeedRaw = {
     didLoad?: boolean;
     searchQuery?: string;
     debouncedSearchQuery?: string;
     activeTab?: string;
+    isTabOverrideActive?: boolean;
     currentSort?: string;
     events?: DisplayEvent[];
     offset?: number;
@@ -190,6 +207,7 @@ type HomeFeedSnapshot = {
     availableFilters: FiltersData | null;
     loadedImages: Record<number, boolean>;
     imageErrors: Record<number, boolean>;
+    isTabOverrideActive: boolean;
 };
 
 function parseHomeFeedSnapshot(): HomeFeedSnapshot | null {
@@ -225,6 +243,7 @@ function parseHomeFeedSnapshot(): HomeFeedSnapshot | null {
             availableFilters: state.availableFilters ?? null,
             loadedImages: state.loadedImages ?? {},
             imageErrors: state.imageErrors ?? {},
+            isTabOverrideActive: Boolean(state.isTabOverrideActive),
         };
     } catch (error) {
         console.error('Failed to parse home feed snapshot:', error);
@@ -281,12 +300,28 @@ export const HomePage = () => {
     const [isInitialized, setIsInitialized] = useState(false);
     const [isUserInterestsReady, setIsUserInterestsReady] = useState(false);
     const [userProfileCity, setUserProfileCity] = useState<string | null>(null);
-    const [isTabOverrideActive, setIsTabOverrideActive] = useState(false);
+    const [isTabOverrideActive, setIsTabOverrideActive] = useState(
+        () => homeSnapshot?.isTabOverrideActive ?? false,
+    );
     const tabOverrideBaseInterestsRef = useRef<string[] | null>(null);
     const restoredFromSessionRef = useRef(
         homeSnapshot?.hasRestorableEvents ?? false,
     );
     const skipNextDebounceRef = useRef(homeSnapshot?.hasRestorableEvents ?? false);
+    /** Пока ключ совпадает с восстановленным — не дёргаем список заново (возврат с карточки). */
+    const keepRestoredFeedRef = useRef(homeSnapshot?.hasRestorableEvents ?? false);
+    const restoredFeedRequestKeyRef = useRef<string | null>(
+        homeSnapshot?.hasRestorableEvents
+            ? feedRequestKey({
+                  debouncedSearchQuery: homeSnapshot.debouncedSearchQuery,
+                  currentSort: homeSnapshot.currentSort,
+                  activeTab: homeSnapshot.activeTab,
+                  isTabOverrideActive: homeSnapshot.isTabOverrideActive,
+                  appliedFilters: homeSnapshot.appliedFilters,
+              })
+            : null,
+    );
+    const latestScrollYRef = useRef(0);
     const defaultUserCityAppliedRef = useRef(false);
     const profileCityNotInFiltersRef = useRef(false);
 
@@ -337,6 +372,8 @@ export const HomePage = () => {
         });
         const t1 = window.setTimeout(apply, 80);
         const t2 = window.setTimeout(apply, 280);
+        const t3 = window.setTimeout(apply, 520);
+        const t4 = window.setTimeout(apply, 780);
 
         return () => {
             cancelled = true;
@@ -346,8 +383,33 @@ export const HomePage = () => {
             }
             window.clearTimeout(t1);
             window.clearTimeout(t2);
+            window.clearTimeout(t3);
+            window.clearTimeout(t4);
         };
     }, [homeSnapshot]);
+
+    // После раскладки карточек (длина контента) — ещё раз выставить скролл
+    useEffect(() => {
+        if (!homeSnapshot?.hasRestorableEvents) {
+            return;
+        }
+        const y = homeSnapshot.scrollY ?? 0;
+        if (y <= 0 || events.length === 0) {
+            return;
+        }
+        const id = window.requestAnimationFrame(() => {
+            window.scrollTo({ top: y, left: 0, behavior: 'auto' });
+        });
+        return () => window.cancelAnimationFrame(id);
+    }, [events.length, homeSnapshot]);
+
+    useEffect(() => {
+        const onScroll = () => {
+            latestScrollYRef.current = window.scrollY;
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+    }, []);
 
     useEffect(() => {
         setIsInitialized(true);
@@ -531,14 +593,23 @@ export const HomePage = () => {
     };
 
     useEffect(() => {
-        if (!isInitialized) {
+        if (!isInitialized || !isUserInterestsReady) {
             return;
         }
 
-        // Если только что восстановили состояние из sessionStorage — пропускаем первый запуск
-        if (restoredFromSessionRef.current) {
-            restoredFromSessionRef.current = false;
-            return;
+        const key = feedRequestKey({
+            debouncedSearchQuery,
+            currentSort,
+            activeTab,
+            isTabOverrideActive,
+            appliedFilters,
+        });
+
+        if (keepRestoredFeedRef.current) {
+            if (restoredFeedRequestKeyRef.current === key) {
+                return;
+            }
+            keepRestoredFeedRef.current = false;
         }
 
         lastRequestRef.current = null;
@@ -572,11 +643,16 @@ export const HomePage = () => {
 
         return () => {
             try {
+                const scrollY = Math.max(
+                    window.scrollY,
+                    latestScrollYRef.current,
+                );
                 const state = {
                     didLoad: true,
                     searchQuery,
                     debouncedSearchQuery,
                     activeTab,
+                    isTabOverrideActive,
                     currentSort,
                     events,
                     offset,
@@ -586,7 +662,7 @@ export const HomePage = () => {
                     availableFilters,
                     loadedImages,
                     imageErrors,
-                    scrollY: window.scrollY,
+                    scrollY,
                 };
                 sessionStorage.setItem('homeFeedState', JSON.stringify(state));
             } catch (error) {
@@ -606,6 +682,7 @@ export const HomePage = () => {
         uiFilters,
         loadedImages,
         imageErrors,
+        isTabOverrideActive,
     ]);
 
     const handleImageLoad = (id: number) => {
