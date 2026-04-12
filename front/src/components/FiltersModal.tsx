@@ -620,7 +620,6 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                                                 setShowExactDateInput(false);
                                             }
                                         }}
-                                        autoFocus
                                     />
                                 </div>
                             )}
