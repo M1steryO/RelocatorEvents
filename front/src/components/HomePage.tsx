@@ -322,8 +322,11 @@ export const HomePage = () => {
             : null,
     );
     const latestScrollYRef = useRef(0);
+    /** После таба/фильтра/сортировки/поиска не применять scrollY из снимка (эффекты по events.length и таймеры). */
+    const invalidateRestoredScrollRef = useRef(false);
 
     const scrollFeedToTop = useCallback(() => {
+        invalidateRestoredScrollRef.current = true;
         latestScrollYRef.current = 0;
         window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
     }, []);
@@ -359,6 +362,9 @@ export const HomePage = () => {
         if (!homeSnapshot?.hasRestorableEvents) {
             return;
         }
+        if (invalidateRestoredScrollRef.current) {
+            return;
+        }
         const y = homeSnapshot.scrollY ?? 0;
         if (y <= 0) {
             return;
@@ -366,7 +372,7 @@ export const HomePage = () => {
 
         let cancelled = false;
         const apply = () => {
-            if (cancelled) {
+            if (cancelled || invalidateRestoredScrollRef.current) {
                 return;
             }
             window.scrollTo({ top: y, left: 0, behavior: 'auto' });
@@ -394,8 +400,11 @@ export const HomePage = () => {
         };
     }, [homeSnapshot]);
 
-    // После раскладки карточек (длина контента) — ещё раз выставить скролл
+    // После раскладки карточек — повторить скролл из снимка (только если пользователь не сбросил ленту табом/фильтром и т.д.)
     useEffect(() => {
+        if (invalidateRestoredScrollRef.current) {
+            return;
+        }
         if (!homeSnapshot?.hasRestorableEvents) {
             return;
         }
@@ -404,6 +413,9 @@ export const HomePage = () => {
             return;
         }
         const id = window.requestAnimationFrame(() => {
+            if (invalidateRestoredScrollRef.current) {
+                return;
+            }
             window.scrollTo({ top: y, left: 0, behavior: 'auto' });
         });
         return () => window.cancelAnimationFrame(id);
@@ -539,11 +551,16 @@ export const HomePage = () => {
         }
 
         const timeoutId = setTimeout(() => {
-            setDebouncedSearchQuery(searchQuery);
+            setDebouncedSearchQuery((prev) => {
+                if (prev !== searchQuery) {
+                    queueMicrotask(scrollFeedToTop);
+                }
+                return searchQuery;
+            });
         }, 400);
 
         return () => clearTimeout(timeoutId);
-    }, [searchQuery, isInitialized]);
+    }, [searchQuery, isInitialized, scrollFeedToTop]);
 
     const fetchEventsPage = async (nextOffset: number, replace: boolean) => {
         if (replace) {
