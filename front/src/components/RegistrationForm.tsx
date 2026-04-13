@@ -13,7 +13,7 @@ interface RegistrationFormProps {
 
 // Sample cities for Georgia (can be replaced with API data)
 const CITIES_BY_COUNTRY: Record<string, string[]> = {
-    'Грузия': ['Сингахи', 'Тбилиси', 'Телави', 'Тержола', 'Батуми', 'Кутаиси'],
+    'Грузия': ['Тбилиси', 'Батуми'],
 };
 
 // List of available countries

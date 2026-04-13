@@ -342,19 +342,11 @@
     justify-content: center;
 }
 
-@media (max-width: 480px) {
-    .skip-link {
-        position: fixed !important;
-        bottom: calc(max(44px, env(safe-area-inset-bottom)) + 48px + 4px) !important;
-        left: max(16px, env(safe-area-inset-left)) !important;
-        z-index: 101;
-        margin: 0 !important;
-    }
-}
 /* Pre-apply fixed positioning for mobile to prevent layout shift */
 @media (max-width: 768px) {
     .skip-link {
         align-self: flex-start;
+        margin-top: 4px;
         /* Force GPU acceleration */
         transform: translateZ(0);
         will-change: transform;
@@ -477,7 +469,7 @@
     color: var(--color-primary);
     font-weight: 500;
     cursor: pointer;
-    margin-top: 8px;
+    margin-top: 0;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
@@ -485,6 +477,7 @@
     gap: 13px;
     background: transparent;
     box-sizing: border-box;
+    align-self: flex-start;
 }
 
 .skip-link:hover {
