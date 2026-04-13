@@ -125,15 +125,26 @@
 }
 
 .step-3-title-row {
+    position: relative;
     display: flex;
     align-items: center;
-    gap: 12px;
+    justify-content: center;
     width: 100%;
+    min-height: 40px;
 }
 
 .step-3-title-row .step-title-inline {
     padding-block: 0;
-    flex: 1;
+    width: 100%;
+    text-align: center;
+}
+
+.step-3-title-row .back-button {
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    margin-bottom: 0;
 }
 
 /* Mobile: center align titles */
@@ -346,7 +357,6 @@
 @media (max-width: 768px) {
     .skip-link {
         align-self: flex-start;
-        margin-top: 4px;
         /* Force GPU acceleration */
         transform: translateZ(0);
         will-change: transform;
@@ -417,6 +427,23 @@
     flex-wrap: wrap;
     gap: 8px;
     margin-bottom: 8px;
+}
+
+/* Step 3: exact distances around interests/skip */
+.registration-step-interests {
+    gap: 0;
+}
+
+.registration-step-interests .step-description {
+    margin-bottom: 14px;
+}
+
+.registration-step-interests .interests-grid {
+    margin-bottom: 4px;
+}
+
+.registration-step-interests .skip-link {
+    margin-top: 0;
 }
 
 .interest-button {

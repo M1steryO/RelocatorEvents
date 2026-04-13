@@ -408,7 +408,7 @@ export const RegistrationForm = ({onSuccess}: RegistrationFormProps) => {
 
                 {/* Step 3: Interests Selection */}
                 {step === 3 && (
-                    <div className="registration-step">
+                    <div className="registration-step registration-step-interests">
                         <div className="step-3-title-row">
                             {renderBackButton()}
                             <h1 className="step-title step-title-inline">Выберите ваши интересы</h1>
