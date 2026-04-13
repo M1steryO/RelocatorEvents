@@ -12,7 +12,7 @@ from redis.asyncio import Redis
 from geocoder import ReverseGeocoder
 from kafka import publish_with_retry
 from parser import Event, parse_datetime_loose
-from cache import is_new_event, mark_seen, save_event_json
+from cache import cleanup_past_seen_events, is_new_event, mark_seen
 
 
 async def parse_georgia(
@@ -39,6 +39,8 @@ async def parse_georgia(
     seen: set[str] = set()  # дедуп по (url+starts_at)
 
     producer, topic = kafka_data
+
+    await cleanup_past_seen_events(redis, source)
 
     async with aiohttp.ClientSession() as http:
         geocoder = ReverseGeocoder(http, qps=1.0)
@@ -71,11 +73,8 @@ async def parse_georgia(
 
                 # по карточкам — отдельные страницы, но аккуратно закрываем
                 for event_url in hrefs:
-                    if event_url == "https://yolo.ge/ru/poster/zero-compromise-20266979":
-                        pass
 
-                    if not await is_new_event(redis, source, event_url):
-                        continue
+
                     detail_page = await context.new_page()
                     try:
                         for attempt in range(1, 4):
@@ -132,6 +131,8 @@ async def parse_georgia(
                             dedup_key = f"{event_url}|{starts_at or ''}"
                             if dedup_key in seen:
                                 continue
+                            if not await is_new_event(redis, source, event_url, starts_at):
+                                continue
                             seen.add(dedup_key)
                             price_raw = price.split("-")[0].split() if price else None
                             price = float(price_raw[0]) if price_raw else None
@@ -157,8 +158,8 @@ async def parse_georgia(
                             if e.title:
                                 events.append(e)
 
-                                await mark_seen(redis, source, event_url)
-                                await publish_with_retry(producer, topic, asdict(e))
+                                await mark_seen(redis, source, event_url, starts_at)
+                                # await publish_with_retry(producer, topic, asdict(e))
 
                     finally:
                         await detail_page.close()

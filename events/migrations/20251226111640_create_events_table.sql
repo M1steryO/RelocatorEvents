@@ -23,7 +23,7 @@ create table events
 
     title           varchar(255)              not null,
     description     text,
-    link            varchar(255)              not null unique,
+    link            varchar(255)              not null,
 
     rating          numeric(3, 2),
     reviews_count   int,

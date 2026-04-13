@@ -14,19 +14,19 @@ services:
       timeout: 3s
       retries: 30
       start_period: 5s
-    networks: [reloca]
+#    networks: [reloca]
 
 
-  parser:
-    build:
-      context: .
-      dockerfile: ./Dockerfile
-    depends_on:
-      redis:
-        condition: service_healthy
-      kafka:
-        condition: service_healthy
-    networks: [reloca]
+#  parser:
+#    build:
+#      context: .
+#      dockerfile: ./Dockerfile
+#    depends_on:
+#      redis:
+#        condition: service_healthy
+#      kafka:
+#        condition: service_healthy
+#    networks: [reloca]
 
 
 volumes:

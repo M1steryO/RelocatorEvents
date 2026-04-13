@@ -3,6 +3,7 @@ from typing import List
 
 from redis.asyncio import Redis
 
+from cache import cleanup_all_past_seen_events
 from kafka import make_producer
 from parser import Event
 from parser_funcs.georgia import parse_georgia
@@ -11,17 +12,17 @@ LINKS = {
     "Грузия": {
         "yolo.ge": (
             {
-                "https://yolo.ge/ru/posters/musical": "music",
-                "https://yolo.ge/ru/posters/theater": "theater",
-                "https://yolo.ge/ru/posters/festivals": "festivals",
-                "https://yolo.ge/ru/posters/gastronomic": "gastronomic",
-                "https://yolo.ge/ru/posters/cafe": "cafe",
-                "https://yolo.ge/ru/posters/exhibition": "exhibition",
+                # "https://yolo.ge/ru/posters/musical": "music",
+                # "https://yolo.ge/ru/posters/theater": "theater",
+                # "https://yolo.ge/ru/posters/festivals": "festivals",
+                # "https://yolo.ge/ru/posters/gastronomic": "gastronomic",
+                # "https://yolo.ge/ru/posters/cafe": "cafe",
+                # "https://yolo.ge/ru/posters/exhibition": "exhibition",
                 "https://yolo.ge/ru/posters/kids": "kids",
-                "https://yolo.ge/ru/posters/education": "education",
-                "https://yolo.ge/ru/posters/nightlife": "nightlife",
-                "https://yolo.ge/ru/posters/sports": "sports",
-                "https://yolo.ge/ru/posters/movies": "movies",
+                # "https://yolo.ge/ru/posters/education": "education",
+                # "https://yolo.ge/ru/posters/nightlife": "nightlife",
+                # "https://yolo.ge/ru/posters/sports": "sports",
+                # "https://yolo.ge/ru/posters/movies": "movies",
 
             },
             parse_georgia,
@@ -33,7 +34,10 @@ LINKS = {
 async def main():
     all_events: List[Event] = []
     redis = Redis.from_url("redis://default:redispass@redis:6379/0", decode_responses=True)
-    producer = await make_producer("kafka1:29091")
+    await cleanup_all_past_seen_events(redis)
+    # producer = await make_producer("kafka1:29091")
+    producer = None
+
     topic = "events.new"
 
     for country, resources in LINKS.items():
@@ -48,7 +52,8 @@ async def main():
         print(all_events[0])
 
     await redis.aclose()
-    await producer.stop()
+    if producer:
+        await producer.stop()
 
 
 if __name__ == "__main__":
