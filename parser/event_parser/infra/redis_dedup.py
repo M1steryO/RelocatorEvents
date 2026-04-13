@@ -6,9 +6,7 @@ from typing import Optional
 
 from redis.asyncio import Redis
 
-# Оценка «без известной даты» — выше любого реального unix time, чтобы не удалять zremrangebyscore как прошедшие.
 _SCORE_UNKNOWN_START = 1e12
-
 _DEDUP_KEY_PREFIX = "events:dedup:"
 
 
@@ -69,6 +67,10 @@ async def cleanup_all_past_seen_events(redis: Redis, grace_seconds: int = 0) -> 
             break
 
 
-async def save_event_json(redis: Redis, url: str, event_dict: dict, ttl_days: int = 90) -> None:
+async def save_event_json(
+    redis: Redis, url: str, event_dict: dict, ttl_days: int = 90
+) -> None:
     key = f"event:data:{url_key(url)}"
-    await redis.set(key, json.dumps(event_dict, ensure_ascii=False), ex=ttl_days * 24 * 3600)
+    await redis.set(
+        key, json.dumps(event_dict, ensure_ascii=False), ex=ttl_days * 24 * 3600
+    )

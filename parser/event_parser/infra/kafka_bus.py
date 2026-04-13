@@ -1,10 +1,13 @@
 import asyncio
-import json
 import hashlib
+import json
+
 from aiokafka import AIOKafkaProducer
+
 
 def kafka_key(url: str) -> bytes:
     return hashlib.sha1(url.encode("utf-8")).hexdigest().encode("utf-8")
+
 
 async def make_producer(bootstrap: str) -> AIOKafkaProducer:
     producer = AIOKafkaProducer(
@@ -13,16 +16,17 @@ async def make_producer(bootstrap: str) -> AIOKafkaProducer:
         linger_ms=50,
         request_timeout_ms=40_000,
         retry_backoff_ms=300,
-        enable_idempotence=True,   # можно включать
+        enable_idempotence=True,
     )
     await producer.start()
     return producer
 
+
 async def publish_with_retry(
-        producer: AIOKafkaProducer,
-        topic: str,
-        event: dict,
-        attempts: int = 5,
+    producer: AIOKafkaProducer,
+    topic: str,
+    event: dict,
+    attempts: int = 5,
 ) -> None:
     value = json.dumps(event, ensure_ascii=False).encode("utf-8")
     key = kafka_key(event["link"])
@@ -34,7 +38,6 @@ async def publish_with_retry(
             return
         except Exception as e:
             last_err = e
-            await asyncio.sleep(0.5 * (2 ** i))
-
+            await asyncio.sleep(0.5 * (2**i))
 
     raise last_err
