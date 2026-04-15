@@ -306,6 +306,7 @@ class AuthService {
         name: string;
         country?: string;
         city?: string;
+        language?: string;
         interests?: string[];
         collections?: string[];
     }> {
@@ -319,6 +320,7 @@ class AuthService {
                     telegramInitData?: string;
                     country?: string;
                     city?: string;
+                    language?: string;
                     interests?: Array<string | { code?: string; title?: string }>;
                     role?: string;
                 };
@@ -343,6 +345,7 @@ class AuthService {
             name: response.user.info.name,
             country: response.user.info.country || undefined,
             city: response.user.info.city || undefined,
+            language: response.user.info.language || undefined,
             interests: normalizedInterests,
             collections: [], // Collections not in response, keeping for compatibility
         };

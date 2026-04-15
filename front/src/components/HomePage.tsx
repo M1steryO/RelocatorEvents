@@ -107,6 +107,8 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
 };
 
 const DEFAULT_HOME_TAB = 'Вечер для новых друзей';
+const ENGLISH_TAB_LABEL = 'На английском';
+const NATIVE_LANGUAGE_TAB_LABEL = 'На родном языке';
 
 const getSelectedCityForCollections = (
     ui: FiltersState | null,
@@ -274,6 +276,7 @@ export const HomePage = () => {
     const [isInitialized, setIsInitialized] = useState(false);
     const [isUserInterestsReady, setIsUserInterestsReady] = useState(false);
     const [userProfileCity, setUserProfileCity] = useState<string | null>(null);
+    const [userProfileLanguage, setUserProfileLanguage] = useState<string | null>(null);
     const [isTabOverrideActive, setIsTabOverrideActive] = useState(
         () => homeSnapshot?.isTabOverrideActive ?? false,
     );
@@ -312,8 +315,8 @@ export const HomePage = () => {
         { label: 'Начните знакомство с городом', categories: ['exhibition', 'theater'] },
         { label: 'Рядом с вами', categories: ['cafe', 'festivals'] },
         { label: 'Для всей семьи', categories: ['kids'] },
-        { label: 'На английском', categories: ['english_language'] },
-        { label: 'На родном языке', categories: ['native_language'] },
+        { label: ENGLISH_TAB_LABEL, categories: [] },
+        { label: NATIVE_LANGUAGE_TAB_LABEL, categories: [] },
     ];
     // Map sort option to API sort parameter
     const getSortParam = (sort: string): string => {
@@ -422,7 +425,9 @@ export const HomePage = () => {
                 const userData = await authService.getCurrentUser();
                 if (cancelled) return;
                 const trimmedCity = (userData.city || '').trim();
+                const trimmedLang = (userData.language || '').trim().toLowerCase();
                 setUserProfileCity(trimmedCity || null);
+                setUserProfileLanguage(trimmedLang || null);
                 const interestCodes = (userData.interests || []).filter(Boolean);
                 if (interestCodes.length > 0) {
                     setAppliedFilters((prev) => ({ ...prev, category: interestCodes }));
@@ -547,6 +552,12 @@ export const HomePage = () => {
             const categoriesFromFilters = appliedFilters.category;
             const categoriesFromTab = isTabOverrideActive ? activeTabConfig?.categories : undefined;
             const shouldUseRandomByTab = isTabOverrideActive && !isFirstTab;
+            const tabLang =
+                isTabOverrideActive && activeTab === ENGLISH_TAB_LABEL
+                    ? 'en'
+                    : isTabOverrideActive && activeTab === NATIVE_LANGUAGE_TAB_LABEL
+                        ? (userProfileLanguage || undefined)
+                        : undefined;
             const params: GetListRequest = {
                 q: debouncedSearchQuery || undefined,
                 // random только при активном tab-override и не для первой вкладки
@@ -554,7 +565,8 @@ export const HomePage = () => {
                 limit: PAGE_LIMIT,
                 offset: nextOffset,
                 ...appliedFilters,
-                category: categoriesFromTab ?? categoriesFromFilters,
+                category: tabLang ? undefined : (categoriesFromTab ?? categoriesFromFilters),
+                lang: tabLang ?? appliedFilters.lang,
             };
             const requestKey = JSON.stringify(params);
             const now = Date.now();
@@ -762,11 +774,19 @@ export const HomePage = () => {
                             setActiveTab(tab.label);
                             setIsTabOverrideActive(true);
                             // При переходе в подборку фильтры сбрасываем полностью.
-                            setAppliedFilters(
-                                preservedCity
-                                    ? { city: preservedCity, category: tab.categories }
-                                    : { category: tab.categories },
-                            );
+                            const nextTabFilters: GetListRequest = preservedCity
+                                ? { city: preservedCity }
+                                : {};
+                            if (tab.label === ENGLISH_TAB_LABEL) {
+                                nextTabFilters.lang = 'en';
+                            } else if (tab.label === NATIVE_LANGUAGE_TAB_LABEL) {
+                                if (userProfileLanguage) {
+                                    nextTabFilters.lang = userProfileLanguage;
+                                }
+                            } else {
+                                nextTabFilters.category = tab.categories;
+                            }
+                            setAppliedFilters(nextTabFilters);
                             setUiFilters(cityOnlyUi);
                         }}
                     >

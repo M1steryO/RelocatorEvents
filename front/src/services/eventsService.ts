@@ -81,6 +81,7 @@ export interface GetEventResponse {
 export interface GetListRequest {
     q?: string;
     sort?: string;
+    lang?: string;
     city?: string;
     district?: string;
     min_price?: number;
