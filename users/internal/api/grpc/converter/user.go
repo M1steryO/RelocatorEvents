@@ -37,8 +37,9 @@ func ToCreateUserDtoInfoFromApi(req *desc.CreateRequest, telegramId *int64) *dto
 		Password:        req.Password,
 		ConfirmPassword: req.PasswordConfirm,
 
-		Country: req.Info.Country,
-		City:    req.Info.City,
+		Country:  req.Info.Country,
+		City:     req.Info.City,
+		Language: req.Info.Language,
 
 		Interests: ToInterestsDtoFromApi(req.Info.Interests),
 	}

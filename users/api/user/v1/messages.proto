@@ -32,6 +32,8 @@ message UserInfo {
   string city = 6;
 
   repeated Interest interests = 7;
+
+  string language = 8;
 }
 
 message Interest {

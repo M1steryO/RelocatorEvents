@@ -34,11 +34,11 @@ func (s *repo) Create(ctx context.Context, user *modelDomain.User) (int64, error
 func (s *repo) CreateUserData(ctx context.Context, userId int64, telegramUsername string, userInfo *modelDomain.UserInfo) error {
 	q := db.Query{
 		Title: "user_repository.CreateUserData",
-		Query: `INSERT INTO "user_data" (user_id,tg_username, country, city)
-				VALUES ($1, $2, $3, $4)`,
+		Query: `INSERT INTO "user_data" (user_id,tg_username, country, city, language)
+				VALUES ($1, $2, $3, $4, $5)`,
 	}
 
-	_, err := s.db.DB().ExecContext(ctx, q, userId, telegramUsername, userInfo.Country, userInfo.City)
+	_, err := s.db.DB().ExecContext(ctx, q, userId, telegramUsername, userInfo.Country, userInfo.City, userInfo.Language)
 	if err != nil {
 		return err
 	}

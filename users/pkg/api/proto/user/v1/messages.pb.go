@@ -147,6 +147,7 @@ type UserInfo struct {
 	Country          string                  `protobuf:"bytes,5,opt,name=country,proto3" json:"country,omitempty"`
 	City             string                  `protobuf:"bytes,6,opt,name=city,proto3" json:"city,omitempty"`
 	Interests        []*Interest             `protobuf:"bytes,7,rep,name=interests,proto3" json:"interests,omitempty"`
+	Language         string                  `protobuf:"bytes,8,opt,name=language,proto3" json:"language,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -228,6 +229,13 @@ func (x *UserInfo) GetInterests() []*Interest {
 		return x.Interests
 	}
 	return nil
+}
+
+func (x *UserInfo) GetLanguage() string {
+	if x != nil {
+		return x.Language
+	}
+	return ""
 }
 
 type Interest struct {
@@ -745,7 +753,7 @@ const file_user_v1_messages_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xc4\x02\n" +
+	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xe0\x02\n" +
 	"\bUserInfo\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x122\n" +
 	"\x05email\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x05email\x12<\n" +
@@ -754,7 +762,8 @@ const file_user_v1_messages_proto_rawDesc = "" +
 	"\x11telegram_username\x18\x04 \x01(\tR\x10telegramUsername\x12\x18\n" +
 	"\acountry\x18\x05 \x01(\tR\acountry\x12\x12\n" +
 	"\x04city\x18\x06 \x01(\tR\x04city\x12W\n" +
-	"\tinterests\x18\a \x03(\v29.github.com.M1steryO.RelocatorEvents.user.api.v1.InterestR\tinterests\"4\n" +
+	"\tinterests\x18\a \x03(\v29.github.com.M1steryO.RelocatorEvents.user.api.v1.InterestR\tinterests\x12\x1a\n" +
+	"\blanguage\x18\b \x01(\tR\blanguage\"4\n" +
 	"\bInterest\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x12\x14\n" +
 	"\x05title\x18\x03 \x01(\tR\x05title\"v\n" +

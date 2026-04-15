@@ -18,8 +18,9 @@ type UserInfo struct {
 	TelegramID       *int64
 	TelegramUsername string
 
-	City    string
-	Country string
+	City     string
+	Country  string
+	Language string
 
 	Interests []Interest
 }

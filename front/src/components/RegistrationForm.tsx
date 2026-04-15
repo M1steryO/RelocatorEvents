@@ -19,6 +19,11 @@ const CITIES_BY_COUNTRY: Record<string, string[]> = {
 // List of available countries
 const AVAILABLE_COUNTRIES = Object.keys(CITIES_BY_COUNTRY);
 const LANGUAGE_OPTIONS = ['Русский', 'Английский', 'Грузинский'];
+const LANGUAGE_CODE_BY_LABEL: Record<string, 'ru' | 'en' | 'ge'> = {
+    Русский: 'ru',
+    Английский: 'en',
+    Грузинский: 'ge',
+};
 
 export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const { setAccessToken, setUser } = useAuth();
@@ -204,7 +209,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                     name: telegramNameFromInitData,
                     telegram_username: telegramUsernameFromInitData,
                     email: emailForRegistration,
-                    language: formData.language,
+                    language: LANGUAGE_CODE_BY_LABEL[formData.language] || (formData.language as 'ru' | 'en' | 'ge'),
                     country: formData.country,
                     city: formData.city,
                     interests: formData.interests.map((interest) => ({ code: interest })),

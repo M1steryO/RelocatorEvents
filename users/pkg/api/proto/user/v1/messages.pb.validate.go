@@ -344,6 +344,8 @@ func (m *UserInfo) validate(all bool) error {
 
 	}
 
+	// no validation rules for Language
+
 	if len(errors) > 0 {
 		return UserInfoMultiError(errors)
 	}

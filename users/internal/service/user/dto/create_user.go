@@ -11,8 +11,9 @@ type CreateUser struct {
 	TelegramId       *int64
 	TelegramUsername string
 
-	City    string
-	Country string
+	City     string
+	Country  string
+	Language string
 
 	Interests []string
 
@@ -38,6 +39,8 @@ func (c CreateUser) ToDomain(telegramId *int64) *domain.User {
 
 			City:    c.City,
 			Country: c.Country,
+
+			Language: c.Language,
 
 			Interests: convertedInterests,
 		},
