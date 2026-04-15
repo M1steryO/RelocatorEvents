@@ -108,6 +108,30 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
 
 const DEFAULT_HOME_TAB = 'Вечер для новых друзей';
 
+const getSelectedCityForCollections = (
+    ui: FiltersState | null,
+    applied: GetListRequest,
+): string | null => {
+    const fromUi = (ui?.cities?.[0] || '').trim();
+    if (fromUi) return fromUi;
+    const fromApplied = (applied.city || '').trim();
+    return fromApplied || null;
+};
+
+const buildCityOnlyUiFilters = (
+    city: string | null,
+    available: FiltersData | null,
+): FiltersState => ({
+    cities: city ? [city] : [],
+    districts: [],
+    priceRange: [available?.min_price ?? 0, available?.max_price ?? 10000],
+    dateType: null,
+    weekdays: false,
+    exactDate: '',
+    formats: [],
+    interests: [],
+});
+
 function feedRequestKey(parts: {
     debouncedSearchQuery: string;
     currentSort: string;
@@ -736,18 +760,24 @@ export const HomePage = () => {
                         className={`tab-button ${isTabOverrideActive && activeTab === tab.label ? 'active' : ''}`}
                         onClick={() => {
                             scrollFeedToTop();
+                            const preservedCity = getSelectedCityForCollections(uiFilters, appliedFilters);
+                            const cityOnlyUi = buildCityOnlyUiFilters(preservedCity, availableFilters);
                             // Повторный клик по активной подборке снимает подборку и очищает фильтры.
                             if (isTabOverrideActive && activeTab === tab.label) {
                                 setIsTabOverrideActive(false);
-                                setAppliedFilters({});
-                                setUiFilters(null);
+                                setAppliedFilters(preservedCity ? { city: preservedCity } : {});
+                                setUiFilters(cityOnlyUi);
                                 return;
                             }
                             setActiveTab(tab.label);
                             setIsTabOverrideActive(true);
                             // При переходе в подборку фильтры сбрасываем полностью.
-                            setAppliedFilters({ category: tab.categories });
-                            setUiFilters(null);
+                            setAppliedFilters(
+                                preservedCity
+                                    ? { city: preservedCity, category: tab.categories }
+                                    : { category: tab.categories },
+                            );
+                            setUiFilters(cityOnlyUi);
                         }}
                     >
                         {tab.label}
