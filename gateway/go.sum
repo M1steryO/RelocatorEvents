@@ -1,7 +1,7 @@
 github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260315124812-c61e40827aed h1:e4lysBqazH1kGM0OVCeMLDKewVSm5MDQH5kOSzAIpm4=
 github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260315124812-c61e40827aed/go.mod h1:IyUkRU1T+Srp5MC9f0daEDmPORY5CZ7Z479pW8gf49U=
-github.com/M1steryO/RelocatorEvents/events v0.0.0-20260315124812-c61e40827aed h1:Jay5cEKOICNMawv1OeGhcwobZWrRYVAjaDQO9u9CAIM=
-github.com/M1steryO/RelocatorEvents/events v0.0.0-20260315124812-c61e40827aed/go.mod h1:5ebNPGBPi3IJDPsHUluSe53cAnLCKQ0fie6wnX//IBc=
+github.com/M1steryO/RelocatorEvents/events v0.0.0-20260415185542-f11ff111c4b2 h1:O8wluMJewD/nL3Dy68/ZpR1aigfjXlPx9498MVfeOjM=
+github.com/M1steryO/RelocatorEvents/events v0.0.0-20260415185542-f11ff111c4b2/go.mod h1:+ZJzuFEwHYNcKqD+2UgjbYmrlCov+oXNBTRmXl+Nf18=
 github.com/M1steryO/RelocatorEvents/media v0.0.0-20260315124812-c61e40827aed h1:TfGzFSwi+l8EuzTd0ylsh0INND08rX0PBuUYE/9OxXQ=
 github.com/M1steryO/RelocatorEvents/media v0.0.0-20260315124812-c61e40827aed/go.mod h1:ndN4MDM7Xvqdzs3v2mvF3q8vORjzLk2TKf2NaoIE6b4=
 github.com/M1steryO/RelocatorEvents/users v0.0.0-20260415183352-37f1a4f6e8c8 h1:pzgbv7s4ra5sIhvoEUxKkxXRBBczefpb+FRzQtBILMs=
