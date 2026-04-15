@@ -315,16 +315,6 @@ export const HomePage = () => {
         { label: 'На английском', categories: ['english_language'] },
         { label: 'На родном языке', categories: ['native_language'] },
     ];
-    const collectionCategoryCodes = new Set(tabs.flatMap((tab) => tab.categories));
-    const availableFiltersForModal: FiltersData | undefined = !availableFilters
-        ? undefined
-        : {
-            ...availableFilters,
-            categories: (availableFilters.categories || []).filter(
-                (category) => !collectionCategoryCodes.has(category.code),
-            ),
-        };
-
     // Map sort option to API sort parameter
     const getSortParam = (sort: string): string => {
         switch (sort) {
@@ -871,59 +861,53 @@ export const HomePage = () => {
             <FiltersModal
                 isOpen={isFiltersOpen}
                 onClose={() => setIsFiltersOpen(false)}
-                availableFilters={availableFiltersForModal}
+                availableFilters={availableFilters || undefined}
                 initialFilters={uiFilters}
                 onApply={(filters) => {
                     scrollFeedToTop();
                     setIsTabOverrideActive(false);
-                    const sanitizedFilters: FiltersState = {
-                        ...filters,
-                        interests: filters.interests.filter(
-                            (code) => !collectionCategoryCodes.has(code),
-                        ),
-                    };
-                    setUiFilters(sanitizedFilters);
+                    setUiFilters(filters);
                     const apiFilters: GetListRequest = {};
 
-                    if (sanitizedFilters.cities.length > 0) {
-                        apiFilters.city = sanitizedFilters.cities[0]; // API expects single city
+                    if (filters.cities.length > 0) {
+                        apiFilters.city = filters.cities[0]; // API expects single city
                     }
-                    if (sanitizedFilters.districts.length > 0) {
-                        apiFilters.district = sanitizedFilters.districts[0]; // API expects single district
+                    if (filters.districts.length > 0) {
+                        apiFilters.district = filters.districts[0]; // API expects single district
                     }
                     const maxPrice = availableFilters?.max_price || 10000;
-                    if (sanitizedFilters.priceRange[0] > (availableFilters?.min_price || 0) || sanitizedFilters.priceRange[1] < maxPrice) {
-                        apiFilters.min_price = sanitizedFilters.priceRange[0];
-                        apiFilters.max_price = sanitizedFilters.priceRange[1];
+                    if (filters.priceRange[0] > (availableFilters?.min_price || 0) || filters.priceRange[1] < maxPrice) {
+                        apiFilters.min_price = filters.priceRange[0];
+                        apiFilters.max_price = filters.priceRange[1];
                     }
                     // Обработка даты
-                    if (sanitizedFilters.exactDate) {
+                    if (filters.exactDate) {
                         // Если указана точная дата, преобразуем из DD.MM.YYYY в YYYY-MM-DD
-                        const dateParts = sanitizedFilters.exactDate.split('.');
+                        const dateParts = filters.exactDate.split('.');
                         if (dateParts.length === 3) {
                             const [day, month, year] = dateParts;
                             apiFilters.event_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                         } else {
                             // Если формат уже правильный, используем как есть
-                            apiFilters.event_date = sanitizedFilters.exactDate;
+                            apiFilters.event_date = filters.exactDate;
                         }
-                    } else if (sanitizedFilters.dateType) {
+                    } else if (filters.dateType) {
                         // Send predefined keywords expected by API
-                        apiFilters.event_date = sanitizedFilters.dateType;
+                        apiFilters.event_date = filters.dateType;
                     }
-                    if (sanitizedFilters.formats.length > 0) {
+                    if (filters.formats.length > 0) {
                         // Map "Онлайн" -> online, "Офлайн" -> offline
                         const formatMap: Record<string, 'online' | 'offline'> = {
                             'Онлайн': 'online',
                             'Офлайн': 'offline',
                         };
-                        const eventType = formatMap[sanitizedFilters.formats[0]];
+                        const eventType = formatMap[filters.formats[0]];
                         if (eventType) {
                             apiFilters.event_type = eventType;
                         }
                     }
-                    if (sanitizedFilters.interests.length > 0) {
-                        apiFilters.category = sanitizedFilters.interests;
+                    if (filters.interests.length > 0) {
+                        apiFilters.category = filters.interests;
                     }
 
                     setAppliedFilters(apiFilters);

@@ -1,5 +1,6 @@
 import asyncio
 import logging
+from dataclasses import asdict
 from time import perf_counter
 from typing import List
 from urllib.parse import urljoin
@@ -10,6 +11,7 @@ from playwright.async_api import async_playwright
 from playwright.async_api import TimeoutError as PWTimeout
 from redis.asyncio import Redis
 
+from event_parser.infra.kafka_bus import publish_with_retry
 from event_parser.infra.redis_dedup import (
     cleanup_past_seen_events,
     is_new_event,
@@ -197,7 +199,7 @@ async def parse_georgia(
                                 events.append(e)
 
                                 await mark_seen(redis, source, event_url, starts_at)
-                                # await publish_with_retry(producer, topic, asdict(e))  # + dataclasses.asdict
+                                await publish_with_retry(producer, topic, asdict(e))
                             else:
                                 skipped_no_title += 1
 
