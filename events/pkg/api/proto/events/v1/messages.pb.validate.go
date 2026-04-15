@@ -1349,6 +1349,35 @@ func (m *ListEventsRequest) validate(all bool) error {
 		}
 	}
 
+	if all {
+		switch v := interface{}(m.GetLang()).(type) {
+		case interface{ ValidateAll() error }:
+			if err := v.ValidateAll(); err != nil {
+				errors = append(errors, ListEventsRequestValidationError{
+					field:  "Lang",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		case interface{ Validate() error }:
+			if err := v.Validate(); err != nil {
+				errors = append(errors, ListEventsRequestValidationError{
+					field:  "Lang",
+					reason: "embedded message failed validation",
+					cause:  err,
+				})
+			}
+		}
+	} else if v, ok := interface{}(m.GetLang()).(interface{ Validate() error }); ok {
+		if err := v.Validate(); err != nil {
+			return ListEventsRequestValidationError{
+				field:  "Lang",
+				reason: "embedded message failed validation",
+				cause:  err,
+			}
+		}
+	}
+
 	if m.EventType != nil {
 		// no validation rules for EventType
 	}

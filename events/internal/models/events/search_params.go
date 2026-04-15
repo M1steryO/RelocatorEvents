@@ -94,6 +94,7 @@ type SearchParams struct {
 
 	EventType  *EventType
 	Categories []string
+	Lang       *string
 
 	Limit  *int64
 	LastID *int64

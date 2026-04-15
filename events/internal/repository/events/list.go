@@ -57,6 +57,12 @@ func (s *repo) GetList(ctx context.Context, params *domain.SearchParams, country
 			idx++
 		}
 
+		if params.Lang != nil {
+			conditions = append(conditions, fmt.Sprintf("any(e.languages) = $%d", idx))
+			filters = append(filters, *params.Lang)
+			idx++
+		}
+
 		if params.MinPrice != nil {
 			conditions = append(conditions, fmt.Sprintf("e.min_price >= $%d", idx))
 			filters = append(filters, *params.MinPrice)

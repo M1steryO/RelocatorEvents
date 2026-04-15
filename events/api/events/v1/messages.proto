@@ -85,6 +85,9 @@ message ListEventsRequest {
   google.protobuf.Int64Value limit = 10 [json_name = "limit"];
   google.protobuf.Int64Value last_id = 11 [json_name = "last_id"];
   google.protobuf.Int64Value offset = 12 [json_name = "offset"];
+
+  google.protobuf.StringValue lang = 13 [json_name = "lang"];
+
 }
 
 message EventCategory {

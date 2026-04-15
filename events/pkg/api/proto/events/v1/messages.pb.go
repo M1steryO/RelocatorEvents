@@ -460,6 +460,7 @@ type ListEventsRequest struct {
 	Limit         *wrapperspb.Int64Value  `protobuf:"bytes,10,opt,name=limit,proto3" json:"limit,omitempty"`
 	LastId        *wrapperspb.Int64Value  `protobuf:"bytes,11,opt,name=last_id,proto3" json:"last_id,omitempty"`
 	Offset        *wrapperspb.Int64Value  `protobuf:"bytes,12,opt,name=offset,proto3" json:"offset,omitempty"`
+	Lang          *wrapperspb.StringValue `protobuf:"bytes,13,opt,name=lang,proto3" json:"lang,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -574,6 +575,13 @@ func (x *ListEventsRequest) GetLastId() *wrapperspb.Int64Value {
 func (x *ListEventsRequest) GetOffset() *wrapperspb.Int64Value {
 	if x != nil {
 		return x.Offset
+	}
+	return nil
+}
+
+func (x *ListEventsRequest) GetLang() *wrapperspb.StringValue {
+	if x != nil {
+		return x.Lang
 	}
 	return nil
 }
@@ -1040,7 +1048,7 @@ const file_events_v1_messages_proto_rawDesc = "" +
 	"\bcurrency\x18\x11 \x01(\v2\x1c.google.protobuf.StringValueR\bcurrency\x12\"\n" +
 	"\fis_favourite\x18\x12 \x01(\bR\fis_favouriteB\n" +
 	"\n" +
-	"\b_address\"\xbf\x05\n" +
+	"\b_address\"\xf1\x05\n" +
 	"\x11ListEventsRequest\x12*\n" +
 	"\x01q\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueR\x01q\x120\n" +
 	"\x04sort\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x04sort\x120\n" +
@@ -1058,7 +1066,8 @@ const file_events_v1_messages_proto_rawDesc = "" +
 	"\x05limit\x18\n" +
 	" \x01(\v2\x1b.google.protobuf.Int64ValueR\x05limit\x125\n" +
 	"\alast_id\x18\v \x01(\v2\x1b.google.protobuf.Int64ValueR\alast_id\x123\n" +
-	"\x06offset\x18\f \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offsetB\r\n" +
+	"\x06offset\x18\f \x01(\v2\x1b.google.protobuf.Int64ValueR\x06offset\x120\n" +
+	"\x04lang\x18\r \x01(\v2\x1c.google.protobuf.StringValueR\x04langB\r\n" +
 	"\v_event_type\"9\n" +
 	"\rEventCategory\x12\x14\n" +
 	"\x05title\x18\x01 \x01(\tR\x05title\x12\x12\n" +
@@ -1157,17 +1166,18 @@ var file_events_v1_messages_proto_depIdxs = []int32{
 	19, // 29: github.com.M1steryO.RelocatorEvents.events.api.v1.ListEventsRequest.limit:type_name -> google.protobuf.Int64Value
 	19, // 30: github.com.M1steryO.RelocatorEvents.events.api.v1.ListEventsRequest.last_id:type_name -> google.protobuf.Int64Value
 	19, // 31: github.com.M1steryO.RelocatorEvents.events.api.v1.ListEventsRequest.offset:type_name -> google.protobuf.Int64Value
-	17, // 32: github.com.M1steryO.RelocatorEvents.events.api.v1.FiltersValues.min_price:type_name -> google.protobuf.Int32Value
-	17, // 33: github.com.M1steryO.RelocatorEvents.events.api.v1.FiltersValues.max_price:type_name -> google.protobuf.Int32Value
-	6,  // 34: github.com.M1steryO.RelocatorEvents.events.api.v1.FiltersValues.categories:type_name -> github.com.M1steryO.RelocatorEvents.events.api.v1.EventCategory
-	4,  // 35: github.com.M1steryO.RelocatorEvents.events.api.v1.ListEventsResponse.data:type_name -> github.com.M1steryO.RelocatorEvents.events.api.v1.Event
-	7,  // 36: github.com.M1steryO.RelocatorEvents.events.api.v1.ListEventsResponse.filters:type_name -> github.com.M1steryO.RelocatorEvents.events.api.v1.FiltersValues
-	4,  // 37: github.com.M1steryO.RelocatorEvents.events.api.v1.ListFavouritesResponse.events:type_name -> github.com.M1steryO.RelocatorEvents.events.api.v1.Event
-	38, // [38:38] is the sub-list for method output_type
-	38, // [38:38] is the sub-list for method input_type
-	38, // [38:38] is the sub-list for extension type_name
-	38, // [38:38] is the sub-list for extension extendee
-	0,  // [0:38] is the sub-list for field type_name
+	15, // 32: github.com.M1steryO.RelocatorEvents.events.api.v1.ListEventsRequest.lang:type_name -> google.protobuf.StringValue
+	17, // 33: github.com.M1steryO.RelocatorEvents.events.api.v1.FiltersValues.min_price:type_name -> google.protobuf.Int32Value
+	17, // 34: github.com.M1steryO.RelocatorEvents.events.api.v1.FiltersValues.max_price:type_name -> google.protobuf.Int32Value
+	6,  // 35: github.com.M1steryO.RelocatorEvents.events.api.v1.FiltersValues.categories:type_name -> github.com.M1steryO.RelocatorEvents.events.api.v1.EventCategory
+	4,  // 36: github.com.M1steryO.RelocatorEvents.events.api.v1.ListEventsResponse.data:type_name -> github.com.M1steryO.RelocatorEvents.events.api.v1.Event
+	7,  // 37: github.com.M1steryO.RelocatorEvents.events.api.v1.ListEventsResponse.filters:type_name -> github.com.M1steryO.RelocatorEvents.events.api.v1.FiltersValues
+	4,  // 38: github.com.M1steryO.RelocatorEvents.events.api.v1.ListFavouritesResponse.events:type_name -> github.com.M1steryO.RelocatorEvents.events.api.v1.Event
+	39, // [39:39] is the sub-list for method output_type
+	39, // [39:39] is the sub-list for method input_type
+	39, // [39:39] is the sub-list for extension type_name
+	39, // [39:39] is the sub-list for extension extendee
+	0,  // [0:39] is the sub-list for field type_name
 }
 
 func init() { file_events_v1_messages_proto_init() }

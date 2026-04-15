@@ -62,6 +62,7 @@ func SearchParamsToDomainFromApi(params *desc.ListEventsRequest) *domain.SearchP
 		Sort:     common.ToStringFromStringValue(params.Sort),
 		City:     common.ToStringFromStringValue(params.City),
 		District: common.ToStringFromStringValue(params.District),
+		Lang:     common.ToStringFromStringValue(params.Lang),
 
 		MinPrice: common.ToInt32FromInt32Value(params.MinPrice),
 		MaxPrice: common.ToInt32FromInt32Value(params.MaxPrice),
