@@ -58,7 +58,7 @@ func (s *repo) GetList(ctx context.Context, params *domain.SearchParams, country
 		}
 
 		if params.Lang != nil {
-			conditions = append(conditions, fmt.Sprintf("any(e.languages) = $%d", idx))
+			conditions = append(conditions, fmt.Sprintf("$%d = ANY(e.languages)", idx))
 			filters = append(filters, *params.Lang)
 			idx++
 		}
