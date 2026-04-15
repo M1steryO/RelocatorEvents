@@ -12,14 +12,14 @@ import (
 func (s *repo) Create(ctx context.Context, event *domain.Event, addressId int64) (int64, error) {
 	q := db.Query{
 		Title: "event_repository.Create",
-		Query: `insert into events (title, description, link, min_age, seats_available, type, address_id, min_price, starts_at, image_url, currency)
-				values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11) returning id`,
+		Query: `insert into events (title, description, link, min_age, seats_available, type, address_id, min_price, starts_at, image_url, currency, languages)
+				values ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12) returning id`,
 	}
 	var id int64
 	err := s.db.DB().QueryRowContext(ctx, q, event.Title, event.Description,
 		event.Link, event.MinAge, event.SeatsAvailable,
 		event.Type.String(), addressId,
-		event.MinPrice, event.StartsAt, event.ImageUrl, event.Currency).Scan(&id)
+		event.MinPrice, event.StartsAt, event.ImageUrl, event.Currency, event.Languages).Scan(&id)
 	if err != nil {
 		return 0, errors.Wrap(err, q.Title)
 	}

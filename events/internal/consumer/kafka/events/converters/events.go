@@ -45,6 +45,8 @@ func ToDomainEvent(src models.Event) *domain.Event {
 			CreatedAt: now,
 		},
 
+		Languages: src.Languages,
+
 		CreatedAt: now,
 	}
 

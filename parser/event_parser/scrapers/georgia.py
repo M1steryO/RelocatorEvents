@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import re
 from dataclasses import asdict
 from time import perf_counter
 from typing import List
@@ -22,14 +23,50 @@ from event_parser.services.geocoder import ReverseGeocoder
 
 logger = logging.getLogger(__name__)
 
+LANGUAGE_CODE_MAP = {
+    "английский": "en",
+    "русский": "ru",
+    "грузинский": "ge",
+}
+
+
+async def _extract_service_languages(detail_page) -> list[str] | None:
+    items = await detail_page.query_selector_all(".product__icons_short_info_item")
+    for item in items:
+        marker = await item.query_selector(
+            "[aria-label='Язык обслуживания'], [data-bs-original-title='Язык обслуживания']"
+        )
+        if not marker:
+            continue
+
+        raw_text = (await item.inner_text()).strip()
+        if not raw_text:
+            return None
+
+        cleaned = re.sub(r"\s+", " ", raw_text).strip(" ,")
+        if not cleaned:
+            return None
+
+        raw_languages = [part.strip() for part in cleaned.split(",") if part.strip()]
+        if not raw_languages:
+            return None
+
+        codes: list[str] = []
+        for raw in raw_languages:
+            code = LANGUAGE_CODE_MAP.get(raw.casefold())
+            if code and code not in codes:
+                codes.append(code)
+        return codes or None
+    return None
+
 
 async def parse_georgia(
-    page_url: str,
-    category: str,
-    country: str,
-    source: str,
-    redis: Redis,
-    kafka_data: List[AIOKafkaProducer | str],
+        page_url: str,
+        category: str,
+        country: str,
+        source: str,
+        redis: Redis,
+        kafka_data: List[AIOKafkaProducer | str],
 ) -> List[Event]:
     CARD_LINK = ".products-actions__item_title_wrap a"
 
@@ -132,6 +169,8 @@ async def parse_georgia(
                             else None
                         )
 
+                        languages = await _extract_service_languages(detail_page)
+
                         img_url = None
                         img_el = await detail_page.query_selector(IMG_LINK)
                         if img_el:
@@ -184,6 +223,7 @@ async def parse_georgia(
                                 description=description.strip() if description else None,
                                 country=country.strip(),
                                 category=category.strip(),
+                                languages=languages,
                                 starts_at=starts_at,
                                 venue=venue.strip() if venue else None,
                                 city=city,

@@ -12,6 +12,7 @@ class Event:
     description: Optional[str]
     country: str
     category: str
+    languages: Optional[list[str]]
     starts_at: Optional[str]  # ISO-8601
     venue: Optional[str]
     city: Optional[str]

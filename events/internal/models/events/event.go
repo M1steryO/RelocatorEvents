@@ -39,6 +39,7 @@ type Event struct {
 	ImageUrl       *string
 	Address        *EventAddress
 	IsFavourite    bool
+	Languages      []string
 	CreatedAt      time.Time
 	UpdatedAt      *time.Time
 }

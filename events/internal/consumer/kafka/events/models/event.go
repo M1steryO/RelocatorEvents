@@ -18,4 +18,5 @@ type Event struct {
 	Longitude   float64   `json:"longitude"`
 	Latitude    float64   `json:"latitude"`
 	ImgURL      string    `json:"img_url"`
+	Languages   []string  `json:"languages"`
 }
