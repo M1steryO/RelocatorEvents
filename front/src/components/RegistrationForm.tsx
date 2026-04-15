@@ -436,7 +436,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                     <div className="registration-step">
                         <div className="step-3-title-row">
                             {renderBackButton()}
-                            <h1 className="step-title step-title-inline">Укажите ваш родной язык</h1>
+                            <h1 className="step-title step-title-inline">Укажите ваш<br />родной язык</h1>
                         </div>
                         <div className="step-header">
                             <p className="step-description">
