@@ -18,23 +18,29 @@ const CITIES_BY_COUNTRY: Record<string, string[]> = {
 
 // List of available countries
 const AVAILABLE_COUNTRIES = Object.keys(CITIES_BY_COUNTRY);
+const LANGUAGE_OPTIONS = ['Русский', 'Английский', 'Грузинский'];
 
 export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const { setAccessToken, setUser } = useAuth();
     const navigate = useNavigate();
     const [step, setStep] = useState(2);
     const [formData, setFormData] = useState({
+        language: '',
         country: '',
         city: '',
         interests: [] as string[],
         collections: [] as string[],
     });
     const [isLoading, setIsLoading] = useState(false);
+    const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
     const [showCountryDropdown, setShowCountryDropdown] = useState(false);
     const [showCityDropdown, setShowCityDropdown] = useState(false);
+    const [languageError, setLanguageError] = useState<string>('');
     const [countryError, setCountryError] = useState<string>('');
     const [cityError, setCityError] = useState<string>('');
     const [showButton, setShowButton] = useState(false);
+    const languageDropdownRef = useRef<HTMLDivElement>(null);
+    const languageInputRef = useRef<HTMLInputElement>(null);
     const countryDropdownRef = useRef<HTMLDivElement>(null);
     const countryInputRef = useRef<HTMLInputElement>(null);
     const cityDropdownRef = useRef<HTMLDivElement>(null);
@@ -53,6 +59,16 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     // Close dropdowns when clicking outside
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
+            // Close language dropdown
+            if (
+                languageDropdownRef.current &&
+                !languageDropdownRef.current.contains(event.target as Node) &&
+                languageInputRef.current &&
+                !languageInputRef.current.contains(event.target as Node)
+            ) {
+                setShowLanguageDropdown(false);
+            }
+
             // Close country dropdown
             if (
                 countryDropdownRef.current &&
@@ -74,14 +90,22 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             }
         };
 
-        if (showCountryDropdown || showCityDropdown) {
+        if (showLanguageDropdown || showCountryDropdown || showCityDropdown) {
             document.addEventListener('mousedown', handleClickOutside);
         }
 
         return () => {
             document.removeEventListener('mousedown', handleClickOutside);
         };
-    }, [showCountryDropdown, showCityDropdown]);
+    }, [showLanguageDropdown, showCountryDropdown, showCityDropdown]);
+
+    const handleLanguageSelect = (language: string) => {
+        setFormData((prev) => ({ ...prev, language }));
+        setShowLanguageDropdown(false);
+        if (languageError) {
+            setLanguageError('');
+        }
+    };
 
 
     const handleCountrySelect = (country: string) => {
@@ -115,6 +139,14 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const handleNext = () => {
         // Validate before proceeding
         if (step === 2) {
+            if (!formData.language.trim()) {
+                setLanguageError('Пожалуйста, выберите язык');
+                return;
+            }
+            setLanguageError('');
+        }
+
+        if (step === 3) {
             if (!formData.country.trim()) {
                 setCountryError('Пожалуйста, выберите страну');
                 return;
@@ -127,8 +159,9 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             setCityError('');
         }
 
-        if (step < 3) {
+        if (step < 4) {
             setStep(step + 1);
+            setShowLanguageDropdown(false);
             setShowCountryDropdown(false);
             setShowCityDropdown(false);
         } else {
@@ -138,6 +171,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
 
     const handleBack = () => {
         if (step > 2) {
+            setShowLanguageDropdown(false);
             setShowCountryDropdown(false);
             setShowCityDropdown(false);
             setStep(step - 1);
@@ -145,7 +179,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     };
 
     const handleSkip = () => {
-        if (step === 3) {
+        if (step === 4) {
             handleSubmit();
         }
     };
@@ -171,6 +205,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                     name: telegramNameFromInitData,
                     telegram_username: telegramUsernameFromInitData,
                     email: emailForRegistration,
+                    language: formData.language,
                     country: formData.country,
                     city: formData.city,
                     interests: formData.interests.map((interest) => ({ code: interest })),
@@ -227,12 +262,14 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             case 1:
                 return true; // Welcome step, always can proceed
             case 2:
+                return formData.language.trim().length > 0 && !languageError;
+            case 3:
                 return (
                     formData.country.trim().length > 0 &&
                     formData.city.trim().length > 0 &&
                     !countryError
                 );
-            case 3:
+            case 4:
                 return true; // Interests are optional
             default:
                 return false;
@@ -282,8 +319,74 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                     </div>
                 )}
 
-                {/* Step 2: Region Selection */}
+                {/* Step 2: Language Selection */}
                 {step === 2 && (
+                    <div className="registration-step">
+                        <div className="step-header">
+                            <h1 className="step-title">Укажите ваш родной язык</h1>
+                            <p className="step-description">
+                                Это нужно для поиска мероприятий и новых знакомств
+                            </p>
+                        </div>
+                        <div className="input-wrapper">
+                            <label className="input-label">Язык</label>
+                            <div className="input-container">
+                                <input
+                                    ref={languageInputRef}
+                                    type="text"
+                                    className={`registration-input ${languageError ? 'error' : ''}`}
+                                    placeholder="Язык"
+                                    value={formData.language}
+                                    readOnly
+                                    onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !showLanguageDropdown && canProceed() && !isLoading) {
+                                            e.preventDefault();
+                                            handleNext();
+                                        }
+                                    }}
+                                    autoFocus
+                                />
+                                <span className="dropdown-icon"></span>
+                            </div>
+                            {languageError && (
+                                <span className="error-message">{languageError}</span>
+                            )}
+                            {showLanguageDropdown && (
+                                <div ref={languageDropdownRef} className="city-dropdown">
+                                    {LANGUAGE_OPTIONS.map((language) => (
+                                        <div
+                                            key={language}
+                                            className="city-option"
+                                            onClick={() => handleLanguageSelect(language)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleLanguageSelect(language);
+                                                }
+                                            }}
+                                            tabIndex={0}
+                                        >
+                                            {language}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        {showButton && (
+                            <button
+                                className="continue-button"
+                                onClick={handleNext}
+                                disabled={isLoading || !canProceed()}
+                            >
+                                Продолжить
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* Step 3: Region Selection */}
+                {step === 3 && (
                     <div className="registration-step">
                         <div className="step-header">
                             <h1 className="step-title">Укажите ваш регион</h1>
@@ -310,7 +413,6 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                                             }
                                         }
                                     }}
-                                    autoFocus
                                 />
                                 <span className="dropdown-icon"></span>
                             </div>
@@ -395,8 +497,8 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                     </div>
                 )}
 
-                {/* Step 3: Interests Selection */}
-                {step === 3 && (
+                {/* Step 4: Interests Selection */}
+                {step === 4 && (
                     <div className="registration-step registration-step-interests">
                         <div className="step-3-title-row">
                             {renderBackButton()}

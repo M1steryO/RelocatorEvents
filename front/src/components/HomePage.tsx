@@ -106,56 +106,6 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
     };
 };
 
-/**
- * При смене подборки (таб) не теряем город/район/цену и прочие поля UI:
- * если в uiFilters пусто, подставляем из уже применённого запроса (appliedFilters).
- */
-const mergeUiFiltersForTabOverride = (
-    prev: FiltersState | null,
-    applied: GetListRequest,
-    available: FiltersData | null | undefined,
-    nextInterests: string[],
-): FiltersState => {
-    const minP = available?.min_price ?? 0;
-    const maxP = available?.max_price ?? 10000;
-    if (!prev) {
-        return {
-            cities: applied.city ? [applied.city] : [],
-            districts: applied.district ? [applied.district] : [],
-            priceRange:
-                applied.min_price !== undefined || applied.max_price !== undefined
-                    ? [applied.min_price ?? minP, applied.max_price ?? maxP]
-                    : [minP, maxP],
-            dateType: null,
-            weekdays: false,
-            exactDate: '',
-            formats:
-                applied.event_type === 'online'
-                    ? ['Онлайн']
-                    : applied.event_type === 'offline'
-                        ? ['Офлайн']
-                        : [],
-            interests: nextInterests,
-        };
-    }
-
-    const cities =
-        prev.cities.length > 0 ? prev.cities : applied.city ? [applied.city] : [];
-    const districts =
-        prev.districts.length > 0
-            ? prev.districts
-            : applied.district
-                ? [applied.district]
-                : [];
-
-    return {
-        ...prev,
-        cities,
-        districts,
-        interests: nextInterests,
-    };
-};
-
 const DEFAULT_HOME_TAB = 'Вечер для новых друзей';
 
 function feedRequestKey(parts: {
@@ -303,7 +253,6 @@ export const HomePage = () => {
     const [isTabOverrideActive, setIsTabOverrideActive] = useState(
         () => homeSnapshot?.isTabOverrideActive ?? false,
     );
-    const tabOverrideBaseInterestsRef = useRef<string[] | null>(null);
     const restoredFromSessionRef = useRef(
         homeSnapshot?.hasRestorableEvents ?? false,
     );
@@ -342,6 +291,15 @@ export const HomePage = () => {
         { label: 'На английском', categories: ['english_language'] },
         { label: 'На родном языке', categories: ['native_language'] },
     ];
+    const collectionCategoryCodes = new Set(tabs.flatMap((tab) => tab.categories));
+    const availableFiltersForModal: FiltersData | undefined = !availableFilters
+        ? undefined
+        : {
+            ...availableFilters,
+            categories: (availableFilters.categories || []).filter(
+                (category) => !collectionCategoryCodes.has(category.code),
+            ),
+        };
 
     // Map sort option to API sort parameter
     const getSortParam = (sort: string): string => {
@@ -778,43 +736,18 @@ export const HomePage = () => {
                         className={`tab-button ${isTabOverrideActive && activeTab === tab.label ? 'active' : ''}`}
                         onClick={() => {
                             scrollFeedToTop();
-                            // Повторный клик по активному табу снимает tab-фильтр
+                            // Повторный клик по активной подборке снимает подборку и очищает фильтры.
                             if (isTabOverrideActive && activeTab === tab.label) {
                                 setIsTabOverrideActive(false);
-                                const baseInterests = tabOverrideBaseInterestsRef.current ?? [];
-                                setAppliedFilters((prev) => {
-                                    const next = { ...prev };
-                                    if (baseInterests.length > 0) {
-                                        next.category = baseInterests;
-                                    } else {
-                                        delete next.category;
-                                    }
-                                    return next;
-                                });
-                                setUiFilters((prev) =>
-                                    mergeUiFiltersForTabOverride(
-                                        prev,
-                                        appliedFilters,
-                                        availableFilters,
-                                        baseInterests,
-                                    ),
-                                );
+                                setAppliedFilters({});
+                                setUiFilters(null);
                                 return;
-                            }
-                            if (!isTabOverrideActive) {
-                                tabOverrideBaseInterestsRef.current = uiFilters?.interests ?? appliedFilters.category ?? [];
                             }
                             setActiveTab(tab.label);
                             setIsTabOverrideActive(true);
-                            setAppliedFilters((prev) => ({ ...prev, category: tab.categories }));
-                            setUiFilters((prev) =>
-                                mergeUiFiltersForTabOverride(
-                                    prev,
-                                    appliedFilters,
-                                    availableFilters,
-                                    tab.categories,
-                                ),
-                            );
+                            // При переходе в подборку фильтры сбрасываем полностью.
+                            setAppliedFilters({ category: tab.categories });
+                            setUiFilters(null);
                         }}
                     >
                         {tab.label}
@@ -908,54 +841,59 @@ export const HomePage = () => {
             <FiltersModal
                 isOpen={isFiltersOpen}
                 onClose={() => setIsFiltersOpen(false)}
-                availableFilters={availableFilters || undefined}
+                availableFilters={availableFiltersForModal}
                 initialFilters={uiFilters}
                 onApply={(filters) => {
                     scrollFeedToTop();
                     setIsTabOverrideActive(false);
-                    tabOverrideBaseInterestsRef.current = null;
-                    setUiFilters(filters);
+                    const sanitizedFilters: FiltersState = {
+                        ...filters,
+                        interests: filters.interests.filter(
+                            (code) => !collectionCategoryCodes.has(code),
+                        ),
+                    };
+                    setUiFilters(sanitizedFilters);
                     const apiFilters: GetListRequest = {};
 
-                    if (filters.cities.length > 0) {
-                        apiFilters.city = filters.cities[0]; // API expects single city
+                    if (sanitizedFilters.cities.length > 0) {
+                        apiFilters.city = sanitizedFilters.cities[0]; // API expects single city
                     }
-                    if (filters.districts.length > 0) {
-                        apiFilters.district = filters.districts[0]; // API expects single district
+                    if (sanitizedFilters.districts.length > 0) {
+                        apiFilters.district = sanitizedFilters.districts[0]; // API expects single district
                     }
                     const maxPrice = availableFilters?.max_price || 10000;
-                    if (filters.priceRange[0] > (availableFilters?.min_price || 0) || filters.priceRange[1] < maxPrice) {
-                        apiFilters.min_price = filters.priceRange[0];
-                        apiFilters.max_price = filters.priceRange[1];
+                    if (sanitizedFilters.priceRange[0] > (availableFilters?.min_price || 0) || sanitizedFilters.priceRange[1] < maxPrice) {
+                        apiFilters.min_price = sanitizedFilters.priceRange[0];
+                        apiFilters.max_price = sanitizedFilters.priceRange[1];
                     }
                     // Обработка даты
-                    if (filters.exactDate) {
+                    if (sanitizedFilters.exactDate) {
                         // Если указана точная дата, преобразуем из DD.MM.YYYY в YYYY-MM-DD
-                        const dateParts = filters.exactDate.split('.');
+                        const dateParts = sanitizedFilters.exactDate.split('.');
                         if (dateParts.length === 3) {
                             const [day, month, year] = dateParts;
                             apiFilters.event_date = `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
                         } else {
                             // Если формат уже правильный, используем как есть
-                            apiFilters.event_date = filters.exactDate;
+                            apiFilters.event_date = sanitizedFilters.exactDate;
                         }
-                    } else if (filters.dateType) {
+                    } else if (sanitizedFilters.dateType) {
                         // Send predefined keywords expected by API
-                        apiFilters.event_date = filters.dateType;
+                        apiFilters.event_date = sanitizedFilters.dateType;
                     }
-                    if (filters.formats.length > 0) {
+                    if (sanitizedFilters.formats.length > 0) {
                         // Map "Онлайн" -> online, "Офлайн" -> offline
                         const formatMap: Record<string, 'online' | 'offline'> = {
                             'Онлайн': 'online',
                             'Офлайн': 'offline',
                         };
-                        const eventType = formatMap[filters.formats[0]];
+                        const eventType = formatMap[sanitizedFilters.formats[0]];
                         if (eventType) {
                             apiFilters.event_type = eventType;
                         }
                     }
-                    if (filters.interests.length > 0) {
-                        apiFilters.category = filters.interests;
+                    if (sanitizedFilters.interests.length > 0) {
+                        apiFilters.category = sanitizedFilters.interests;
                     }
 
                     setAppliedFilters(apiFilters);

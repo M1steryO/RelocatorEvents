@@ -15,6 +15,7 @@ export interface RegisterData {
         name?:string;
         email?: string | null;
         telegram_username? : string
+        language?: string;
         country?: string;
         city?: string;
         interests?: {
