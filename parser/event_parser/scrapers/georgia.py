@@ -92,6 +92,8 @@ async def parse_georgia(
     t0 = perf_counter()
     await cleanup_past_seen_events(redis, source)
     t_after_cleanup = perf_counter()
+    hrefs: List[str] = []
+    t_after_listing = t_after_cleanup
 
     async with aiohttp.ClientSession() as http:
         geocoder = ReverseGeocoder(http, qps=1.0)
@@ -109,15 +111,21 @@ async def parse_georgia(
                         await page.goto(
                             page_url, wait_until="domcontentloaded", timeout=30_000
                         )
-                        await page.wait_for_selector(CARD_LINK, timeout=20_000)
+                        await page.wait_for_selector(
+                            CARD_LINK, timeout=20_000, state="attached"
+                        )
                         break
                     except PWTimeout:
                         if attempt == 3:
-                            raise
+                            logger.warning(
+                                "Listing selector timeout for %s after %d attempts; skip source page",
+                                page_url,
+                                attempt,
+                            )
+                            return []
                         await asyncio.sleep(1.0 * attempt)
 
                 link_els = await page.query_selector_all(CARD_LINK)
-                hrefs: List[str] = []
                 for el in link_els:
                     href = await el.get_attribute("href")
                     if href:

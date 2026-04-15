@@ -26,55 +26,66 @@ async def main() -> None:
     t_run = perf_counter()
     all_events: List[Event] = []
     redis = Redis.from_url(settings.redis_url, decode_responses=True)
-    t_redis = perf_counter()
-    await cleanup_all_past_seen_events(redis)
-    logging.info(
-        "Redis cleanup (past dedup keys): %.2fs", perf_counter() - t_redis
-    )
-
     producer = await make_producer(settings.kafka_bootstrap)
-    topic = settings.kafka_topic
-
-    for job in JOBS:
-        scraper = SCRAPERS.get(job.source)
-        if scraper is None:
-            logging.warning("No scraper for source=%r, skip job %s", job.source, job)
-            continue
-
-        t0 = perf_counter()
-        evs = await scraper(
-            page_url=job.page_url,
-            country=job.country,
-            source=job.source,
-            category=job.category,
-            redis=redis,
-            kafka_data=[producer, topic],
-        )
-        dt = perf_counter() - t0
-        all_events.extend(evs)
-        rate = len(evs) / dt if dt > 0 else 0.0
+    try:
+        t_redis = perf_counter()
+        await cleanup_all_past_seen_events(redis)
         logging.info(
-            "Run done: country=%r source=%r category=%r url=%s | "
-            "events=%d wall_time=%.2fs (%.2f ev/s)",
-            job.country,
-            job.source,
-            job.category,
-            job.page_url,
-            len(evs),
-            dt,
-            rate,
+            "Redis cleanup (past dedup keys): %.2fs", perf_counter() - t_redis
         )
 
-    total_dt = perf_counter() - t_run
-    logging.info(
-        "Total: events=%d jobs=%d wall_time=%.2fs (%.2f ev/s overall)",
-        len(all_events),
-        len(JOBS),
-        total_dt,
-        len(all_events) / total_dt if total_dt > 0 else 0.0,
-    )
-    if all_events:
-        logging.debug("Sample event: %s", all_events[0])
+        topic = settings.kafka_topic
 
-    await redis.aclose()
-    await producer.stop()
+        for job in JOBS:
+            scraper = SCRAPERS.get(job.source)
+            if scraper is None:
+                logging.warning("No scraper for source=%r, skip job %s", job.source, job)
+                continue
+
+            t0 = perf_counter()
+            try:
+                evs = await scraper(
+                    page_url=job.page_url,
+                    country=job.country,
+                    source=job.source,
+                    category=job.category,
+                    redis=redis,
+                    kafka_data=[producer, topic],
+                )
+            except Exception:
+                logging.exception(
+                    "Job failed: country=%r source=%r category=%r url=%s",
+                    job.country,
+                    job.source,
+                    job.category,
+                    job.page_url,
+                )
+                continue
+            dt = perf_counter() - t0
+            all_events.extend(evs)
+            rate = len(evs) / dt if dt > 0 else 0.0
+            logging.info(
+                "Run done: country=%r source=%r category=%r url=%s | "
+                "events=%d wall_time=%.2fs (%.2f ev/s)",
+                job.country,
+                job.source,
+                job.category,
+                job.page_url,
+                len(evs),
+                dt,
+                rate,
+            )
+
+        total_dt = perf_counter() - t_run
+        logging.info(
+            "Total: events=%d jobs=%d wall_time=%.2fs (%.2f ev/s overall)",
+            len(all_events),
+            len(JOBS),
+            total_dt,
+            len(all_events) / total_dt if total_dt > 0 else 0.0,
+        )
+        if all_events:
+            logging.debug("Sample event: %s", all_events[0])
+    finally:
+        await redis.aclose()
+        await producer.stop()
