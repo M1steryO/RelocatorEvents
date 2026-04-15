@@ -139,14 +139,6 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const handleNext = () => {
         // Validate before proceeding
         if (step === 2) {
-            if (!formData.language.trim()) {
-                setLanguageError('Пожалуйста, выберите язык');
-                return;
-            }
-            setLanguageError('');
-        }
-
-        if (step === 3) {
             if (!formData.country.trim()) {
                 setCountryError('Пожалуйста, выберите страну');
                 return;
@@ -157,6 +149,13 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             }
             setCountryError('');
             setCityError('');
+        }
+        if (step === 4) {
+            if (!formData.language.trim()) {
+                setLanguageError('Пожалуйста, выберите язык');
+                return;
+            }
+            setLanguageError('');
         }
 
         if (step < 4) {
@@ -179,8 +178,8 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     };
 
     const handleSkip = () => {
-        if (step === 4) {
-            handleSubmit();
+        if (step === 3) {
+            setStep(4);
         }
     };
 
@@ -262,15 +261,15 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             case 1:
                 return true; // Welcome step, always can proceed
             case 2:
-                return formData.language.trim().length > 0 && !languageError;
-            case 3:
                 return (
                     formData.country.trim().length > 0 &&
                     formData.city.trim().length > 0 &&
                     !countryError
                 );
-            case 4:
+            case 3:
                 return true; // Interests are optional
+            case 4:
+                return formData.language.trim().length > 0 && !languageError;
             default:
                 return false;
         }
@@ -319,74 +318,8 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                     </div>
                 )}
 
-                {/* Step 2: Language Selection */}
+                {/* Step 2: Region Selection */}
                 {step === 2 && (
-                    <div className="registration-step">
-                        <div className="step-header">
-                            <h1 className="step-title">Укажите ваш родной язык</h1>
-                            <p className="step-description">
-                                Это нужно для поиска мероприятий и новых знакомств
-                            </p>
-                        </div>
-                        <div className="input-wrapper">
-                            <label className="input-label">Язык</label>
-                            <div className="input-container">
-                                <input
-                                    ref={languageInputRef}
-                                    type="text"
-                                    className={`registration-input ${languageError ? 'error' : ''}`}
-                                    placeholder="Язык"
-                                    value={formData.language}
-                                    readOnly
-                                    onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Enter' && !showLanguageDropdown && canProceed() && !isLoading) {
-                                            e.preventDefault();
-                                            handleNext();
-                                        }
-                                    }}
-                                    autoFocus
-                                />
-                                <span className="dropdown-icon"></span>
-                            </div>
-                            {languageError && (
-                                <span className="error-message">{languageError}</span>
-                            )}
-                            {showLanguageDropdown && (
-                                <div ref={languageDropdownRef} className="city-dropdown">
-                                    {LANGUAGE_OPTIONS.map((language) => (
-                                        <div
-                                            key={language}
-                                            className="city-option"
-                                            onClick={() => handleLanguageSelect(language)}
-                                            onKeyDown={(e) => {
-                                                if (e.key === 'Enter') {
-                                                    e.preventDefault();
-                                                    handleLanguageSelect(language);
-                                                }
-                                            }}
-                                            tabIndex={0}
-                                        >
-                                            {language}
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                        {showButton && (
-                            <button
-                                className="continue-button"
-                                onClick={handleNext}
-                                disabled={isLoading || !canProceed()}
-                            >
-                                Продолжить
-                            </button>
-                        )}
-                    </div>
-                )}
-
-                {/* Step 3: Region Selection */}
-                {step === 3 && (
                     <div className="registration-step">
                         <div className="step-header">
                             <h1 className="step-title">Укажите ваш регион</h1>
@@ -413,6 +346,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                                             }
                                         }
                                     }}
+                                    autoFocus
                                 />
                                 <span className="dropdown-icon"></span>
                             </div>
@@ -497,8 +431,76 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                     </div>
                 )}
 
-                {/* Step 4: Interests Selection */}
+                {/* Step 4: Language Selection */}
                 {step === 4 && (
+                    <div className="registration-step">
+                        <div className="step-3-title-row">
+                            {renderBackButton()}
+                            <h1 className="step-title step-title-inline">Укажите ваш родной язык</h1>
+                        </div>
+                        <div className="step-header">
+                            <p className="step-description">
+                                Это нужно для поиска мероприятий и новых знакомств
+                            </p>
+                        </div>
+                        <div className="input-wrapper">
+                            <label className="input-label">Язык</label>
+                            <div className="input-container">
+                                <input
+                                    ref={languageInputRef}
+                                    type="text"
+                                    className={`registration-input ${languageError ? 'error' : ''}`}
+                                    placeholder="Язык"
+                                    value={formData.language}
+                                    readOnly
+                                    onClick={() => setShowLanguageDropdown(!showLanguageDropdown)}
+                                    onKeyDown={(e) => {
+                                        if (e.key === 'Enter' && !showLanguageDropdown && canProceed() && !isLoading) {
+                                            e.preventDefault();
+                                            handleNext();
+                                        }
+                                    }}
+                                />
+                                <span className="dropdown-icon"></span>
+                            </div>
+                            {languageError && (
+                                <span className="error-message">{languageError}</span>
+                            )}
+                            {showLanguageDropdown && (
+                                <div ref={languageDropdownRef} className="city-dropdown">
+                                    {LANGUAGE_OPTIONS.map((language) => (
+                                        <div
+                                            key={language}
+                                            className="city-option"
+                                            onClick={() => handleLanguageSelect(language)}
+                                            onKeyDown={(e) => {
+                                                if (e.key === 'Enter') {
+                                                    e.preventDefault();
+                                                    handleLanguageSelect(language);
+                                                }
+                                            }}
+                                            tabIndex={0}
+                                        >
+                                            {language}
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                        {showButton && (
+                            <button
+                                className="continue-button"
+                                onClick={handleNext}
+                                disabled={isLoading || !canProceed()}
+                            >
+                                Продолжить
+                            </button>
+                        )}
+                    </div>
+                )}
+
+                {/* Step 3: Interests Selection */}
+                {step === 3 && (
                     <div className="registration-step registration-step-interests">
                         <div className="step-3-title-row">
                             {renderBackButton()}
