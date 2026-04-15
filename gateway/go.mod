@@ -6,7 +6,7 @@ require (
 	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260315124812-c61e40827aed
 	github.com/M1steryO/RelocatorEvents/events v0.0.0-20260315124812-c61e40827aed
 	github.com/M1steryO/RelocatorEvents/media v0.0.0-20260315124812-c61e40827aed
-	github.com/M1steryO/RelocatorEvents/users v0.0.0-20260403171720-b43465fe18be
+	github.com/M1steryO/RelocatorEvents/users v0.0.0-20260415183352-37f1a4f6e8c8
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/fatih/color v1.18.0
 	github.com/go-chi/chi/v5 v5.2.5
