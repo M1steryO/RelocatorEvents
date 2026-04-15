@@ -29,6 +29,7 @@ func ToUserInfoFromRepo(userInfo *modelRepo.UserInfo) user.UserInfo {
 
 		City:      userInfo.City,
 		Country:   userInfo.Country,
+		Language:  userInfo.Language,
 		Interests: ToUserInterestFromRepo(userInfo.Interests),
 	}
 }

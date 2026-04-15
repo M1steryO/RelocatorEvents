@@ -70,8 +70,9 @@ func ToUserApiFromDomain(user *user.User) *desc.User {
 				}
 				return nil
 			}(),
-			City:    user.Info.City,
-			Country: user.Info.Country,
+			City:     user.Info.City,
+			Country:  user.Info.Country,
+			Language: user.Info.Language,
 
 			TelegramId: func() *wrapperspb.Int64Value {
 				if user.Info.TelegramID != nil {

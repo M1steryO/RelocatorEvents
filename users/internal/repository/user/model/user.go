@@ -20,8 +20,9 @@ type UserInfo struct {
 	Email *string `db:"email"`
 	Name  string  `db:"name"`
 
-	Country string `db:"country"`
-	City    string `db:"city"`
+	Country  string `db:"country"`
+	City     string `db:"city"`
+	Language string `db:"language"`
 
 	Interests []UserInterest `db:"interests"`
 }
