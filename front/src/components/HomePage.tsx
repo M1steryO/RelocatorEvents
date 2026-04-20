@@ -106,9 +106,23 @@ const convertEventToDisplay = (event: ServerEvent): DisplayEvent => {
     };
 };
 
-const DEFAULT_HOME_TAB = 'Вечер для новых друзей';
-const ENGLISH_TAB_LABEL = 'На английском';
-const NATIVE_LANGUAGE_TAB_LABEL = 'На родном языке';
+type CollectionConfig = {
+    label: string;
+    categories?: string[];
+    lang?: string;
+    freeOnly?: boolean;
+};
+
+const DEFAULT_HOME_TAB = 'Для вас';
+const COLLECTIONS: CollectionConfig[] = [
+    { label: DEFAULT_HOME_TAB },
+    { label: 'Вечер для новых друзей', categories: ['nightlife', 'gastronomic'] },
+    { label: 'Знакомство с городом', categories: ['excursion'] },
+    { label: 'Для всей семьи', categories: ['kids'] },
+    { label: 'На английском', lang: 'en' },
+    { label: 'На родном языке', lang: 'ru' },
+    { label: 'Бесплатные мероприятия', freeOnly: true },
+];
 
 const getSelectedCityForCollections = (
     ui: FiltersState | null,
@@ -136,14 +150,12 @@ const buildCityOnlyUiFilters = (
 
 function feedRequestKey(parts: {
     debouncedSearchQuery: string;
-    currentSort: string;
     activeTab: string;
     isTabOverrideActive: boolean;
     appliedFilters: GetListRequest;
 }): string {
     return JSON.stringify({
         q: parts.debouncedSearchQuery,
-        sort: parts.currentSort,
         tab: parts.activeTab,
         tabOverride: parts.isTabOverrideActive,
         filters: parts.appliedFilters,
@@ -177,7 +189,6 @@ type HomeFeedSnapshot = {
     searchQuery: string;
     debouncedSearchQuery: string;
     activeTab: string;
-    currentSort: string;
     appliedFilters: GetListRequest;
     uiFilters: FiltersState | null;
     availableFilters: FiltersData | null;
@@ -213,7 +224,6 @@ function parseHomeFeedSnapshot(): HomeFeedSnapshot | null {
             debouncedSearchQuery:
                 state.debouncedSearchQuery ?? state.searchQuery ?? '',
             activeTab: state.activeTab || DEFAULT_HOME_TAB,
-            currentSort: state.currentSort || 'popular',
             appliedFilters: state.appliedFilters ?? {},
             uiFilters: state.uiFilters ?? null,
             availableFilters: state.availableFilters ?? null,
@@ -245,9 +255,6 @@ export const HomePage = () => {
     );
     const [isFiltersOpen, setIsFiltersOpen] = useState(false);
     const [isSortOpen, setIsSortOpen] = useState(false);
-    const [currentSort, setCurrentSort] = useState(
-        () => homeSnapshot?.currentSort ?? 'popular',
-    );
     const [events, setEvents] = useState<DisplayEvent[]>(
         () => homeSnapshot?.events ?? [],
     );
@@ -276,7 +283,6 @@ export const HomePage = () => {
     const [isInitialized, setIsInitialized] = useState(false);
     const [isUserInterestsReady, setIsUserInterestsReady] = useState(false);
     const [userProfileCity, setUserProfileCity] = useState<string | null>(null);
-    const [userProfileLanguage, setUserProfileLanguage] = useState<string | null>(null);
     const [isTabOverrideActive, setIsTabOverrideActive] = useState(
         () => homeSnapshot?.isTabOverrideActive ?? false,
     );
@@ -290,7 +296,6 @@ export const HomePage = () => {
         homeSnapshot?.hasRestorableEvents
             ? feedRequestKey({
                   debouncedSearchQuery: homeSnapshot.debouncedSearchQuery,
-                  currentSort: homeSnapshot.currentSort,
                   activeTab: homeSnapshot.activeTab,
                   isTabOverrideActive: homeSnapshot.isTabOverrideActive,
                   appliedFilters: homeSnapshot.appliedFilters,
@@ -310,25 +315,10 @@ export const HomePage = () => {
     const defaultUserCityAppliedRef = useRef(false);
     const profileCityNotInFiltersRef = useRef(false);
 
-    const tabs: Array<{ label: string; categories: string[] }> = [
-        { label: DEFAULT_HOME_TAB, categories: ['nightlife', 'gastronomic'] },
-        { label: 'Начните знакомство с городом', categories: ['exhibition', 'theater'] },
-        { label: 'Рядом с вами', categories: ['cafe', 'festivals'] },
-        { label: 'Для всей семьи', categories: ['kids'] },
-        { label: ENGLISH_TAB_LABEL, categories: [] },
-        { label: NATIVE_LANGUAGE_TAB_LABEL, categories: [] },
-    ];
-    // Map sort option to API sort parameter
-    const getSortParam = (sort: string): string => {
-        switch (sort) {
-            case 'popular': return 'popular';
-            case 'rating': return 'rating';
-            case 'cheaper': return 'price_asc';
-            case 'expensive': return 'price_desc';
-            case 'new': return 'new';
-            default: return 'popular';
-        }
-    };
+    const selectedCollection = useMemo(
+        () => COLLECTIONS.find((collection) => collection.label === activeTab) ?? COLLECTIONS[0],
+        [activeTab],
+    );
 
     // Снимок ленты уже в useState (parseHomeFeedSnapshot). Скролл только после paint:
     // синхронный scrollTo + position:sticky в iOS / Telegram WebView даёт чёрный прямоугольник
@@ -425,9 +415,7 @@ export const HomePage = () => {
                 const userData = await authService.getCurrentUser();
                 if (cancelled) return;
                 const trimmedCity = (userData.city || '').trim();
-                const trimmedLang = (userData.language || '').trim().toLowerCase();
                 setUserProfileCity(trimmedCity || null);
-                setUserProfileLanguage(trimmedLang || null);
                 const interestCodes = (userData.interests || []).filter(Boolean);
                 if (interestCodes.length > 0) {
                     setAppliedFilters((prev) => ({ ...prev, category: interestCodes }));
@@ -547,26 +535,19 @@ export const HomePage = () => {
         }
 
         try {
-            const isFirstTab = activeTab === tabs[0].label;
-            const activeTabConfig = tabs.find((tab) => tab.label === activeTab);
             const categoriesFromFilters = appliedFilters.category;
-            const categoriesFromTab = isTabOverrideActive ? activeTabConfig?.categories : undefined;
-            const shouldUseRandomByTab = isTabOverrideActive && !isFirstTab;
-            const tabLang =
-                isTabOverrideActive && activeTab === ENGLISH_TAB_LABEL
-                    ? 'en'
-                    : isTabOverrideActive && activeTab === NATIVE_LANGUAGE_TAB_LABEL
-                        ? (userProfileLanguage || undefined)
-                        : undefined;
+            const categoriesFromCollection = isTabOverrideActive ? selectedCollection.categories : undefined;
+            const langFromCollection = isTabOverrideActive ? selectedCollection.lang : undefined;
+            const freeOnlyFromCollection = isTabOverrideActive && selectedCollection.freeOnly === true;
             const params: GetListRequest = {
                 q: debouncedSearchQuery || undefined,
-                // random только при активном tab-override и не для первой вкладки
-                sort: shouldUseRandomByTab ? '' : getSortParam(currentSort),
                 limit: PAGE_LIMIT,
                 offset: nextOffset,
                 ...appliedFilters,
-                category: tabLang ? undefined : (categoriesFromTab ?? categoriesFromFilters),
-                lang: tabLang ?? appliedFilters.lang,
+                category: langFromCollection || freeOnlyFromCollection ? undefined : (categoriesFromCollection ?? categoriesFromFilters),
+                lang: langFromCollection ?? appliedFilters.lang,
+                min_price: freeOnlyFromCollection ? 0 : appliedFilters.min_price,
+                max_price: freeOnlyFromCollection ? 0 : appliedFilters.max_price,
             };
             const requestKey = JSON.stringify(params);
             const now = Date.now();
@@ -606,7 +587,6 @@ export const HomePage = () => {
 
         const key = feedRequestKey({
             debouncedSearchQuery,
-            currentSort,
             activeTab,
             isTabOverrideActive,
             appliedFilters,
@@ -623,7 +603,7 @@ export const HomePage = () => {
         setOffset(0);
         setHasMore(true);
         fetchEventsPage(0, true);
-    }, [debouncedSearchQuery, currentSort, appliedFilters, activeTab, isTabOverrideActive, isInitialized, isUserInterestsReady]);
+    }, [debouncedSearchQuery, appliedFilters, activeTab, isTabOverrideActive, isInitialized, isUserInterestsReady]);
 
     useEffect(() => {
         const handleScroll = () => {
@@ -640,7 +620,7 @@ export const HomePage = () => {
 
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, currentSort, appliedFilters, activeTab, isTabOverrideActive, isUserInterestsReady]);
+    }, [offset, hasMore, isLoading, isLoadingMore, debouncedSearchQuery, appliedFilters, activeTab, isTabOverrideActive, isUserInterestsReady]);
 
     // Сохраняем состояние ленты и позицию скролла при размонтировании
     useEffect(() => {
@@ -660,7 +640,6 @@ export const HomePage = () => {
                     debouncedSearchQuery,
                     activeTab,
                     isTabOverrideActive,
-                    currentSort,
                     events,
                     offset,
                     hasMore,
@@ -680,7 +659,6 @@ export const HomePage = () => {
         searchQuery,
         debouncedSearchQuery,
         activeTab,
-        currentSort,
         events,
         offset,
         hasMore,
@@ -701,6 +679,20 @@ export const HomePage = () => {
         setImageErrors(prev => ({ ...prev, [id]: true }));
     };
 
+    const minPriceDefault = availableFilters?.min_price ?? 0;
+    const maxPriceDefault = availableFilters?.max_price ?? 10000;
+    const hasAnyManualFilterApplied = Boolean(
+        uiFilters && (
+            uiFilters.districts.length > 0 ||
+            uiFilters.formats.length > 0 ||
+            uiFilters.interests.length > 0 ||
+            uiFilters.dateType ||
+            uiFilters.exactDate ||
+            uiFilters.priceRange[0] !== minPriceDefault ||
+            uiFilters.priceRange[1] !== maxPriceDefault
+        ),
+    );
+
     return (
         <div className="home-page">
             <div className="home-page-sticky-top">
@@ -720,7 +712,7 @@ export const HomePage = () => {
                         <input
                             type="text"
                             className="search-input"
-                            placeholder="Театр"
+                            placeholder="Поиск"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
@@ -730,20 +722,16 @@ export const HomePage = () => {
                 {/* Action Buttons */}
                 <div className="action-buttons">
                     <button
-                        className="action-button active"
+                        className={`action-button ${isTabOverrideActive || hasAnyManualFilterApplied ? 'active' : ''}`}
                         onClick={() => setIsSortOpen(true)}
                     >
-                        {currentSort === 'popular' ? 'Популярное' :
-                            currentSort === 'rating' ? 'По рейтингу' :
-                                currentSort === 'cheaper' ? 'Дешевле' :
-                                    currentSort === 'expensive' ? 'Дороже' :
-                                        currentSort === 'new' ? 'Новинки' : 'Популярное'}
+                        Подборки
                         <svg width="26" height="19" viewBox="0 0 26 19" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M8.36377 1C8.36377 0.447715 7.91605 0 7.36377 0C6.81148 0 6.36377 0.447715 6.36377 1H7.36377H8.36377ZM6.65666 18.7071C7.04719 19.0976 7.68035 19.0976 8.07088 18.7071L14.4348 12.3431C14.8254 11.9526 14.8254 11.3195 14.4348 10.9289C14.0443 10.5384 13.4111 10.5384 13.0206 10.9289L7.36377 16.5858L1.70692 10.9289C1.31639 10.5384 0.683226 10.5384 0.292702 10.9289C-0.0978227 11.3195 -0.0978227 11.9526 0.292702 12.3431L6.65666 18.7071ZM17.3638 18C17.3638 18.5523 17.8115 19 18.3638 19C18.9161 19 19.3638 18.5523 19.3638 18H18.3638H17.3638ZM19.0709 0.292893C18.6804 -0.0976311 18.0472 -0.0976311 17.6567 0.292893L11.2927 6.65685C10.9022 7.04738 10.9022 7.68054 11.2927 8.07107C11.6832 8.46159 12.3164 8.46159 12.7069 8.07107L18.3638 2.41421L24.0206 8.07107C24.4111 8.46159 25.0443 8.46159 25.4348 8.07107C25.8254 7.68054 25.8254 7.04738 25.4348 6.65685L19.0709 0.292893ZM7.36377 1H6.36377V18H7.36377H8.36377V1H7.36377ZM18.3638 18H19.3638L19.3638 1L18.3638 1L17.3638 1L17.3638 18H18.3638Z" fill="#458DBD" />
                         </svg>
                     </button>
                     <button
-                        className="action-button filter-button"
+                        className={`action-button filter-button ${isTabOverrideActive || hasAnyManualFilterApplied ? 'active' : ''}`}
                         onClick={() => setIsFiltersOpen(true)}
                     >
                         Фильтр
@@ -752,48 +740,8 @@ export const HomePage = () => {
                         </svg>
                     </button>
                 </div>
+                <div className="selected-collection-title">{selectedCollection.label}</div>
             </header>
-
-            {/* Tabs Navigation */}
-            <div className="tabs-navigation">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.label}
-                        className={`tab-button ${isTabOverrideActive && activeTab === tab.label ? 'active' : ''}`}
-                        onClick={() => {
-                            scrollFeedToTop();
-                            const preservedCity = getSelectedCityForCollections(uiFilters, appliedFilters);
-                            const cityOnlyUi = buildCityOnlyUiFilters(preservedCity, availableFilters);
-                            // Повторный клик по активной подборке снимает подборку и очищает фильтры.
-                            if (isTabOverrideActive && activeTab === tab.label) {
-                                setIsTabOverrideActive(false);
-                                setAppliedFilters(preservedCity ? { city: preservedCity } : {});
-                                setUiFilters(cityOnlyUi);
-                                return;
-                            }
-                            setActiveTab(tab.label);
-                            setIsTabOverrideActive(true);
-                            // При переходе в подборку фильтры сбрасываем полностью.
-                            const nextTabFilters: GetListRequest = preservedCity
-                                ? { city: preservedCity }
-                                : {};
-                            if (tab.label === ENGLISH_TAB_LABEL) {
-                                nextTabFilters.lang = 'en';
-                            } else if (tab.label === NATIVE_LANGUAGE_TAB_LABEL) {
-                                if (userProfileLanguage) {
-                                    nextTabFilters.lang = userProfileLanguage;
-                                }
-                            } else {
-                                nextTabFilters.category = tab.categories;
-                            }
-                            setAppliedFilters(nextTabFilters);
-                            setUiFilters(cityOnlyUi);
-                        }}
-                    >
-                        {tab.label}
-                    </button>
-                ))}
-            </div>
             </div>
 
             {/* Events Feed */}
@@ -938,11 +886,38 @@ export const HomePage = () => {
             <SortModal
                 isOpen={isSortOpen}
                 onClose={() => setIsSortOpen(false)}
-                onApply={(sortOption) => {
+                title="Подборки"
+                options={COLLECTIONS.map((collection) => ({
+                    value: collection.label,
+                    label: collection.label,
+                }))}
+                currentSelection={selectedCollection.label}
+                onApply={(collectionLabel) => {
                     scrollFeedToTop();
-                    setCurrentSort(sortOption);
+                    const preservedCity = getSelectedCityForCollections(uiFilters, appliedFilters);
+                    const cityOnlyUi = buildCityOnlyUiFilters(preservedCity, availableFilters);
+                    const selected = COLLECTIONS.find((collection) => collection.label === collectionLabel) || COLLECTIONS[0];
+                    if (selected.label === DEFAULT_HOME_TAB) {
+                        setActiveTab(DEFAULT_HOME_TAB);
+                        setIsTabOverrideActive(false);
+                        setAppliedFilters(preservedCity ? { city: preservedCity } : {});
+                        setUiFilters(cityOnlyUi);
+                        return;
+                    }
+                    setActiveTab(selected.label);
+                    setIsTabOverrideActive(true);
+                    const nextFilters: GetListRequest = preservedCity ? { city: preservedCity } : {};
+                    if (selected.lang) {
+                        nextFilters.lang = selected.lang;
+                    } else if (selected.freeOnly) {
+                        nextFilters.min_price = 0;
+                        nextFilters.max_price = 0;
+                    } else if (selected.categories?.length) {
+                        nextFilters.category = selected.categories;
+                    }
+                    setAppliedFilters(nextFilters);
+                    setUiFilters(cityOnlyUi);
                 }}
-                currentSort={currentSort}
             />
         </div>
     );

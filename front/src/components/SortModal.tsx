@@ -4,26 +4,27 @@ import './SortModal.css';
 interface SortModalProps {
     isOpen: boolean;
     onClose: () => void;
-    onApply: (sortOption: string) => void;
-    currentSort?: string;
+    onApply: (value: string) => void;
+    currentSelection?: string;
+    options: Array<{ value: string; label: string }>;
+    title?: string;
 }
 
-const SORT_OPTIONS = [
-    { value: 'popular', label: 'Популярное' },
-    { value: 'rating', label: 'По рейтингу' },
-    { value: 'cheaper', label: 'Дешевле' },
-    { value: 'expensive', label: 'Дороже' },
-    { value: 'new', label: 'Новинки' },
-];
-
-export const SortModal = ({ isOpen, onClose, onApply, currentSort = 'popular' }: SortModalProps) => {
-    const [selectedSort, setSelectedSort] = useState(currentSort);
+export const SortModal = ({
+    isOpen,
+    onClose,
+    onApply,
+    currentSelection = '',
+    options,
+    title = 'Подборки',
+}: SortModalProps) => {
+    const [selectedValue, setSelectedValue] = useState(currentSelection);
     const [isClosing, setIsClosing] = useState(false);
     const modalRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-        setSelectedSort(currentSort);
-    }, [currentSort, isOpen]);
+        setSelectedValue(currentSelection);
+    }, [currentSelection, isOpen]);
 
     const handleClose = useCallback(() => {
         if (isClosing) return; // Предотвращаем множественные вызовы
@@ -64,7 +65,7 @@ export const SortModal = ({ isOpen, onClose, onApply, currentSort = 'popular' }:
     }, [isOpen, isClosing, handleClose]);
 
     const handleApply = () => {
-        onApply(selectedSort);
+        onApply(selectedValue);
         handleClose();
     };
 
@@ -74,18 +75,18 @@ export const SortModal = ({ isOpen, onClose, onApply, currentSort = 'popular' }:
         <div className={`sort-modal-overlay ${isClosing ? 'closing' : ''}`}>
             <div className={`sort-modal ${isClosing ? 'closing' : ''}`} ref={modalRef}>
                 <div className="sort-header">
-                    <h2 className="sort-title">Показать сначала</h2>
+                    <h2 className="sort-title">{title}</h2>
                 </div>
 
                 <div className="sort-content">
-                    {SORT_OPTIONS.map((option) => (
+                    {options.map((option) => (
                         <label key={option.value} className="sort-option">
                             <input
                                 type="radio"
                                 name="sort"
                                 value={option.value}
-                                checked={selectedSort === option.value}
-                                onChange={(e) => setSelectedSort(e.target.value)}
+                                checked={selectedValue === option.value}
+                                onChange={(e) => setSelectedValue(e.target.value)}
                                 className="sort-radio"
                             />
                             <span className="sort-option-label">{option.label}</span>

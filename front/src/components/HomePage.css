@@ -96,6 +96,16 @@
     justify-content: flex-start;
 }
 
+.selected-collection-title {
+    margin-top: 14px;
+    font-weight: 600;
+    font-size: 12px;
+    line-height: 100%;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    color: #414141;
+}
+
 .action-button {
     width: 50%;
     height: 38px;
@@ -122,6 +132,11 @@
 
 .action-button:hover {
     background-color: rgba(69, 141, 189, 0.05);
+    border-color: #458DBD;
+}
+
+.action-button.active {
+    background-color: rgba(69, 141, 189, 0.08);
     border-color: #458DBD;
 }
 
@@ -185,7 +200,7 @@
 /* Events Feed */
 .events-feed {
     flex: 1;
-    padding: 20px;
+    padding: 14px 20px 20px;
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -442,6 +457,12 @@
         gap: 16px;
     }
 
+    .selected-collection-title {
+        font-size: 14px;
+        letter-spacing: 0.04em;
+        margin-top: 14px;
+    }
+
     .filter-button {
         min-width: 200px;
     }
@@ -458,7 +479,7 @@
     }
 
     .events-feed {
-        padding: 32px 40px;
+        padding: 14px 40px 32px;
         display: grid;
         grid-template-columns: repeat(2, 1fr);
         gap: 24px;
