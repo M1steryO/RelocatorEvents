@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/M1steryO/RelocatorEvents/auth/internal/core/logger"
 	jwtUtils "github.com/M1steryO/RelocatorEvents/auth/internal/core/utils/jwt"
 	"github.com/M1steryO/RelocatorEvents/auth/internal/models/auth"
 	"github.com/golang-jwt/jwt/v5"
@@ -65,6 +66,7 @@ func (s *serv) handleJWT(_ context.Context, accessToken, refreshToken string) (*
 		}
 
 		if !errors.Is(err, jwt.ErrTokenExpired) {
+			logger.Error("failed to verify access token: %s", err.Error())
 			return nil, auth.NewCredentialsError("invalid access token")
 		}
 	}

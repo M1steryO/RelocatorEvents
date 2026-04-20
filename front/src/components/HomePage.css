@@ -22,7 +22,7 @@
 
 /* Header */
 .home-header {
-    padding: 16px 20px;
+    padding: 14px 20px;
     background-color: #F1EFEF;
     display: flex;
     flex-direction: column;
@@ -97,7 +97,6 @@
 }
 
 .selected-collection-title {
-    margin-top: 14px;
     font-weight: 600;
     font-size: 12px;
     line-height: 100%;
@@ -136,8 +135,16 @@
 }
 
 .action-button.active {
-    background-color: rgba(69, 141, 189, 0.08);
-    border-color: #458DBD;
+    background-color: #458DBD;
+    color: #ffffff;
+
+}
+.action-button.active.selection-button path{
+    fill: #ffffff;
+}
+
+.action-button.active.filter-button path{
+    stroke: #ffffff;
 }
 
 .filter-button {
@@ -460,7 +467,6 @@
     .selected-collection-title {
         font-size: 14px;
         letter-spacing: 0.04em;
-        margin-top: 14px;
     }
 
     .filter-button {

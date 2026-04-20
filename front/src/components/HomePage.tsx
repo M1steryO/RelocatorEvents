@@ -683,6 +683,7 @@ export const HomePage = () => {
     const maxPriceDefault = availableFilters?.max_price ?? 10000;
     const hasAnyManualFilterApplied = Boolean(
         uiFilters && (
+            uiFilters.cities.length > 0 ||
             uiFilters.districts.length > 0 ||
             uiFilters.formats.length > 0 ||
             uiFilters.interests.length > 0 ||
@@ -692,6 +693,8 @@ export const HomePage = () => {
             uiFilters.priceRange[1] !== maxPriceDefault
         ),
     );
+    const isCollectionButtonActive =
+        isTabOverrideActive && selectedCollection.label !== DEFAULT_HOME_TAB;
 
     return (
         <div className="home-page">
@@ -722,7 +725,7 @@ export const HomePage = () => {
                 {/* Action Buttons */}
                 <div className="action-buttons">
                     <button
-                        className={`action-button ${isTabOverrideActive || hasAnyManualFilterApplied ? 'active' : ''}`}
+                        className={`action-button selection-button${isCollectionButtonActive ? 'active' : ''}`}
                         onClick={() => setIsSortOpen(true)}
                     >
                         Подборки
@@ -731,7 +734,7 @@ export const HomePage = () => {
                         </svg>
                     </button>
                     <button
-                        className={`action-button filter-button ${isTabOverrideActive || hasAnyManualFilterApplied ? 'active' : ''}`}
+                        className={`action-button filter-button ${hasAnyManualFilterApplied ? 'active' : ''}`}
                         onClick={() => setIsFiltersOpen(true)}
                     >
                         Фильтр
