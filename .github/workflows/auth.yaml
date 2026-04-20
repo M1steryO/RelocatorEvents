@@ -27,7 +27,7 @@ jobs:
         uses: actions/setup-go@v5
         with:
           go-version: "1.24"
-          cache-dependency-path: go.sum
+          cache-dependency-path: auth/go.sum
       - name: Build
         run: |
           cd auth/
