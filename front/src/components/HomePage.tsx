@@ -725,7 +725,7 @@ export const HomePage = () => {
                 {/* Action Buttons */}
                 <div className="action-buttons">
                     <button
-                        className={`action-button selection-button${isCollectionButtonActive ? 'active' : ''}`}
+                        className={`action-button selection-button ${isCollectionButtonActive ? 'active' : ''}`}
                         onClick={() => setIsSortOpen(true)}
                     >
                         Подборки
