@@ -25,9 +25,9 @@ var File_auth_v1_service_proto protoreflect.FileDescriptor
 
 const file_auth_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"\x15auth/v1/service.proto\x12/github.com.M1steryO.RelocatorEvents.auth.api.v1\x1a\x16auth/v1/messages.proto\x1a\x1cgoogle/api/annotations.proto2\xd1\x06\n" +
-	"\vAuthService\x12\x86\x01\n" +
-	"\x05Login\x12=.github.com.M1steryO.RelocatorEvents.auth.api.v1.LoginRequest\x1a>.github.com.M1steryO.RelocatorEvents.auth.api.v1.LoginResponse\x12\x9d\x01\n" +
+	"\x15auth/v1/service.proto\x12/github.com.M1steryO.RelocatorEvents.auth.api.v1\x1a\x16auth/v1/messages.proto\x1a\x1cgoogle/api/annotations.proto2\xec\x06\n" +
+	"\vAuthService\x12\xa1\x01\n" +
+	"\x05Login\x12=.github.com.M1steryO.RelocatorEvents.auth.api.v1.LoginRequest\x1a>.github.com.M1steryO.RelocatorEvents.auth.api.v1.LoginResponse\"\x19\x82\xd3\xe4\x93\x02\x13:\x01*\"\x0e/auth/v1/login\x12\x9d\x01\n" +
 	"\rTelegramLogin\x12E.github.com.M1steryO.RelocatorEvents.auth.api.v1.TelegramLoginRequest\x1aE.github.com.M1steryO.RelocatorEvents.auth.api.v1.TelegramLoginReponse\x12\x86\x01\n" +
 	"\x05Check\x12=.github.com.M1steryO.RelocatorEvents.auth.api.v1.CheckRequest\x1a>.github.com.M1steryO.RelocatorEvents.auth.api.v1.CheckResponse\x12\xc8\x01\n" +
 	"\x0fGetRefreshToken\x12G.github.com.M1steryO.RelocatorEvents.auth.api.v1.GetRefreshTokenRequest\x1aH.github.com.M1steryO.RelocatorEvents.auth.api.v1.GetRefreshTokenResponse\"\"\x82\xd3\xe4\x93\x02\x1c\x12\x1a/auth/v1/get-refresh-token\x12\xc4\x01\n" +

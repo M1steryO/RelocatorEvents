@@ -24,6 +24,7 @@ service UserService {
     };
   };
   rpc GetUserByTelegramId(GetUserByTelegramIdRequest) returns (GetUserByTelegramIdResponse);
+  rpc GetUserByEmail(GetUserByEmailRequest) returns (GetUserByEmailResponse);
 
   rpc Update(UpdateRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {

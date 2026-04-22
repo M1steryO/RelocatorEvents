@@ -8,6 +8,7 @@ import (
 type Implementation struct {
 	descAuth.UnimplementedAuthServiceServer
 	authService service.AuthService
+
 }
 
 func NewImplementation(authService service.AuthService) *Implementation {

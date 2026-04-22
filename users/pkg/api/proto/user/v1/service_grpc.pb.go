@@ -23,6 +23,7 @@ const (
 	UserService_Create_FullMethodName              = "/github.com.M1steryO.RelocatorEvents.user.api.v1.UserService/Create"
 	UserService_Get_FullMethodName                 = "/github.com.M1steryO.RelocatorEvents.user.api.v1.UserService/Get"
 	UserService_GetUserByTelegramId_FullMethodName = "/github.com.M1steryO.RelocatorEvents.user.api.v1.UserService/GetUserByTelegramId"
+	UserService_GetUserByEmail_FullMethodName      = "/github.com.M1steryO.RelocatorEvents.user.api.v1.UserService/GetUserByEmail"
 	UserService_Update_FullMethodName              = "/github.com.M1steryO.RelocatorEvents.user.api.v1.UserService/Update"
 	UserService_Delete_FullMethodName              = "/github.com.M1steryO.RelocatorEvents.user.api.v1.UserService/Delete"
 )
@@ -34,6 +35,7 @@ type UserServiceClient interface {
 	Create(ctx context.Context, in *CreateRequest, opts ...grpc.CallOption) (*CreateResponse, error)
 	Get(ctx context.Context, in *GetRequest, opts ...grpc.CallOption) (*GetResponse, error)
 	GetUserByTelegramId(ctx context.Context, in *GetUserByTelegramIdRequest, opts ...grpc.CallOption) (*GetUserByTelegramIdResponse, error)
+	GetUserByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*GetUserByEmailResponse, error)
 	Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	Delete(ctx context.Context, in *DeleteRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
@@ -76,6 +78,16 @@ func (c *userServiceClient) GetUserByTelegramId(ctx context.Context, in *GetUser
 	return out, nil
 }
 
+func (c *userServiceClient) GetUserByEmail(ctx context.Context, in *GetUserByEmailRequest, opts ...grpc.CallOption) (*GetUserByEmailResponse, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(GetUserByEmailResponse)
+	err := c.cc.Invoke(ctx, UserService_GetUserByEmail_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *userServiceClient) Update(ctx context.Context, in *UpdateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(emptypb.Empty)
@@ -103,6 +115,7 @@ type UserServiceServer interface {
 	Create(context.Context, *CreateRequest) (*CreateResponse, error)
 	Get(context.Context, *GetRequest) (*GetResponse, error)
 	GetUserByTelegramId(context.Context, *GetUserByTelegramIdRequest) (*GetUserByTelegramIdResponse, error)
+	GetUserByEmail(context.Context, *GetUserByEmailRequest) (*GetUserByEmailResponse, error)
 	Update(context.Context, *UpdateRequest) (*emptypb.Empty, error)
 	Delete(context.Context, *DeleteRequest) (*emptypb.Empty, error)
 	mustEmbedUnimplementedUserServiceServer()
@@ -123,6 +136,9 @@ func (UnimplementedUserServiceServer) Get(context.Context, *GetRequest) (*GetRes
 }
 func (UnimplementedUserServiceServer) GetUserByTelegramId(context.Context, *GetUserByTelegramIdRequest) (*GetUserByTelegramIdResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetUserByTelegramId not implemented")
+}
+func (UnimplementedUserServiceServer) GetUserByEmail(context.Context, *GetUserByEmailRequest) (*GetUserByEmailResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetUserByEmail not implemented")
 }
 func (UnimplementedUserServiceServer) Update(context.Context, *UpdateRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method Update not implemented")
@@ -205,6 +221,24 @@ func _UserService_GetUserByTelegramId_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserService_GetUserByEmail_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetUserByEmailRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserServiceServer).GetUserByEmail(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserService_GetUserByEmail_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserServiceServer).GetUserByEmail(ctx, req.(*GetUserByEmailRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _UserService_Update_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(UpdateRequest)
 	if err := dec(in); err != nil {
@@ -259,6 +293,10 @@ var UserService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetUserByTelegramId",
 			Handler:    _UserService_GetUserByTelegramId_Handler,
+		},
+		{
+			MethodName: "GetUserByEmail",
+			Handler:    _UserService_GetUserByEmail_Handler,
 		},
 		{
 			MethodName: "Update",
