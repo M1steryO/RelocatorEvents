@@ -45,7 +45,7 @@ func (s *userService) GetByTelegramId(ctx context.Context, telegramId int64) (*d
 }
 
 func (s *userService) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
-	resp, err := s.client.GetUserByTelegramId(ctx, &desc.GetUser{Email: email})
+	resp, err := s.client.GetUserByTelegramId(ctx, &desc.GetUserByEmail{Email: email})
 	if err != nil {
 		return nil, mapUserClientError(err)
 	}

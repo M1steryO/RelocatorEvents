@@ -23,8 +23,9 @@ func (i *Implementation) GetUserByEmail(ctx context.Context, req *desc.GetUserBy
 		}
 		return nil, err
 	}
-
+	passwordPtr := &user.Password
 	return &desc.GetUserByEmailResponse{
-		User: converter.ToUserApiFromDomain(user),
+		User:     converter.ToUserApiFromDomain(user),
+		Password: converter.ToStringValueFromString(passwordPtr),
 	}, nil
 }

@@ -3,8 +3,9 @@ package user
 import "time"
 
 type User struct {
-	ID   int64
-	Info UserInfo
+	ID       int64
+	Info     UserInfo
+	Password string
 
 	CreatedAt time.Time
 	UpdatedAt *time.Time

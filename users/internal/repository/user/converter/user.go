@@ -37,6 +37,7 @@ func ToUserInfoFromRepo(userInfo *modelRepo.UserInfo) user.UserInfo {
 func ToUserFromRepo(u *modelRepo.User) *user.User {
 	return &user.User{
 		ID:        u.Id,
+		Password:  u.Password,
 		Info:      ToUserInfoFromRepo(u.Info),
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: func() *time.Time {

@@ -7,5 +7,10 @@ import (
 )
 
 func (s *serv) Login(ctx context.Context, email, password string) (*models.Credentials, error) {
-	user, err := s.userService.
+	user, err := s.userService.GetByEmail(ctx, email)
+	if err != nil {
+		return nil, err
+	}
+
+	if user.
 }

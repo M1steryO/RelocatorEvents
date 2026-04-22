@@ -787,8 +787,9 @@ func (x *GetUserByEmailRequest) GetEmail() string {
 }
 
 type GetUserByEmailResponse struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	User          *User                  `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	state         protoimpl.MessageState  `protogen:"open.v1"`
+	User          *User                   `protobuf:"bytes,1,opt,name=user,proto3" json:"user,omitempty"`
+	Password      *wrapperspb.StringValue `protobuf:"bytes,2,opt,name=password,proto3" json:"password,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -826,6 +827,13 @@ func (*GetUserByEmailResponse) Descriptor() ([]byte, []int) {
 func (x *GetUserByEmailResponse) GetUser() *User {
 	if x != nil {
 		return x.User
+	}
+	return nil
+}
+
+func (x *GetUserByEmailResponse) GetPassword() *wrapperspb.StringValue {
+	if x != nil {
+		return x.Password
 	}
 	return nil
 }
@@ -883,9 +891,10 @@ const file_user_v1_messages_proto_rawDesc = "" +
 	"\x1bGetUserByTelegramIdResponse\x12I\n" +
 	"\x04user\x18\x01 \x01(\v25.github.com.M1steryO.RelocatorEvents.user.api.v1.UserR\x04user\"-\n" +
 	"\x15GetUserByEmailRequest\x12\x14\n" +
-	"\x05email\x18\x01 \x01(\tR\x05email\"c\n" +
+	"\x05email\x18\x01 \x01(\tR\x05email\"\x9d\x01\n" +
 	"\x16GetUserByEmailResponse\x12I\n" +
-	"\x04user\x18\x01 \x01(\v25.github.com.M1steryO.RelocatorEvents.user.api.v1.UserR\x04user*\x1b\n" +
+	"\x04user\x18\x01 \x01(\v25.github.com.M1steryO.RelocatorEvents.user.api.v1.UserR\x04user\x128\n" +
+	"\bpassword\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\bpassword*\x1b\n" +
 	"\x04Role\x12\b\n" +
 	"\x04USER\x10\x00\x12\t\n" +
 	"\x05ADMIN\x10\x01BFZDgithub.com/M1steryO/RelocatorEvents/users/pkg/api/proto/user/v1;userb\x06proto3"
@@ -938,11 +947,12 @@ var file_user_v1_messages_proto_depIdxs = []int32{
 	4,  // 10: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateRequest.info:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfo
 	1,  // 11: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse.user:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.User
 	1,  // 12: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse.user:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.User
-	13, // [13:13] is the sub-list for method output_type
-	13, // [13:13] is the sub-list for method input_type
-	13, // [13:13] is the sub-list for extension type_name
-	13, // [13:13] is the sub-list for extension extendee
-	0,  // [0:13] is the sub-list for field type_name
+	16, // 13: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse.password:type_name -> google.protobuf.StringValue
+	14, // [14:14] is the sub-list for method output_type
+	14, // [14:14] is the sub-list for method input_type
+	14, // [14:14] is the sub-list for extension type_name
+	14, // [14:14] is the sub-list for extension extendee
+	0,  // [0:14] is the sub-list for field type_name
 }
 
 func init() { file_user_v1_messages_proto_init() }

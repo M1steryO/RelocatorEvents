@@ -23,6 +23,13 @@ func ToStringFromStringValue(s *wrapperspb.StringValue) *string {
 	return &s.Value
 }
 
+func ToStringValueFromString(s *string) *wrapperspb.StringValue {
+	if s == nil {
+		return nil
+	}
+	return &wrapperspb.StringValue{Value: *s}
+}
+
 func ToCreateUserDtoInfoFromApi(req *desc.CreateRequest, telegramId *int64) *dto.CreateUser {
 	if req.Info == nil {
 		return &dto.CreateUser{}

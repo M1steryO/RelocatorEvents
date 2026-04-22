@@ -91,4 +91,5 @@ message GetUserByEmailRequest{
 
 message GetUserByEmailResponse{
   User user = 1;
+  google.protobuf.StringValue password = 2;
 }

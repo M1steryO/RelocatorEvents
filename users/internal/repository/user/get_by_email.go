@@ -14,7 +14,7 @@ func (s *repo) GetByEmail(ctx context.Context, email string) (*modelDomain.User,
 	user := modelRepo.User{}
 	q := db.Query{
 		Title: "user_repository.GetByEmail",
-		Query: `SELECT id, name,telegram_id,email,tg_username,country, city
+		Query: `SELECT id, name,telegram_id,email,tg_username,country, city, password
 				 FROM "users"
 				 JOIN user_data ON users.id = user_data.user_id
 				 
