@@ -110,6 +110,10 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 			r.URL.Path = "/user/v1/create"
 			gw.ServeHTTP(w, r)
 		}))
+		r.Handle("/auth/login", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			r.URL.Path = "/auth/v1" + strings.TrimPrefix(r.URL.Path, "/v1/auth")
+			gw.ServeHTTP(w, r)
+		}))
 
 		r.Group(func(r chi.Router) {
 			r.Use(authMW.RequireAuth)
@@ -119,11 +123,6 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 			}))
 			r.Handle("/user", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				r.URL.Path = "/user/v1" + strings.TrimPrefix(r.URL.Path, "/v1/user")
-				gw.ServeHTTP(w, r)
-			}))
-
-			r.Handle("/auth/login", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				r.URL.Path = "/auth/v1" + strings.TrimPrefix(r.URL.Path, "/v1/auth")
 				gw.ServeHTTP(w, r)
 			}))
 
