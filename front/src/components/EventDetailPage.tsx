@@ -257,31 +257,75 @@ export const EventDetailPage = () => {
         navigate(from ?? '/');
     };
 
+    const copyText = async (text: string) => {
+        if (navigator.clipboard?.writeText && window.isSecureContext) {
+            await navigator.clipboard.writeText(text);
+            return;
+        }
+    
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        textarea.style.pointerEvents = 'none';
+        document.body.appendChild(textarea);
+        textarea.focus();
+        textarea.select();
+    
+        const ok = document.execCommand('copy');
+        document.body.removeChild(textarea);
+    
+        if (!ok) {
+            throw new Error('Copy failed');
+        }
+    };
+    
     const handleShare = async () => {
-        const shareUrl = window.location.href;
-        const shareData = {
-            title: event?.title || 'Eventify',
-            text: event?.title || 'Посмотрите это мероприятие в Eventify',
-            url: shareUrl,
-        };
-
+        const title = event?.title || 'Eventify';
+        const text = event?.title || 'Посмотрите это мероприятие в Eventify';
+    
+        // Лучше использовать публичный canonical url события, а не просто window.location.href
+        const shareUrl =
+            event?.slug
+                ? `${window.location.origin}/events/${event.slug}`
+                : window.location.href;
+    
+        const telegramShareUrl =
+            `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
+    
+        const tg = window.Telegram?.WebApp;
+    
         try {
-            if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
-                await navigator.share(shareData);
+            // 1. Если мы внутри Telegram Mini App — используем telegram share
+            if (tg?.openTelegramLink) {
+                tg.openTelegramLink(telegramShareUrl);
+                return;
+            }
+    
+            // 2. Обычный браузерный native share
+            if (navigator.share) {
+                await navigator.share({
+                    title,
+                    text,
+                    url: shareUrl,
+                });
                 return;
             }
         } catch (error) {
-            // When user cancels native share sheet we silently ignore.
             if (error instanceof Error && error.name === 'AbortError') {
                 return;
             }
             console.error('Share failed:', error);
         }
-
+    
+        // 3. Fallback — копирование ссылки
         try {
-            await navigator.clipboard.writeText(shareUrl);
+            await copyText(shareUrl);
+            console.log('Link copied');
+            // тут лучше показать toast: "Ссылка скопирована"
         } catch (error) {
             console.error('Failed to copy share URL:', error);
+            // тут лучше показать toast: "Не удалось поделиться ссылкой"
         }
     };
 
