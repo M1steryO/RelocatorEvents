@@ -19,4 +19,5 @@ type AuthService interface {
 	Check(ctx context.Context, creds *auth.Credentials) (*auth.Credentials, error)
 	GetRefreshToken(ctx context.Context, refreshToken string) (string, error)
 	GetAccessToken(ctx context.Context, refreshToken string) (string, error)
+	Login(ctx context.Context, email, password string) (*auth.Credentials, error)
 }

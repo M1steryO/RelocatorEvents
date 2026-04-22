@@ -24,7 +24,7 @@ func (s *userService) Get(ctx context.Context, id int64) (*domain.User, error) {
 	if err != nil {
 		return nil, mapUserClientError(err)
 	}
-	return toDomainUser(resp.GetUser()), nil
+	return toDomainUser(resp.GetUser(), ""), nil
 }
 
 func (s *userService) Create(ctx context.Context, user *dto.CreateUser) (int64, error) {
@@ -41,15 +41,15 @@ func (s *userService) GetByTelegramId(ctx context.Context, telegramId int64) (*d
 	if err != nil {
 		return nil, mapUserClientError(err)
 	}
-	return toDomainUser(resp.GetUser()), nil
+	return toDomainUser(resp.GetUser(), ""), nil
 }
 
 func (s *userService) GetByEmail(ctx context.Context, email string) (*domain.User, error) {
-	resp, err := s.client.GetUserByTelegramId(ctx, &desc.GetUserByEmail{Email: email})
+	resp, err := s.client.GetUserByEmail(ctx, &desc.GetUserByEmailRequest{Email: email})
 	if err != nil {
 		return nil, mapUserClientError(err)
 	}
-	return toDomainUser(resp.GetUser()), nil
+	return toDomainUser(resp.GetUser(), resp.GetPassword().GetValue()), nil
 }
 
 func mapUserClientError(err error) error {

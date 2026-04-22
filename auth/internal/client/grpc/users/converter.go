@@ -7,7 +7,7 @@ import (
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
 
-func toDomainUser(u *desc.User) *domain.User {
+func toDomainUser(u *desc.User, password string) *domain.User {
 	if u == nil {
 		return nil
 	}
@@ -16,6 +16,7 @@ func toDomainUser(u *desc.User) *domain.User {
 		Info: domain.UserInfo{
 			UserID: u.GetId(),
 		},
+		Password: password,
 	}
 	if u.GetCreatedAt() != nil {
 		out.CreatedAt = u.GetCreatedAt().AsTime()
