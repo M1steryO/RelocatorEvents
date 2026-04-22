@@ -3,10 +3,10 @@ module github.com/M1steryO/RelocatorEvents/gateway
 go 1.25.4
 
 require (
-	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260315124812-c61e40827aed
+	github.com/M1steryO/RelocatorEvents/auth v0.0.0-20260422194028-1fd4f840a6f3
 	github.com/M1steryO/RelocatorEvents/events v0.0.0-20260415185542-f11ff111c4b2
 	github.com/M1steryO/RelocatorEvents/media v0.0.0-20260315124812-c61e40827aed
-	github.com/M1steryO/RelocatorEvents/users v0.0.0-20260415183352-37f1a4f6e8c8
+	github.com/M1steryO/RelocatorEvents/users v0.0.0-20260422193529-7fa0960fe429
 	github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2
 	github.com/fatih/color v1.18.0
 	github.com/go-chi/chi/v5 v5.2.5
