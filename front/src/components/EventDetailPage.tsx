@@ -5,6 +5,7 @@ import type { Event, Address } from '../services/eventsService';
 import { NotFoundCard } from './NotFoundCard';
 import { useFavourites } from '../contexts/FavouritesContext';
 import { sanitizeInternalPath } from '../utils/navigation';
+import { showGlobalNotification } from '../contexts/NotificationContext';
 import './EventDetailPage.css';
 
 let yandexMapsPromise: Promise<any> | null = null;
@@ -262,7 +263,7 @@ export const EventDetailPage = () => {
             await navigator.clipboard.writeText(text);
             return;
         }
-    
+
         const textarea = document.createElement('textarea');
         textarea.value = text;
         textarea.style.position = 'fixed';
@@ -271,61 +272,50 @@ export const EventDetailPage = () => {
         document.body.appendChild(textarea);
         textarea.focus();
         textarea.select();
-    
-        const ok = document.execCommand('copy');
+
+        const copied = document.execCommand('copy');
         document.body.removeChild(textarea);
-    
-        if (!ok) {
+
+        if (!copied) {
             throw new Error('Copy failed');
         }
     };
-    
+
     const handleShare = async () => {
-        const title = event?.title || 'Eventify';
-        const text = event?.title || 'Посмотрите это мероприятие в Eventify';
-    
-        // Лучше использовать публичный canonical url события, а не просто window.location.href
-        const shareUrl =
-            event?.slug
-                ? `${window.location.origin}/events/${event.slug}`
-                : window.location.href;
-    
+        const eventPath = event?.id ? `/events/${event.id}` : window.location.pathname;
+        const shareUrl = `${window.location.origin}${eventPath}`;
+        const shareData = {
+            title: event?.title || 'Eventify',
+            text: event?.title || 'Посмотрите это мероприятие в Eventify',
+            url: shareUrl,
+        };
         const telegramShareUrl =
-            `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(text)}`;
-    
+            `https://t.me/share/url?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareData.text)}`;
         const tg = window.Telegram?.WebApp;
-    
+
         try {
-            // 1. Если мы внутри Telegram Mini App — используем telegram share
             if (tg?.openTelegramLink) {
                 tg.openTelegramLink(telegramShareUrl);
                 return;
             }
-    
-            // 2. Обычный браузерный native share
-            if (navigator.share) {
-                await navigator.share({
-                    title,
-                    text,
-                    url: shareUrl,
-                });
+            if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+                await navigator.share(shareData);
                 return;
             }
         } catch (error) {
+            // When user cancels native share sheet we silently ignore.
             if (error instanceof Error && error.name === 'AbortError') {
                 return;
             }
             console.error('Share failed:', error);
         }
-    
-        // 3. Fallback — копирование ссылки
+
         try {
             await copyText(shareUrl);
-            console.log('Link copied');
-            // тут лучше показать toast: "Ссылка скопирована"
+            showGlobalNotification('Ссылка скопирована', 'success');
         } catch (error) {
             console.error('Failed to copy share URL:', error);
-            // тут лучше показать toast: "Не удалось поделиться ссылкой"
+            showGlobalNotification('Не удалось поделиться ссылкой', 'error');
         }
     };
 
