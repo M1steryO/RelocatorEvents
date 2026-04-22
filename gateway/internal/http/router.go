@@ -3,7 +3,6 @@ package http
 import (
 	"context"
 	"github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth/v1"
-	"github.com/M1steryO/RelocatorEvents/users/pkg/api/proto/user/v1"
 	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/events/v1"
 	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/favourites/v1"
 	"github.com/M1steryO/RelocatorEvents/events/pkg/api/proto/reviews/v1"
@@ -11,6 +10,7 @@ import (
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/config"
 	"github.com/M1steryO/RelocatorEvents/gateway/internal/http/middleware"
 	"github.com/M1steryO/RelocatorEvents/media/pkg/api/proto/media/v1"
+	"github.com/M1steryO/RelocatorEvents/users/pkg/api/proto/user/v1"
 	"google.golang.org/grpc/metadata"
 	"strconv"
 	"strings"
@@ -119,6 +119,11 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 			}))
 			r.Handle("/user", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				r.URL.Path = "/user/v1" + strings.TrimPrefix(r.URL.Path, "/v1/user")
+				gw.ServeHTTP(w, r)
+			}))
+
+			r.Handle("/auth/login", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				r.URL.Path = "/auth/v1" + strings.TrimPrefix(r.URL.Path, "/v1/auth")
 				gw.ServeHTTP(w, r)
 			}))
 
