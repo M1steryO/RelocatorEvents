@@ -64,6 +64,32 @@
     justify-self: end;
 }
 
+.event-detail-header-actions {
+    display: flex;
+    align-items: center;
+    justify-self: end;
+    gap: 8px;
+}
+
+.event-detail-share-button {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: #ffffff;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    transition: transform 0.2s;
+}
+
+.event-detail-share-button:hover {
+    transform: scale(1.08);
+}
+
 .event-detail-favourite-heart:hover {
     transform: scale(1.08);
     background: #fff;

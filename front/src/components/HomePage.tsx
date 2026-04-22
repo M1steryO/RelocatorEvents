@@ -146,6 +146,7 @@ const buildCityOnlyUiFilters = (
     exactDate: '',
     formats: [],
     interests: [],
+    languages: [],
 });
 
 function feedRequestKey(parts: {
@@ -428,6 +429,7 @@ export const HomePage = () => {
                         exactDate: prev?.exactDate || '',
                         formats: prev?.formats || [],
                         interests: interestCodes,
+                        languages: prev?.languages || [],
                     }));
                 }
             } catch {
@@ -487,6 +489,7 @@ export const HomePage = () => {
                     exactDate: '',
                     formats: [],
                     interests: [],
+                    languages: [],
                 };
             return {
                 ...base,
@@ -687,6 +690,7 @@ export const HomePage = () => {
             uiFilters.districts.length > 0 ||
             uiFilters.formats.length > 0 ||
             uiFilters.interests.length > 0 ||
+            uiFilters.languages.length > 0 ||
             uiFilters.dateType ||
             uiFilters.exactDate ||
             uiFilters.priceRange[0] !== minPriceDefault ||
@@ -879,6 +883,9 @@ export const HomePage = () => {
                     }
                     if (filters.interests.length > 0) {
                         apiFilters.category = filters.interests;
+                    }
+                    if (filters.languages.length > 0) {
+                        apiFilters.lang = filters.languages[0];
                     }
 
                     setAppliedFilters(apiFilters);

@@ -257,6 +257,34 @@ export const EventDetailPage = () => {
         navigate(from ?? '/');
     };
 
+    const handleShare = async () => {
+        const shareUrl = window.location.href;
+        const shareData = {
+            title: event?.title || 'Eventify',
+            text: event?.title || 'Посмотрите это мероприятие в Eventify',
+            url: shareUrl,
+        };
+
+        try {
+            if (navigator.share && (!navigator.canShare || navigator.canShare(shareData))) {
+                await navigator.share(shareData);
+                return;
+            }
+        } catch (error) {
+            // When user cancels native share sheet we silently ignore.
+            if (error instanceof Error && error.name === 'AbortError') {
+                return;
+            }
+            console.error('Share failed:', error);
+        }
+
+        try {
+            await navigator.clipboard.writeText(shareUrl);
+        } catch (error) {
+            console.error('Failed to copy share URL:', error);
+        }
+    };
+
     if (isLoading) {
         return (
             <div className="event-detail-page">
@@ -295,25 +323,37 @@ export const EventDetailPage = () => {
                         </svg>
                     </button>
                     <span />
-                    <button
-                        type="button"
-                        className={`event-detail-favourite-heart ${isFavourite(event.id) ? 'favourite-heart-active' : 'favourite-heart-outline'}`}
-                        onClick={() => toggleFavourite(event.id)}
-                        aria-label={isFavourite(event.id) ? 'Удалить из избранного' : 'Добавить в избранное'}
-                    >
-                        {isFavourite(event.id) ? (
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="21" viewBox="0 0 24 21" fill="none">
-                                <path d="M18.1857 1C13.5464 1 13.5464 4.75243 12 4.75243C10.4536 4.75243 10.4536 1 5.81429 1C1.56161 1 0.364775 5.56486 1.2971 9.22077C2.22941 12.8767 8.90714 20 12 20C15.0929 20 21.7706 12.8767 22.7029 9.22077C23.6352 5.56486 22.4384 1 18.1857 1Z" fill="#E94C29" stroke="#E94C29" stroke-width="2" />
+                    <div className="event-detail-header-actions">
+                        <button
+                            type="button"
+                            className="event-detail-share-button"
+                            onClick={handleShare}
+                            aria-label="Поделиться мероприятием"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                                <path d="M9.75 1.5V10.5" stroke="#414141" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M6 4.5L9.75 0.75L13.5 4.5" stroke="#414141" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                <path d="M2.25 8.25V14.25C2.25 15.0784 2.92157 15.75 3.75 15.75H15.75C16.5784 15.75 17.25 15.0784 17.25 14.25V8.25" stroke="#414141" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
-                        ) : (
-
-                            <svg xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21" fill="none">
-                                <path d="M11.5 4.75243C10.0239 4.75243 10.0239 1 5.59545 1C1.53608 1 0.393649 5.56486 1.28359 9.22078C2.17353 12.8767 8.54773 20 11.5 20" stroke="#414141" stroke-width="2" />
-                                <path d="M11.5 4.75243C12.9761 4.75243 12.9761 1 17.4045 1C21.4639 1 22.6064 5.56486 21.7164 9.22078C20.8265 12.8767 14.4523 20 11.5 20" stroke="#414141" stroke-width="2" />
-                            </svg>
-
-                        )}
-                    </button>
+                        </button>
+                        <button
+                            type="button"
+                            className={`event-detail-favourite-heart ${isFavourite(event.id) ? 'favourite-heart-active' : 'favourite-heart-outline'}`}
+                            onClick={() => toggleFavourite(event.id)}
+                            aria-label={isFavourite(event.id) ? 'Удалить из избранного' : 'Добавить в избранное'}
+                        >
+                            {isFavourite(event.id) ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="21" viewBox="0 0 24 21" fill="none">
+                                    <path d="M18.1857 1C13.5464 1 13.5464 4.75243 12 4.75243C10.4536 4.75243 10.4536 1 5.81429 1C1.56161 1 0.364775 5.56486 1.2971 9.22077C2.22941 12.8767 8.90714 20 12 20C15.0929 20 21.7706 12.8767 22.7029 9.22077C23.6352 5.56486 22.4384 1 18.1857 1Z" fill="#E94C29" stroke="#E94C29" stroke-width="2" />
+                                </svg>
+                            ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" width="23" height="21" viewBox="0 0 23 21" fill="none">
+                                    <path d="M11.5 4.75243C10.0239 4.75243 10.0239 1 5.59545 1C1.53608 1 0.393649 5.56486 1.28359 9.22078C2.17353 12.8767 8.54773 20 11.5 20" stroke="#414141" stroke-width="2" />
+                                    <path d="M11.5 4.75243C12.9761 4.75243 12.9761 1 17.4045 1C21.4639 1 22.6064 5.56486 21.7164 9.22078C20.8265 12.8767 14.4523 20 11.5 20" stroke="#414141" stroke-width="2" />
+                                </svg>
+                            )}
+                        </button>
+                    </div>
                 </header>
                 <div className={`event-poster-image ${isPosterLoaded && !isPosterError ? 'loaded' : 'loading'}`}>
                     <img

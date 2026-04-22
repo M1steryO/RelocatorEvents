@@ -20,10 +20,16 @@ export interface FiltersState {
     exactDate: string;
     formats: string[];
     interests: string[];
+    languages: string[];
 }
 
 const CITIES = ['Тбилиси', 'Сухуми', 'Телави', 'Тержола'];
 const FORMATS = ['Онлайн', 'Офлайн'];
+const LANGUAGES: Array<{ label: string; code: string }> = [
+    { label: 'Русский', code: 'ru' },
+    { label: 'Английский', code: 'en' },
+    { label: 'Грузинский', code: 'ge' },
+];
 const MAX_PRICE = 10000;
 
 const DATE_TYPE_LABELS: Record<string, string> = {
@@ -45,6 +51,7 @@ const createDefaultFilters = (available?: FiltersData): FiltersState => ({
     exactDate: '',
     formats: [],
     interests: [],
+    languages: [],
 });
 
 const clampPriceRange = (
@@ -236,6 +243,13 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
         }));
     };
 
+    const toggleLanguage = (languageCode: string) => {
+        setFilters(prev => ({
+            ...prev,
+            languages: prev.languages.includes(languageCode) ? [] : [languageCode],
+        }));
+    };
+
     const handlePriceChange = (index: number, value: number) => {
         setFilters(prev => {
             const newRange: [number, number] = [...prev.priceRange];
@@ -372,6 +386,14 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                 id: `interest-${code}`,
                 label,
                 onRemove: () => setFilters(prev => ({ ...prev, interests: prev.interests.filter(c => c !== code) })),
+            });
+        });
+        filters.languages.forEach(code => {
+            const languageLabel = LANGUAGES.find((language) => language.code === code)?.label || code;
+            list.push({
+                id: `language-${code}`,
+                label: languageLabel,
+                onRemove: () => setFilters(prev => ({ ...prev, languages: [] })),
             });
         });
         return list;
@@ -661,6 +683,24 @@ export const FiltersModal = ({ isOpen, onClose, onApply, availableFilters, initi
                             </div>
                         </div>
                     )}
+
+                    {/* Язык */}
+                    <div className="filter-section">
+                        <div className="filter-section-header">
+                            <label className="filter-label">Язык</label>
+                        </div>
+                        <div className="filter-chips">
+                            {LANGUAGES.map((language) => (
+                                <button
+                                    key={language.code}
+                                    className={`filter-chip ${filters.languages.includes(language.code) ? 'active' : ''}`}
+                                    onClick={() => toggleLanguage(language.code)}
+                                >
+                                    {language.label}
+                                </button>
+                            ))}
+                        </div>
+                    </div>
                 </div>
 
                 <div className="filters-footer">
