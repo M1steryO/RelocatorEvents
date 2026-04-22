@@ -17,7 +17,7 @@ func (s *repo) Create(ctx context.Context, user *modelDomain.User) (int64, error
 			 	RETURNING id;`,
 	}
 	err := s.db.DB().QueryRowContext(ctx, q,
-		user.Info.Name, user.Info.TelegramID, user.Info.Email, user.Info.Name).Scan(&lastInsertId)
+		user.Info.Name, user.Info.TelegramID, user.Info.Email, user.Password).Scan(&lastInsertId)
 	if err != nil {
 		var pgErr *pgconn.PgError
 		if errors.As(err, &pgErr) {

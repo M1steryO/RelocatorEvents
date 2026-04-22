@@ -125,33 +125,45 @@ function App() {
                     <Route 
                         path="/" 
                         element={
-                            <>
-                                <HomePage />
-                                <BottomNavigation />
-                            </>
+                            isAuthenticated ? (
+                                <>
+                                    <HomePage />
+                                    <BottomNavigation />
+                                </>
+                            ) : (
+                                <Navigate to="/register" replace />
+                            )
                         } 
                     />
                     <Route 
                         path="/favourites" 
                         element={
-                            <>
-                                <FavouritesPage />
-                                <BottomNavigation />
-                            </>
+                            isAuthenticated ? (
+                                <>
+                                    <FavouritesPage />
+                                    <BottomNavigation />
+                                </>
+                            ) : (
+                                <Navigate to="/register" replace />
+                            )
                         } 
                     />
                     <Route 
                         path="/events/:id" 
                         element={
-                            <>
-                                <EventDetailPage />
-                                <BottomNavigation />
-                            </>
+                            isAuthenticated ? (
+                                <>
+                                    <EventDetailPage />
+                                    <BottomNavigation />
+                                </>
+                            ) : (
+                                <Navigate to="/register" replace />
+                            )
                         } 
                     />
                     <Route 
                         path="/events/:id/reviews" 
-                        element={<EventReviewsPage />} 
+                        element={isAuthenticated ? <EventReviewsPage /> : <Navigate to="/register" replace />} 
                     />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
