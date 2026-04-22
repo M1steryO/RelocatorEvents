@@ -65,7 +65,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const { setAccessToken, setUser } = useAuth();
     const navigate = useNavigate();
     const isTelegramMiniApp = detectTelegramMiniApp();
-    const [step, setStep] = useState(isTelegramMiniApp ? 2 : 1);
+    const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -96,6 +96,41 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const countryInputRef = useRef<HTMLInputElement>(null);
     const cityDropdownRef = useRef<HTMLDivElement>(null);
     const cityInputRef = useRef<HTMLInputElement>(null);
+
+    // Step can be initialized before Telegram context is stable.
+    // Keep Telegram flow on step 2, but recover web flow to step 1 when appropriate.
+    useEffect(() => {
+        if (isTelegramMiniApp) {
+            if (step < 2) {
+                setStep(2);
+            }
+            return;
+        }
+
+        const isFreshWebRegistration =
+            step === 2 &&
+            !formData.email.trim() &&
+            !formData.password &&
+            !formData.confirmPassword &&
+            !formData.country.trim() &&
+            !formData.city.trim() &&
+            !formData.language.trim() &&
+            formData.interests.length === 0;
+
+        if (isFreshWebRegistration) {
+            setStep(1);
+        }
+    }, [
+        isTelegramMiniApp,
+        step,
+        formData.email,
+        formData.password,
+        formData.confirmPassword,
+        formData.country,
+        formData.city,
+        formData.language,
+        formData.interests.length,
+    ]);
 
     // Render button with small delay to prevent jump on mobile
     useEffect(() => {
