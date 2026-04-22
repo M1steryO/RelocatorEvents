@@ -3,7 +3,6 @@ package auth
 import (
 	"context"
 	"errors"
-	"fmt"
 	models "github.com/M1steryO/RelocatorEvents/auth/internal/models/auth"
 	domain "github.com/M1steryO/RelocatorEvents/auth/internal/models/user"
 	"github.com/M1steryO/platform_common/pkg/sys"
@@ -23,9 +22,8 @@ func (s *serv) Login(ctx context.Context, email, password string) (*models.Crede
 	if err != nil {
 		return nil, err
 	}
-	fmt.Println(string(hashedPassword))
-	fmt.Println(user.Password)
-	if string(hashedPassword) != user.Password {
+	err = bcrypt.CompareHashAndPassword(hashedPassword, []byte(password))
+	if err != nil {
 		return nil, sys.NewCommonError("wrong password", codes.InvalidArgument)
 	}
 
