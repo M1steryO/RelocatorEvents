@@ -42,6 +42,16 @@ export interface TelegramAuthData {
     init_data: string;
 }
 
+export interface LoginData {
+    login: string;
+    password: string;
+}
+
+export interface LoginResponse {
+    access_token: string;
+    refresh_token: string;
+}
+
 class AuthService {
     private readonly baseUrl: string;
 
@@ -224,6 +234,14 @@ class AuthService {
             ...responseData,
             accessTokenFromHeader,
         };
+    }
+
+    async login(data: LoginData): Promise<LoginResponse> {
+        const endpoint = '/v1/auth/login';
+        return this.request<LoginResponse>(endpoint, {
+            method: 'POST',
+            body: JSON.stringify(data),
+        });
     }
 
 

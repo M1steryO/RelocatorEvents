@@ -11,6 +11,7 @@ import {EventReviewsPage} from "./components/EventReviewsPage";
 import {FavouritesPage} from "./components/FavouritesPage";
 import {BottomNavigation} from "./components/BottomNavigation";
 import {ServiceUnavailablePage} from "./components/ServiceUnavailablePage";
+import {LoginPage} from "./components/LoginPage";
 import {subscribeToServiceUnavailable} from "./utils/serviceUnavailable";
 import {subscribeToUnauthorized} from "./utils/unauthorized";
 import "./App.css";
@@ -97,6 +98,16 @@ function App() {
                                 <RegistrationForm />
                             )
                         } 
+                    />
+                    <Route
+                        path="/login"
+                        element={
+                            isAuthenticated ? (
+                                <Navigate to="/" replace />
+                            ) : (
+                                <LoginPage />
+                            )
+                        }
                     />
                     <Route 
                         path="/profile" 

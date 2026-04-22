@@ -10,7 +10,13 @@ option go_package = "github.com/M1steryO/RelocatorEvents/auth/pkg/api/proto/auth
 
 
 service AuthService{
-  rpc Login(LoginRequest) returns (LoginResponse);
+  rpc Login(LoginRequest) returns (LoginResponse){
+    option (google.api.http) = {
+      post: "/auth/v1/login"
+      body: "*"
+    };
+  };
+  ;
 
   rpc TelegramLogin(TelegramLoginRequest) returns (TelegramLoginReponse);
   rpc Check(CheckRequest) returns (CheckResponse);

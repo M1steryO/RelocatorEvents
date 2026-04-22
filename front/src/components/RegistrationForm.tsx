@@ -25,11 +25,51 @@ const LANGUAGE_CODE_BY_LABEL: Record<string, 'ru' | 'en' | 'ge'> = {
     Грузинский: 'ge',
 };
 
+const getFriendlyRegistrationError = (error: unknown): { field: 'email' | 'password' | 'common'; message: string } => {
+    const message = (error instanceof Error ? error.message : String(error)).toLowerCase();
+
+    if (
+        message.includes('already exists') ||
+        message.includes('already registered') ||
+        message.includes('email exists') ||
+        message.includes('duplicate') ||
+        message.includes('conflict') ||
+        message.includes('409')
+    ) {
+        return { field: 'email', message: 'Пользователь с такой почтой уже существует' };
+    }
+
+    if (
+        message.includes('invalid email') ||
+        message.includes('email is invalid') ||
+        message.includes('bad email')
+    ) {
+        return { field: 'email', message: 'Неверная почта' };
+    }
+
+    if (
+        message.includes('password') &&
+        (message.includes('weak') || message.includes('invalid') || message.includes('requirements'))
+    ) {
+        return { field: 'password', message: 'Пароль не соответствует требованиям' };
+    }
+
+    if (message.includes('too many requests') || message.includes('429')) {
+        return { field: 'common', message: 'Слишком много попыток. Попробуйте позже' };
+    }
+
+    return { field: 'common', message: 'Не удалось завершить регистрацию. Попробуйте еще раз' };
+};
+
 export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const { setAccessToken, setUser } = useAuth();
     const navigate = useNavigate();
-    const [step, setStep] = useState(2);
+    const isTelegramMiniApp = Boolean(getTelegramInitData());
+    const [step, setStep] = useState(isTelegramMiniApp ? 2 : 1);
     const [formData, setFormData] = useState({
+        email: '',
+        password: '',
+        confirmPassword: '',
         language: '',
         country: '',
         city: '',
@@ -43,6 +83,12 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const [languageError, setLanguageError] = useState<string>('');
     const [countryError, setCountryError] = useState<string>('');
     const [cityError, setCityError] = useState<string>('');
+    const [emailError, setEmailError] = useState<string>('');
+    const [passwordError, setPasswordError] = useState<string>('');
+    const [confirmPasswordError, setConfirmPasswordError] = useState<string>('');
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [registrationCommonError, setRegistrationCommonError] = useState('');
     const [showButton, setShowButton] = useState(false);
     const languageDropdownRef = useRef<HTMLDivElement>(null);
     const languageInputRef = useRef<HTMLInputElement>(null);
@@ -112,6 +158,23 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
         }
     };
 
+    const validateEmail = (email: string): boolean => {
+        return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
+    };
+
+    const getPasswordRequirementErrors = (password: string): string[] => {
+        const errors: string[] = [];
+        if (password.length < 8) errors.push('Минимум 8 символов');
+        if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
+            errors.push('Минимум одна заглавная и одна строчная латинская буква');
+        }
+        if (!/\d/.test(password)) errors.push('Минимум одна цифра');
+        if (!/[!?@#$%^&*~\-+=(){}\[\]:;'"<>,./\\|_]/.test(password)) {
+            errors.push('Минимум один спецсимвол');
+        }
+        return errors;
+    };
+
 
     const handleCountrySelect = (country: string) => {
         setFormData((prev) => ({ ...prev, country, city: '' }));
@@ -143,6 +206,34 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
 
     const handleNext = () => {
         // Validate before proceeding
+        if (step === 1 && !isTelegramMiniApp) {
+            setRegistrationCommonError('');
+            const trimmedEmail = formData.email.trim();
+            if (!trimmedEmail) {
+                setEmailError('Введите почту');
+                return;
+            }
+            if (!validateEmail(trimmedEmail)) {
+                setEmailError('Неверная почта');
+                return;
+            }
+            const passwordErrors = getPasswordRequirementErrors(formData.password);
+            if (passwordErrors.length > 0) {
+                setPasswordError(`Пароль должен соответствовать критериям: ${passwordErrors.join(', ')}`);
+                return;
+            }
+            if (!formData.confirmPassword) {
+                setConfirmPasswordError('Подтвердите пароль');
+                return;
+            }
+            if (formData.password !== formData.confirmPassword) {
+                setConfirmPasswordError('Пароль не совпадает');
+                return;
+            }
+            setEmailError('');
+            setPasswordError('');
+            setConfirmPasswordError('');
+        }
         if (step === 2) {
             if (!formData.country.trim()) {
                 setCountryError('Пожалуйста, выберите страну');
@@ -199,12 +290,12 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
 
             const emailForRegistration = telegramInitData
                 ? undefined // for Telegram registration we intentionally don't send email
-                : `stub_${Date.now()}@example.com`;
+                : formData.email.trim();
 
             const response = await authService.register({
-                telegram_token: telegramInitData,
-                password: '',
-                confirm_password: '',
+                telegram_token: telegramInitData || undefined,
+                password: telegramInitData ? '' : formData.password,
+                confirm_password: telegramInitData ? '' : formData.confirmPassword,
                 info: {
                     name: telegramNameFromInitData,
                     telegram_username: telegramUsernameFromInitData,
@@ -254,8 +345,16 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             navigate('/profile');
             onSuccess?.();
         } catch (error) {
-            console.log(error);
-            // Handle error - could show error message
+            const friendlyError = getFriendlyRegistrationError(error);
+            if (friendlyError.field === 'email') {
+                setEmailError(friendlyError.message);
+                setRegistrationCommonError('');
+            } else if (friendlyError.field === 'password') {
+                setPasswordError(friendlyError.message);
+                setRegistrationCommonError('');
+            } else {
+                setRegistrationCommonError(friendlyError.message);
+            }
         } finally {
             setIsLoading(false);
         }
@@ -264,7 +363,15 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const canProceed = () => {
         switch (step) {
             case 1:
-                return true; // Welcome step, always can proceed
+                if (isTelegramMiniApp) return true;
+                return (
+                    formData.email.trim().length > 0 &&
+                    formData.password.length > 0 &&
+                    formData.confirmPassword.length > 0 &&
+                    !emailError &&
+                    !passwordError &&
+                    !confirmPasswordError
+                );
             case 2:
                 return (
                     formData.country.trim().length > 0 &&
@@ -302,24 +409,115 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     return (
         <div className="registration-container">
             <div className="registration-content">
-                {/* Step 1: Welcome */}
-                {step === 1 && (
+                {/* Step 1: Web credentials */}
+                {step === 1 && !isTelegramMiniApp && (
                     <div className="registration-step">
-                        <div className="step-header">
-                            <h1 className="step-title">Добро пожаловать!</h1>
-                            <p className="step-subtitle">
-                                Здесь вы найдете мероприятия в своем городе
-                            </p>
+                        <div className="step-3-title-row">
+                            <h1 className="step-title step-title-inline">Добро пожаловать<br />в Eventify</h1>
                         </div>
+                        <div className="input-wrapper">
+                            <label className="input-label">Почта</label>
+                            <div className="input-container">
+                                <input
+                                    type="email"
+                                    className={`registration-input ${emailError ? 'error' : ''}`}
+                                    placeholder="Почта"
+                                    value={formData.email}
+                                    onChange={(e) => {
+                                        setFormData((prev) => ({ ...prev, email: e.target.value }));
+                                        if (emailError) setEmailError('');
+                                        if (registrationCommonError) setRegistrationCommonError('');
+                                    }}
+                                    autoComplete="email"
+                                />
+                            </div>
+                            {emailError && <span className="error-message">{emailError}</span>}
+                        </div>
+                        <div className="input-wrapper">
+                            <label className="input-label">Пароль</label>
+                            <div className="input-container input-container-with-icon">
+                                <input
+                                    type={showPassword ? 'text' : 'password'}
+                                    className={`registration-input ${passwordError ? 'error' : ''}`}
+                                    placeholder="Введите пароль"
+                                    value={formData.password}
+                                    onChange={(e) => {
+                                        const nextPassword = e.target.value;
+                                        setFormData((prev) => ({ ...prev, password: nextPassword }));
+                                        const passwordErrors = getPasswordRequirementErrors(nextPassword);
+                                        setPasswordError(
+                                            passwordErrors.length
+                                                ? `Пароль должен соответствовать критериям: ${passwordErrors.join(', ')}`
+                                                : '',
+                                        );
+                                        if (formData.confirmPassword && formData.confirmPassword !== nextPassword) {
+                                            setConfirmPasswordError('Пароль не совпадает');
+                                        } else {
+                                            setConfirmPasswordError('');
+                                        }
+                                        if (registrationCommonError) setRegistrationCommonError('');
+                                    }}
+                                    autoComplete="new-password"
+                                />
+                                <button
+                                    type="button"
+                                    className="password-visibility-toggle"
+                                    onClick={() => setShowPassword((prev) => !prev)}
+                                    aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                                >
+                                    {showPassword ? 'Скрыть' : 'Показать'}
+                                </button>
+                            </div>
+                            {passwordError && <span className="error-message">{passwordError}</span>}
+                        </div>
+                        <div className="input-wrapper">
+                            <label className="input-label">Подтвердите пароль</label>
+                            <div className="input-container input-container-with-icon">
+                                <input
+                                    type={showConfirmPassword ? 'text' : 'password'}
+                                    className={`registration-input ${confirmPasswordError ? 'error' : ''}`}
+                                    placeholder="Введите пароль"
+                                    value={formData.confirmPassword}
+                                    onChange={(e) => {
+                                        const nextConfirm = e.target.value;
+                                        setFormData((prev) => ({ ...prev, confirmPassword: nextConfirm }));
+                                        if (nextConfirm && nextConfirm !== formData.password) {
+                                            setConfirmPasswordError('Пароль не совпадает');
+                                        } else {
+                                            setConfirmPasswordError('');
+                                        }
+                                        if (registrationCommonError) setRegistrationCommonError('');
+                                    }}
+                                    autoComplete="new-password"
+                                />
+                                <button
+                                    type="button"
+                                    className="password-visibility-toggle"
+                                    onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                    aria-label={showConfirmPassword ? 'Скрыть пароль' : 'Показать пароль'}
+                                >
+                                    {showConfirmPassword ? 'Скрыть' : 'Показать'}
+                                </button>
+                            </div>
+                            {confirmPasswordError && <span className="error-message">{confirmPasswordError}</span>}
+                        </div>
+                        {registrationCommonError && <span className="error-message">{registrationCommonError}</span>}
                         {showButton && (
                             <button
                                 className="continue-button"
                                 onClick={handleNext}
-                                disabled={isLoading}
+                                disabled={isLoading || !canProceed()}
                             >
                                 Продолжить
                             </button>
                         )}
+                        <button
+                            type="button"
+                            className="auth-link-button"
+                            onClick={() => navigate('/login')}
+                        >
+                            Уже есть аккаунт? Войти
+                        </button>
                     </div>
                 )}
 
