@@ -8,6 +8,14 @@ import './LoginPage.css';
 
 const isValidEmail = (email: string): boolean => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
+const REFRESH_TOKEN_COOKIE_KEY = 'refresh_token';
+
+const saveRefreshTokenToCookie = (refreshToken: string) => {
+    const encodedValue = encodeURIComponent(refreshToken);
+    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `${REFRESH_TOKEN_COOKIE_KEY}=${encodedValue}; Path=/; SameSite=Lax${secure}`;
+};
+
 const getFriendlyLoginError = (error: unknown): string => {
     const message = (error instanceof Error ? error.message : String(error)).toLowerCase();
 
@@ -72,6 +80,9 @@ export const LoginPage = () => {
             });
             if (!response.access_token) {
                 throw new Error('Access token not received');
+            }
+            if (response.refresh_token) {
+                saveRefreshTokenToCookie(response.refresh_token);
             }
             setAccessToken(response.access_token);
             const userData = await authService.getCurrentUser();

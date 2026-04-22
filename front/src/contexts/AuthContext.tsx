@@ -5,6 +5,7 @@ import { eventsService } from '../services/eventsService';
 import { favouritesService } from '../services/favouritesService';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'auth_access_token';
+const REFRESH_TOKEN_COOKIE_KEY = 'refresh_token';
 
 interface User {
   id: number;
@@ -83,6 +84,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const logout = () => {
     setToken(null);
     writeStoredToken(null);
+    document.cookie = `${REFRESH_TOKEN_COOKIE_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
     setUserState(null);
     authService.setAccessToken(null);
     eventsService.setAccessToken(null);
