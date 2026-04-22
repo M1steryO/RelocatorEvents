@@ -9,7 +9,7 @@ export interface RegisterData {
 	
 
 	password?:        string
-	confirm_password?:  string
+	password_confirm?:  string
 
     info: {
         name?:string;

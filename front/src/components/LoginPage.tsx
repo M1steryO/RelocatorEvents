@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/authService';
-import { getTelegramInitData } from '../utils/telegramInitData';
+import { isTelegramMiniApp as detectTelegramMiniApp } from '../utils/telegramInitData';
 import './RegistrationForm.css';
 import './LoginPage.css';
 
@@ -46,7 +46,7 @@ export const LoginPage = () => {
     const [emailError, setEmailError] = useState('');
     const [passwordError, setPasswordError] = useState('');
     const [isLoading, setIsLoading] = useState(false);
-    const isTelegramMiniApp = Boolean(getTelegramInitData());
+    const isTelegramMiniApp = detectTelegramMiniApp();
 
     const handleSubmit = async () => {
         const trimmedLogin = login.trim();

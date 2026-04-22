@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/authService';
 import { INTERESTS_LIST } from '../constants/interests';
-import { getTelegramInitData } from '../utils/telegramInitData';
+import { getTelegramInitData, isTelegramMiniApp as detectTelegramMiniApp } from '../utils/telegramInitData';
 import './RegistrationForm.css';
 
 interface RegistrationFormProps {
@@ -64,7 +64,7 @@ const getFriendlyRegistrationError = (error: unknown): { field: 'email' | 'passw
 export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const { setAccessToken, setUser } = useAuth();
     const navigate = useNavigate();
-    const isTelegramMiniApp = Boolean(getTelegramInitData());
+    const isTelegramMiniApp = detectTelegramMiniApp();
     const [step, setStep] = useState(isTelegramMiniApp ? 2 : 1);
     const [formData, setFormData] = useState({
         email: '',
@@ -295,7 +295,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             const response = await authService.register({
                 telegram_token: telegramInitData || undefined,
                 password: telegramInitData ? '' : formData.password,
-                confirm_password: telegramInitData ? '' : formData.confirmPassword,
+                password_confirm: telegramInitData ? '' : formData.confirmPassword,
                 info: {
                     name: telegramNameFromInitData,
                     telegram_username: telegramUsernameFromInitData,
