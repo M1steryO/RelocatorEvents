@@ -19,12 +19,20 @@ export const isTelegramMiniApp = (): boolean => {
         return false;
     }
 
-    const hasUserInInitData = Boolean(tg.initDataUnsafe?.user?.id);
-    const hasInitData = Boolean(tg.initData && tg.initData.trim().length > 0);
-    const hasKnownPlatform = Boolean(tg.platform && tg.platform !== 'unknown');
+    const userAgent = window.navigator.userAgent.toLowerCase();
+    const hasTelegramWebViewUserAgent =
+        userAgent.includes('telegram') || userAgent.includes('tgwebview');
 
-    // In regular web the Telegram object can exist, but without valid mini-app context.
-    return hasUserInInitData || (hasKnownPlatform && hasInitData);
+    const hasUserInInitData = Boolean(tg.initDataUnsafe?.user?.id);
+    const initData = tg.initData || '';
+    const hasSignedInitData =
+        initData.trim().length > 0 &&
+        initData.includes('hash=') &&
+        initData.includes('auth_date=');
+
+    // In regular browser window.Telegram can be present, so we require
+    // actual mini-app signals (Telegram UA + signed initData or resolved user).
+    return hasTelegramWebViewUserAgent && (hasUserInInitData || hasSignedInitData);
 };
 
 export const addTelegramInitDataHeader = (headers: Record<string, string>) => {
