@@ -40,7 +40,7 @@ const getFriendlyLoginError = (error: unknown): string => {
 export const LoginPage = () => {
     const navigate = useNavigate();
     const { setAccessToken, setUser } = useAuth();
-    const [login, setLogin] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
     const [emailError, setEmailError] = useState('');
@@ -49,12 +49,12 @@ export const LoginPage = () => {
     const isTelegramMiniApp = detectTelegramMiniApp();
 
     const handleSubmit = async () => {
-        const trimmedLogin = login.trim();
-        if (!trimmedLogin) {
+        const trimmedEmail = email.trim();
+        if (!trimmedEmail) {
             setEmailError('Введите почту');
             return;
         }
-        if (!isValidEmail(trimmedLogin)) {
+        if (!isValidEmail(trimmedEmail)) {
             setEmailError('Неверная почта');
             return;
         }
@@ -67,7 +67,7 @@ export const LoginPage = () => {
         setIsLoading(true);
         try {
             const response = await authService.login({
-                login: trimmedLogin,
+                email: trimmedEmail,
                 password,
             });
             if (!response.access_token) {
@@ -122,9 +122,9 @@ export const LoginPage = () => {
                                 type="email"
                                 className={`registration-input ${emailError ? 'error' : ''}`}
                                 placeholder="Почта"
-                                value={login}
+                                value={email}
                                 onChange={(e) => {
-                                    setLogin(e.target.value);
+                                    setEmail(e.target.value);
                                     if (emailError) setEmailError('');
                                 }}
                                 autoComplete="email"
@@ -163,7 +163,7 @@ export const LoginPage = () => {
                         type="button"
                         className="continue-button"
                         onClick={handleSubmit}
-                        disabled={isLoading || !login.trim() || !password}
+                        disabled={isLoading || !email.trim() || !password}
                     >
                         Продолжить
                     </button>
