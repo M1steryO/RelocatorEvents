@@ -300,7 +300,10 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     };
 
     const handleBack = () => {
-        if (step > 2) {
+        const canGoBack =
+            step > 2 || (!isTelegramMiniApp && step === 2);
+
+        if (canGoBack) {
             setShowLanguageDropdown(false);
             setShowCountryDropdown(false);
             setShowCityDropdown(false);
@@ -559,8 +562,17 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                 {/* Step 2: Region Selection */}
                 {step === 2 && (
                     <div className="registration-step">
+                        {!isTelegramMiniApp ? (
+                            <div className="step-3-title-row">
+                                {renderBackButton()}
+                                <h1 className="step-title step-title-inline">Укажите ваш регион</h1>
+                            </div>
+                        ) : (
+                            <div className="step-header">
+                                <h1 className="step-title">Укажите ваш регион</h1>
+                            </div>
+                        )}
                         <div className="step-header">
-                            <h1 className="step-title">Укажите ваш регион</h1>
                             <p className="step-description">
                                 Это нужно для поиска мероприятий именно в вашем регионе
                             </p>

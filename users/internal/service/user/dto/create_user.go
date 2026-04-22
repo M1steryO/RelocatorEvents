@@ -30,6 +30,7 @@ func (c CreateUser) ToDomain(telegramId *int64) *domain.User {
 	}
 
 	return &domain.User{
+		Password: c.Password,
 		Info: domain.UserInfo{
 			Name:  c.Name,
 			Email: c.Email,
