@@ -60,6 +60,58 @@ async def _extract_service_languages(detail_page) -> list[str] | None:
     return None
 
 
+LIST_END_MARKER = ".panel.no-stick"
+SETTLE_AFTER_LIST_MS = 2000
+
+
+async def _scroll_to_load_all_cards(
+        page,
+        card_selector: str,
+        max_rounds: int = 60,
+        idle_rounds_to_stop: int = 5,
+) -> None:
+    cards = page.locator(card_selector)
+    idle_rounds = 0
+
+    for round_num in range(max_rounds):
+        current_count = await cards.count()
+        current_height = await page.evaluate("document.body.scrollHeight")
+
+        if current_count > 0:
+            try:
+                await cards.nth(current_count - 1).scroll_into_view_if_needed()
+            except Exception:
+                pass
+
+        await page.evaluate("window.scrollTo(0, document.body.scrollHeight)")
+        await page.wait_for_timeout(1800)
+
+        try:
+            await page.mouse.wheel(0, 3000)
+        except Exception:
+            pass
+
+        await page.wait_for_timeout(1800)
+
+        try:
+            await page.wait_for_load_state("networkidle", timeout=3000)
+        except PWTimeout:
+            pass
+
+        new_count = await cards.count()
+        new_height = await page.evaluate("document.body.scrollHeight")
+
+        if new_count == current_count and new_height == current_height:
+            idle_rounds += 1
+        else:
+            idle_rounds = 0
+
+        if idle_rounds >= idle_rounds_to_stop:
+            break
+
+    await page.wait_for_timeout(1500)
+
+
 async def parse_georgia(
         page_url: str,
         category: str,
@@ -69,6 +121,7 @@ async def parse_georgia(
         kafka_data: List[AIOKafkaProducer | str],
 ) -> List[Event]:
     CARD_LINK = ".products-actions__item_title_wrap a"
+    LIST_CONTAINER = ".poster.green_wrapper"
 
     TITLE = ".product__title"
     IMG_LINK = ".swiper-slide-fully-visible.swiper-slide-active img"
@@ -125,11 +178,15 @@ async def parse_georgia(
                             return []
                         await asyncio.sleep(1.0 * attempt)
 
+                await _scroll_to_load_all_cards(page, CARD_LINK)
+
                 link_els = await page.query_selector_all(CARD_LINK)
                 for el in link_els:
                     href = await el.get_attribute("href")
                     if href:
                         hrefs.append(urljoin(page_url, href))
+                hrefs = list(dict.fromkeys(hrefs))
+                logger.info("Listing %s loaded cards: %d", page_url, len(hrefs))
 
                 t_after_listing = perf_counter()
 
@@ -191,9 +248,11 @@ async def parse_georgia(
                             longitude = await map_el.get_attribute("data-longitude")
                             latitude = await map_el.get_attribute("data-latitude")
 
-                        city = await geocoder.city_from_latlon(latitude, longitude)
-                        if city == "":
-                            city = None
+                        city = None
+                        if latitude and longitude:
+                            city = await geocoder.city_from_latlon(latitude, longitude)
+                            if city == "":
+                                city = None
 
                         date_els = await detail_page.query_selector_all(DATE)
                         time_els = await detail_page.query_selector_all(TIME)
