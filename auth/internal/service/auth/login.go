@@ -19,7 +19,7 @@ func (s *serv) Login(ctx context.Context, email, password string) (*models.Crede
 		return nil, sys.NewCommonError("invalid login or password", codes.InvalidArgument)
 	}
 
-	err = bcrypt.CompareHashAndPassword([]byte(password), []byte(user.Password))
+	err = bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(password))
 	if err != nil {
 		return nil, sys.NewCommonError("invalid login or password", codes.InvalidArgument)
 	}
