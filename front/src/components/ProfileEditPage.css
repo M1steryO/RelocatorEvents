@@ -1,7 +1,7 @@
 .profile-edit-container {
     min-height: calc(100dvh - 77px);
     width: 100%;
-    max-width: 1200px;
+    max-width: 700px;
     margin: 0 auto;
     background: #f1efef;
     padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(96px, calc(20px + env(safe-area-inset-bottom))) max(20px, env(safe-area-inset-left));
