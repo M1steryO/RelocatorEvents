@@ -54,7 +54,7 @@ jobs:
             docker run -d \
             --name "$CONTAINER_NAME" \
             --network reloca \
-            -p 3000:80 \
+            -p 80:80 \
             -t "$REGISTRY/$IMAGE_NAME:$TAG_NAME"
             docker images "$REGISTRY/$IMAGE_NAME" --format '{{.Repository}}:{{.Tag}} {{.ID}}' \
             | awk -v keep="$REGISTRY/$IMAGE_NAME:$TAG_NAME" '$1!=keep {print $2}' \

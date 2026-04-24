@@ -18,6 +18,18 @@ const saveRefreshTokenToCookie = (refreshToken: string) => {
 
 const getFriendlyLoginError = (error: unknown): string => {
     const message = (error instanceof Error ? error.message : String(error)).toLowerCase();
+    const statusValue = (error as { status?: unknown })?.status;
+    const status = typeof statusValue === 'number' ? statusValue : undefined;
+
+    if (status === 400 || status === 401) {
+        return 'Неверный логин или пароль';
+    }
+    if (status === 404) {
+        return 'Аккаунт с такой почтой не найден';
+    }
+    if (status === 429) {
+        return 'Слишком много попыток входа. Попробуйте позже';
+    }
 
     if (
         message.includes('invalid credentials') ||
@@ -27,7 +39,7 @@ const getFriendlyLoginError = (error: unknown): string => {
         message.includes('unauthorized') ||
         message.includes('401')
     ) {
-        return 'Неверная почта или пароль';
+        return 'Неверный логин или пароль';
     }
 
     if (

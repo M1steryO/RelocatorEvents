@@ -118,6 +118,12 @@ class AuthService {
         showGlobalNotification('Ошибка сети. Попробуйте позже.', 'error');
     }
 
+    private createHttpError(message: string, status: number): Error & { status: number } {
+        const error = new Error(message) as Error & { status: number };
+        error.status = status;
+        return error;
+    }
+
     private async request<T>(
         endpoint: string,
         options: RequestInit = {}
@@ -163,7 +169,7 @@ class AuthService {
             const error = await response.json().catch(() => ({
                 message: 'Service Unavailable',
             }));
-            throw new Error(error.message || 'Service Unavailable');
+            throw this.createHttpError(error.message || 'Service Unavailable', 503);
         }
 
         // Handle 500 Internal Server Error
@@ -172,7 +178,7 @@ class AuthService {
             const error = await response.json().catch(() => ({
                 message: 'Internal Server Error',
             }));
-            throw new Error(error.message || 'Internal Server Error');
+            throw this.createHttpError(error.message || 'Internal Server Error', 500);
         }
 
         // Handle 401 Unauthorized - token expired
@@ -181,14 +187,14 @@ class AuthService {
             const error = await response.json().catch(() => ({
                 message: 'Unauthorized',
             }));
-            throw new Error(error.message || 'Unauthorized');
+            throw this.createHttpError(error.message || 'Unauthorized', 401);
         }
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({
                 message: 'An error occurred',
             }));
-            throw new Error(error.message || `HTTP error! status: ${response.status}`);
+            throw this.createHttpError(error.message || `HTTP error! status: ${response.status}`, response.status);
         }
 
         return response.json();

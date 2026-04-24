@@ -16,12 +16,12 @@ func (s *serv) Login(ctx context.Context, email, password string) (*models.Crede
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return nil, sys.NewCommonError("wrong email", codes.NotFound)
 		}
-		return nil, sys.NewCommonError("invalid login or password", codes.Unauthenticated)
+		return nil, sys.NewCommonError("invalid login or password", codes.InvalidArgument)
 	}
 
 	err = bcrypt.CompareHashAndPassword([]byte(password), []byte(user.Password))
 	if err != nil {
-		return nil, sys.NewCommonError("invalid login or password", codes.Unauthenticated)
+		return nil, sys.NewCommonError("invalid login or password", codes.InvalidArgument)
 	}
 
 	creds, err := s.issueTokens(user.ID, "admin")
