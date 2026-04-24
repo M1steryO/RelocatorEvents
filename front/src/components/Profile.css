@@ -38,6 +38,23 @@
     text-align: center;
 }
 
+.profile-edit-link {
+    border: 3px solid #458dbd;
+    border-radius: 32px;
+    background: transparent;
+    color: #458dbd;
+    height: 44px;
+    padding: 0 18px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1;
+    cursor: pointer;
+}
+
 .profile-content {
     display: flex;
     flex-direction: column;

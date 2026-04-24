@@ -355,8 +355,8 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             // Set access token
             setAccessToken(accessToken);
 
-            // Navigate to profile page
-            navigate('/profile');
+            // Navigate to feed page
+            navigate('/');
             onSuccess?.();
         } catch (error) {
             const friendlyError = getFriendlyRegistrationError(error);

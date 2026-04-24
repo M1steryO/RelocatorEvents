@@ -11,6 +11,7 @@ const REFRESH_TOKEN_COOKIE_KEY = 'refresh_token';
 interface User {
   id: number;
   name: string;
+  email?: string;
   country?: string;
   city?: string;
   language?: string;
@@ -86,6 +87,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         setUserState({
           id: userData.id,
           name: userData.name,
+          email: userData.email,
           country: userData.country,
           city: userData.city,
           language: userData.language,
@@ -149,6 +151,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUserState({
       id: userData.id,
       name: userData.name,
+      email: userData.email,
       country: userData.country,
       city: userData.city,
       language: userData.language,

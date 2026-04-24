@@ -12,6 +12,7 @@ import {FavouritesPage} from "./components/FavouritesPage";
 import {BottomNavigation} from "./components/BottomNavigation";
 import {ServiceUnavailablePage} from "./components/ServiceUnavailablePage";
 import {LoginPage} from "./components/LoginPage";
+import {ProfileEditPage} from "./components/ProfileEditPage";
 import {subscribeToServiceUnavailable} from "./utils/serviceUnavailable";
 import {subscribeToUnauthorized} from "./utils/unauthorized";
 import "./App.css";
@@ -117,6 +118,16 @@ function App() {
                                     <Profile />
                                     <BottomNavigation />
                                 </>
+                            ) : (
+                                <Navigate to="/register" replace />
+                            )
+                        }
+                    />
+                    <Route
+                        path="/profile/edit"
+                        element={
+                            isAuthenticated ? (
+                                <ProfileEditPage />
                             ) : (
                                 <Navigate to="/register" replace />
                             )

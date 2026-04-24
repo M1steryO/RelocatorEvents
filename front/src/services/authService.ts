@@ -60,6 +60,7 @@ class AuthService {
         data: {
             id: number;
             name: string;
+            email?: string;
             country?: string;
             city?: string;
             language?: string;
@@ -71,6 +72,7 @@ class AuthService {
     private currentUserRequest: Promise<{
         id: number;
         name: string;
+        email?: string;
         country?: string;
         city?: string;
         language?: string;
@@ -350,6 +352,7 @@ class AuthService {
     async getCurrentUser(): Promise<{
         id: number;
         name: string;
+        email?: string;
         country?: string;
         city?: string;
         language?: string;
@@ -376,6 +379,7 @@ class AuthService {
                     id: string;
                     info: {
                         name: string;
+                        email?: string;
                         username?: string;
                         telegramInitData?: string;
                         country?: string;
@@ -402,6 +406,7 @@ class AuthService {
             const userData = {
                 id: parseInt(response.user.id, 10),
                 name: response.user.info.name,
+                email: response.user.info.email || undefined,
                 country: response.user.info.country || undefined,
                 city: response.user.info.city || undefined,
                 language: response.user.info.language || undefined,
