@@ -59,6 +59,12 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     // Таймаут = минимум времени показа + минимум 2 с для второй части. Закрываем только когда загрузка завершена и прошло нужное время.
     useEffect(() => {
         if (!isLoading) {
+            // Если пользователь уже известен, сначала обязательно переключаемся
+            // на приветствие (part 2), и только потом считаем таймер закрытия.
+            if (user?.name && !showWelcomeText && !welcomeShownRef.current) {
+                return;
+            }
+
             const elapsed = Date.now() - startTimeRef.current;
             let remaining = Math.max(0, minimumDisplayTime - elapsed);
             if (part2ShownAtRef.current != null) {
@@ -77,7 +83,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
         }
-    }, [isLoading, minimumDisplayTime, startClosing, showWelcomeText]);
+    }, [isLoading, minimumDisplayTime, startClosing, showWelcomeText, user?.name]);
 
     if (!showLoading) {
         return null;
