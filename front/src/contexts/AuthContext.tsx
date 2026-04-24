@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import { eventsService } from '../services/eventsService';
 import { favouritesService } from '../services/favouritesService';
+import { isTelegramMiniApp } from '../utils/telegramInitData';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'auth_access_token';
 const REFRESH_TOKEN_COOKIE_KEY = 'refresh_token';
@@ -72,7 +73,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       setIsLoading(true);
       applyTokenToServices(token);
 
-      if (!token) {
+      const shouldTrySessionBootstrap = Boolean(token) || isTelegramMiniApp();
+      if (!shouldTrySessionBootstrap) {
         setUserState(null);
         if (!cancelled) setIsLoading(false);
         return;
@@ -93,9 +95,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       } catch {
         if (cancelled) return;
         setUserState(null);
-        setToken(null);
-        writeStoredToken(null);
-        applyTokenToServices(null);
+        if (token) {
+          setToken(null);
+          writeStoredToken(null);
+          applyTokenToServices(null);
+        }
       } finally {
         if (!cancelled) setIsLoading(false);
       }
@@ -108,6 +112,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, [token, applyTokenToServices]);
 
   const login = (accessToken: string, newUser: User) => {
+    setIsLoading(true);
     setToken(accessToken);
     writeStoredToken(accessToken);
     setUserState(newUser);
@@ -115,6 +120,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   };
 
   const setAccessToken = (accessToken: string) => {
+    setIsLoading(true);
     setToken(accessToken);
     writeStoredToken(accessToken);
     applyTokenToServices(accessToken);
@@ -154,7 +160,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const value: AuthContextType = {
     user,
     token,
-    isAuthenticated: !!token,
+    isAuthenticated: !!token || !!user,
     isLoading,
     login,
     setAccessToken,
