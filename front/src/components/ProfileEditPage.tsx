@@ -7,6 +7,7 @@ import './ProfileEditPage.css';
 export const ProfileEditPage = () => {
     const navigate = useNavigate();
     const { user, setUser, logout, isLoading } = useAuth();
+    const [activeModal, setActiveModal] = useState<'save' | 'logout' | 'reset' | null>(null);
 
     const initialName = user?.name || '';
     const initialEmail = user?.email || '';
@@ -61,6 +62,10 @@ export const ProfileEditPage = () => {
     const handleLogout = () => {
         logout();
         navigate('/register', { replace: true });
+    };
+
+    const handleModalClose = () => {
+        setActiveModal(null);
     };
 
     return (
@@ -121,18 +126,100 @@ export const ProfileEditPage = () => {
                 </div>
             </div>
 
-            <button type="button" className="profile-edit-save" onClick={handleSave}>
+            <button type="button" className="profile-edit-save" onClick={() => setActiveModal('save')}>
                 Сохранить
             </button>
 
             <div className="profile-edit-footer">
-                <button type="button" className="profile-edit-secondary" onClick={handleReset}>
+                <button type="button" className="profile-edit-secondary" onClick={() => setActiveModal('reset')}>
                     Сбросить настройки
                 </button>
-                <button type="button" className="profile-edit-logout" onClick={handleLogout}>
+                <button type="button" className="profile-edit-logout" onClick={() => setActiveModal('logout')}>
                     Выйти
                 </button>
             </div>
+
+            {activeModal && (
+                <div className="profile-edit-modal-overlay" onClick={handleModalClose}>
+                    <div className="profile-edit-modal" onClick={(e) => e.stopPropagation()}>
+                        <button
+                            type="button"
+                            className="profile-edit-modal-close"
+                            onClick={handleModalClose}
+                            aria-label="Закрыть"
+                        >
+                            <svg xmlns="http://www.w3.org/2000/svg" width="34" height="34" viewBox="0 0 34 34" fill="none">
+                                <circle cx="17" cy="17" r="17" fill="#414141" />
+                                <path d="M11 11L23 23M23 11L11 23" stroke="#FAF9F6" strokeWidth="2" strokeLinecap="round" />
+                            </svg>
+                        </button>
+
+                        {activeModal === 'save' && (
+                            <>
+                                <p className="profile-edit-modal-title">Вы действительно хотите сохранить изменения профиля?</p>
+                                <div className="profile-edit-modal-actions">
+                                    <button type="button" className="profile-edit-modal-btn profile-edit-modal-btn-outline" onClick={handleModalClose}>
+                                        Не сохранить
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="profile-edit-modal-btn profile-edit-modal-btn-filled"
+                                        onClick={() => {
+                                            handleModalClose();
+                                            handleSave();
+                                        }}
+                                    >
+                                        Сохранить
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {activeModal === 'logout' && (
+                            <>
+                                <p className="profile-edit-modal-title">Вы действительно хотите выйти из аккаунта?</p>
+                                <div className="profile-edit-modal-actions">
+                                    <button
+                                        type="button"
+                                        className="profile-edit-modal-btn profile-edit-modal-btn-outline"
+                                        onClick={() => {
+                                            handleModalClose();
+                                            handleLogout();
+                                        }}
+                                    >
+                                        Выйти
+                                    </button>
+                                    <button type="button" className="profile-edit-modal-btn profile-edit-modal-btn-filled" onClick={handleModalClose}>
+                                        Не выходить
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {activeModal === 'reset' && (
+                            <>
+                                <p className="profile-edit-modal-title">Вы действительно хотите сбросить настройки профиля?</p>
+                                <p className="profile-edit-modal-subtitle">Аккаунт сбросится и вам придется снова проходить регистрацию</p>
+                                <div className="profile-edit-modal-actions">
+                                    <button
+                                        type="button"
+                                        className="profile-edit-modal-btn profile-edit-modal-btn-outline"
+                                        onClick={() => {
+                                            handleModalClose();
+                                            handleReset();
+                                        }}
+                                    >
+                                        Сбросить
+                                    </button>
+                                    <button type="button" className="profile-edit-modal-btn profile-edit-modal-btn-filled" onClick={handleModalClose}>
+                                        Не сбрасывать
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
