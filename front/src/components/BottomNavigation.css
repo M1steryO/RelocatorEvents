@@ -7,7 +7,7 @@
     border-top: 1px solid #e5e7eb;
     padding: 14px 20px;
     display: flex;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     gap: 8px;
     z-index: 100;

@@ -24,6 +24,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     const fadeInTimeoutRef = useRef<number | null>(null);
     const welcomeSwitchTimeoutRef = useRef<number | null>(null);
     const FIRST_SCREEN_MIN_MS = isTgMiniApp ? 2200 : 900;
+    const hasAuthorizedUser = Boolean(user?.id);
 
     const showWelcomePhase = useCallback(() => {
         welcomeShownRef.current = true;
@@ -39,7 +40,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
 
     // Показываем приветствие только когда пользователь уже загружен в AuthProvider.
     useEffect(() => {
-        if (!showLoading || showWelcomeText || isClosing || welcomeShownRef.current || !user?.name) return;
+        if (!showLoading || showWelcomeText || isClosing || welcomeShownRef.current || !hasAuthorizedUser) return;
 
         const elapsedSinceStart = Date.now() - startTimeRef.current;
         const remainingFirstScreen = Math.max(0, FIRST_SCREEN_MIN_MS - elapsedSinceStart);
@@ -52,7 +53,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
         }
 
         showWelcomePhase();
-    }, [showLoading, showWelcomeText, isClosing, user?.name, FIRST_SCREEN_MIN_MS, showWelcomePhase]);
+    }, [showLoading, showWelcomeText, isClosing, hasAuthorizedUser, FIRST_SCREEN_MIN_MS, showWelcomePhase]);
 
     useEffect(() => {
         return () => {
@@ -78,6 +79,12 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     // Таймаут = минимум времени показа + минимум 2 с для второй части. Закрываем только когда загрузка завершена и прошло нужное время.
     useEffect(() => {
         if (!isLoading) {
+            // Для авторизованного пользователя обязательно сначала показать
+            // приветственный экран, и только потом закрывать загрузку.
+            if (hasAuthorizedUser && !showWelcomeText && !welcomeShownRef.current) {
+                return;
+            }
+
             const elapsed = Date.now() - startTimeRef.current;
             let remaining = Math.max(0, minimumDisplayTime - elapsed);
             if (part2ShownAtRef.current != null) {
@@ -106,7 +113,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
             clearTimeout(welcomeSwitchTimeoutRef.current);
             welcomeSwitchTimeoutRef.current = null;
         }
-    }, [isLoading, minimumDisplayTime, startClosing, showWelcomeText]);
+    }, [isLoading, minimumDisplayTime, startClosing, showWelcomeText, hasAuthorizedUser]);
 
     if (!showLoading) {
         return null;
@@ -115,7 +122,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     // Часть 1 первой; часть 2 — только если пользователь уже есть в AuthProvider
     const shouldShowInitial = !showWelcomeText || isFadingOut;
     const shouldShowWelcome = showWelcomeText;
-    const displayName = user?.name ?? '';
+    const displayName = user?.name ?? '...';
 
     return (
         <div className={`loading-screen ${isClosing ? 'loading-screen-closing' : ''}`}>
