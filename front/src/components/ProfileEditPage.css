@@ -61,7 +61,7 @@
     right: 0;
     bottom: 0;
     width: 100%;
-    height: 37%;
+    height: 40px;
     border: none;
     border-radius: 0;
     background: #414141;
@@ -131,7 +131,7 @@
     font-size: 14px;
     font-weight: 500;
     line-height: 1.25;
-    padding: 14px 19px;
+    padding-inline: 19px;
     width: fit-content;
     cursor: pointer;
 }
@@ -150,8 +150,12 @@
     font-size: 14px;
     font-weight: 500;
     line-height: 1.25;
-    padding: 14px 19px;
+    padding-inline: 19px;
     cursor: pointer;
+}
+.profile-edit-secondary{
+    border:2px solid #458dbd;
+    color: #458dbd;
 }
 
 .profile-edit-logout {
@@ -165,45 +169,6 @@
         flex-direction: column;
     }
 
-    .profile-edit-header {
-        grid-template-columns: 24px 1fr 24px;
-    }
-
-    .profile-edit-title {
-        font-size: 28px;
-    }
-
-    .profile-edit-avatar-wrap {
-        width: 162px;
-    }
-
-    .profile-edit-avatar {
-        width: 162px;
-        height: 162px;
-        font-size: 56px;
-    }
-
-    .profile-edit-avatar-button {
-        width: 100%;
-        height: 37%;
-        bottom: 0;
-    }
-
-    .profile-edit-label-row label {
-        font-size: 18px;
-    }
-
-    .profile-edit-label-row span {
-        font-size: 14px;
-    }
-
-    .profile-edit-field input {
-        height: 50px;
-        font-size: 18px;
-        padding: 0 16px;
-    }
-
-   
 
     .profile-edit-footer {
         margin-top: auto;

@@ -79,7 +79,7 @@ export const ProfileEditPage = () => {
                     {(user.name || 'П').trim().charAt(0).toUpperCase()}
                 </div>
                 <button type="button" className="profile-edit-avatar-button" aria-label="Изменить аватар">
-                    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="23" height="23" viewBox="0 0 18 18" fill="none">
                         <rect width="17.1523" height="17.1523" fill="url(#pattern0_1666_6774)" />
                         <defs>
                             <pattern id="pattern0_1666_6774" patternContentUnits="objectBoundingBox" width="1" height="1">
