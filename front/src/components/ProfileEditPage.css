@@ -38,6 +38,8 @@
     position: relative;
     width: 115px;
     margin: 0 auto 14px;
+    border-radius: 50%;
+    overflow: hidden;
 }
 
 .profile-edit-avatar {
@@ -57,7 +59,7 @@
     position: absolute;
     left: 50%;
     transform: translateX(-50%);
-    bottom: -8px;
+    bottom: 8px;
     width: 94px;
     height: 40px;
     border: none;
@@ -190,7 +192,7 @@
     .profile-edit-avatar-button {
         width: 72px;
         height: 31px;
-        bottom: -6px;
+        bottom: 8px;
     }
 
     .profile-edit-label-row label {
