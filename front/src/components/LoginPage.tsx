@@ -17,15 +17,6 @@ const saveRefreshTokenToCookie = (refreshToken: string) => {
 };
 
 const getFriendlyLoginError = (error: unknown): string => {
-    const status =
-        typeof error === 'object' && error !== null && 'status' in error
-            ? Number((error as { status?: unknown }).status)
-            : undefined;
-
-    if (status === 400 || status === 401) {
-        return 'Неверная почта или пароль';
-    }
-
     const message = (error instanceof Error ? error.message : String(error)).toLowerCase();
 
     if (
@@ -33,8 +24,8 @@ const getFriendlyLoginError = (error: unknown): string => {
         message.includes('invalid login') ||
         message.includes('invalid password') ||
         message.includes('wrong password') ||
-        message.includes('bad request') ||
-        message.includes('unauthorized')
+        message.includes('unauthorized') ||
+        message.includes('401')
     ) {
         return 'Неверная почта или пароль';
     }
