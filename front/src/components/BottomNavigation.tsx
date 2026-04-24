@@ -4,11 +4,30 @@ import './BottomNavigation.css';
 export const BottomNavigation = () => {
     const navigate = useNavigate();
     const location = useLocation();
+    const isProfile = location.pathname === '/profile';
     const isHome = location.pathname === '/';
     const isFavourites = location.pathname === '/favourites';
 
     return (
         <nav className="bottom-navigation">
+            <button
+                className={`nav-item ${isProfile ? 'active' : ''}`}
+                onClick={() => navigate('/profile')}
+                type="button"
+            >
+                {isProfile ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none">
+                        <path d="M10 1.75C11.933 1.75 13.5 3.317 13.5 5.25C13.5 7.183 11.933 8.75 10 8.75C8.067 8.75 6.5 7.183 6.5 5.25C6.5 3.317 8.067 1.75 10 1.75Z" fill="#414141" />
+                        <path d="M3 16.25C3 13.6266 5.12665 11.5 7.75 11.5H12.25C14.8734 11.5 17 13.6266 17 16.25V18.25H3V16.25Z" fill="#414141" />
+                    </svg>
+                ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="21" viewBox="0 0 20 21" fill="none">
+                        <path d="M10 1.75C11.933 1.75 13.5 3.317 13.5 5.25C13.5 7.183 11.933 8.75 10 8.75C8.067 8.75 6.5 7.183 6.5 5.25C6.5 3.317 8.067 1.75 10 1.75Z" stroke="#414141" strokeWidth="1.8" />
+                        <path d="M3 16.25C3 13.6266 5.12665 11.5 7.75 11.5H12.25C14.8734 11.5 17 13.6266 17 16.25V18.25H3V16.25Z" stroke="#414141" strokeWidth="1.8" />
+                    </svg>
+                )}
+                <span>Профиль</span>
+            </button>
             <button
                 className={`nav-item ${isHome ? 'active' : ''}`}
                 onClick={() => navigate('/')}

@@ -9,9 +9,23 @@ interface UserProfile {
   name: string;
   country?: string;
   city?: string;
+  language?: string;
   interests?: string[];
   collections?: string[];
 }
+
+const getLanguageLabel = (language?: string): string => {
+  switch ((language || '').toLowerCase()) {
+    case 'ru':
+      return 'Русский';
+    case 'en':
+      return 'Английский';
+    case 'ge':
+      return 'Грузинский';
+    default:
+      return language || '';
+  }
+};
 
 export const Profile = () => {
   const { user, setUser, token } = useAuth();
@@ -105,32 +119,32 @@ export const Profile = () => {
 
   return (
     <div className="profile-container">
-      <div className="profile-header">
-        <h1 className="profile-title">Профиль</h1>
-      </div>
-      
-      <div className="profile-content">
-        <div className="profile-section">
-          <h2 className="profile-section-title">Личная информация</h2>
-          <div className="profile-field">
-            <span className="profile-field-label">Имя:</span>
-            <span className="profile-field-value">{profile.name}</span>
-          </div>
+      <div className="profile-hero">
+        <div className="profile-avatar">
+          {(profile.name || 'П')
+            .trim()
+            .charAt(0)
+            .toUpperCase()}
         </div>
+        <h1 className="profile-name">{profile.name}</h1>
+      </div>
+
+      <div className="profile-content">
+        {profile.city && (
+          <div className="profile-section">
+            <h2 className="profile-section-title">Город</h2>
+            <div className="profile-tags">
+              <span className="profile-tag">{profile.city}</span>
+            </div>
+          </div>
+        )}
 
         {profile.country && (
           <div className="profile-section">
-            <h2 className="profile-section-title">Регион</h2>
-            <div className="profile-field">
-              <span className="profile-field-label">Страна:</span>
-              <span className="profile-field-value">{profile.country}</span>
+            <h2 className="profile-section-title">Страна</h2>
+            <div className="profile-tags">
+              <span className="profile-tag">{profile.country}</span>
             </div>
-            {profile.city && (
-              <div className="profile-field">
-                <span className="profile-field-label">Город:</span>
-                <span className="profile-field-value">{profile.city}</span>
-              </div>
-            )}
           </div>
         )}
 
@@ -147,16 +161,18 @@ export const Profile = () => {
           </div>
         )}
 
-        {profile.collections && profile.collections.length > 0 && (
+        {profile.language && (
           <div className="profile-section">
-            <h2 className="profile-section-title">Подборки</h2>
+            <h2 className="profile-section-title">Язык</h2>
             <div className="profile-tags">
-              {profile.collections.map((collection, index) => (
-                <span key={index} className="profile-tag">
-                  {collection}
-                </span>
-              ))}
+              <span className="profile-tag">{getLanguageLabel(profile.language)}</span>
             </div>
+          </div>
+        )}
+
+        {(!profile.interests || profile.interests.length === 0) && !profile.city && !profile.country && !profile.language && (
+          <div className="profile-empty-state">
+            Заполните профиль, чтобы персонализировать рекомендации
           </div>
         )}
       </div>

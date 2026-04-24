@@ -1,78 +1,85 @@
 .profile-container {
-    min-height: 100dvh;
+    min-height: calc(100dvh - 77px);
     background: var(--color-bg-primary);
-    padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(20px, env(safe-area-inset-bottom)) max(20px, env(safe-area-inset-left));
+    padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(96px, calc(20px + env(safe-area-inset-bottom))) max(20px, env(safe-area-inset-left));
     box-sizing: border-box;
 }
 
-.profile-header {
-    margin-bottom: 24px;
+.profile-hero {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 20px;
 }
 
-.profile-title {
+.profile-avatar {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #414141;
+    color: #faf9f6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     font-size: 32px;
-    font-weight: 500;
-    color: var(--color-text-primary);
+    font-weight: 600;
+}
+
+.profile-name {
     margin: 0;
-    line-height: 1.2;
+    font-size: 24px;
+    font-weight: 500;
+    color: #414141;
+    line-height: 1;
+    text-align: center;
 }
 
 .profile-content {
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    max-width: 600px;
+    gap: 14px;
 }
 
 .profile-section {
-    background: var(--color-bg-secondary);
-    border-radius: 12px;
-    padding: 20px;
-    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
 }
 
 .profile-section-title {
-    font-size: 18px;
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin: 0 0 16px 0;
-}
-
-.profile-field {
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    margin-bottom: 12px;
-}
-
-.profile-field:last-child {
-    margin-bottom: 0;
-}
-
-.profile-field-label {
-    font-size: 14px;
+    margin: 0;
+    font-size: 28px;
     font-weight: 500;
-    color: var(--color-text-secondary);
-}
-
-.profile-field-value {
-    font-size: 16px;
-    color: var(--color-text-primary);
+    color: #414141;
+    line-height: 1;
 }
 
 .profile-tags {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
+    gap: 4px;
 }
 
 .profile-tag {
-    padding: 6px 12px;
-    font-size: 14px;
+    height: 32px;
+    padding: 10px;
+    border-radius: 20px;
+    border: 1px solid #ffea00;
+    background: #414141;
+    color: #ffea00;
+    font-size: 16px;
     font-weight: 500;
-    color: var(--color-text-primary);
-    background: var(--color-border);
-    border-radius: 12px;
+    line-height: 1.2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-sizing: border-box;
+}
+
+.profile-empty-state {
+    color: #6b7280;
+    font-size: 14px;
 }
 
 .loading-spinner {
@@ -97,70 +104,3 @@
     text-align: center;
     padding: 20px;
 }
-
-/* Mobile styles */
-@media (max-width: 768px) {
-    .profile-container {
-        padding: max(16px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(16px, env(safe-area-inset-left));
-    }
-
-    .profile-title {
-        font-size: 28px;
-    }
-
-    .profile-section {
-        padding: 16px;
-    }
-
-    .profile-section-title {
-        font-size: 16px;
-    }
-}
-
-/* Desktop styles */
-@media (min-width: 768px) {
-    .profile-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: max(32px, env(safe-area-inset-top)) max(40px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(40px, env(safe-area-inset-left));
-    }
-
-    .profile-header {
-        margin-bottom: 32px;
-    }
-
-    .profile-title {
-        font-size: 36px;
-    }
-
-    .profile-content {
-        max-width: 720px;
-        gap: 28px;
-    }
-
-    .profile-section {
-        padding: 24px;
-        border-radius: 16px;
-    }
-
-    .profile-section-title {
-        font-size: 20px;
-    }
-
-    .profile-field-label {
-        font-size: 15px;
-    }
-
-    .profile-field-value {
-        font-size: 17px;
-    }
-}
-
-
-
-
-
-
-
-
-

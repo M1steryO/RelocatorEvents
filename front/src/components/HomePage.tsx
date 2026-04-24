@@ -418,20 +418,55 @@ export const HomePage = () => {
                 const trimmedCity = (userData.city || '').trim();
                 setUserProfileCity(trimmedCity || null);
                 const interestCodes = (userData.interests || []).filter(Boolean);
-                if (interestCodes.length > 0) {
-                    setAppliedFilters((prev) => ({ ...prev, category: interestCodes }));
-                    setUiFilters((prev) => ({
-                        cities: prev?.cities || [],
-                        districts: prev?.districts || [],
-                        priceRange: prev?.priceRange || [availableFilters?.min_price ?? 0, availableFilters?.max_price ?? 10000],
-                        dateType: prev?.dateType ?? null,
-                        weekdays: prev?.weekdays ?? false,
-                        exactDate: prev?.exactDate || '',
-                        formats: prev?.formats || [],
-                        interests: interestCodes,
-                        languages: prev?.languages || [],
-                    }));
+                if (trimmedCity) {
+                    defaultUserCityAppliedRef.current = true;
                 }
+
+                setAppliedFilters((prev) => {
+                    let changed = false;
+                    let next = prev;
+
+                    if (trimmedCity && prev.city !== trimmedCity) {
+                        next = { ...next, city: trimmedCity };
+                        changed = true;
+                    }
+
+                    if (interestCodes.length > 0) {
+                        const prevCategories = Array.isArray(prev.category) ? prev.category : [];
+                        const isSameCategories =
+                            prevCategories.length === interestCodes.length &&
+                            prevCategories.every((code, index) => code === interestCodes[index]);
+
+                        if (!isSameCategories) {
+                            next = changed ? next : { ...next };
+                            next.category = interestCodes;
+                            changed = true;
+                        }
+                    }
+
+                    return changed ? next : prev;
+                });
+
+                setUiFilters((prev) => {
+                    const base: FiltersState =
+                        prev ?? {
+                            cities: [],
+                            districts: [],
+                            priceRange: [0, 10000],
+                            dateType: null,
+                            weekdays: false,
+                            exactDate: '',
+                            formats: [],
+                            interests: [],
+                            languages: [],
+                        };
+
+                    return {
+                        ...base,
+                        cities: trimmedCity ? [trimmedCity] : base.cities,
+                        interests: interestCodes.length > 0 ? interestCodes : base.interests,
+                    };
+                });
             } catch {
                 // неавторизованный пользователь или ошибка — просто не предзаполняем
             } finally {
@@ -443,7 +478,7 @@ export const HomePage = () => {
         return () => {
             cancelled = true;
         };
-    }, [isInitialized, availableFilters?.min_price, availableFilters?.max_price]);
+    }, [isInitialized]);
 
     // Город из профиля: в запрос и в UI фильтра, если он есть в списке cities с ответа списка
     useEffect(() => {

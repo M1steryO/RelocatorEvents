@@ -7,9 +7,9 @@
     border-top: 1px solid #e5e7eb;
     padding: 14px 20px;
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
     align-items: center;
-    gap: 33px;
+    gap: 8px;
     z-index: 100;
     box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
     padding-bottom: 31px;
@@ -27,6 +27,7 @@
     transition: all 0.2s ease;
     font-family: inherit;
     padding: 5px;
+    min-width: 72px;
 }
 @media (min-width: 1024px) {
     .nav-item:hover {

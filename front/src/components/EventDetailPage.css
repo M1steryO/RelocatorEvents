@@ -734,8 +734,8 @@
     border: none;
     cursor: pointer;
     transition: background 0.2s;
-    border: 2px solid #FAF9F6;
     border-radius: 7px;
+    line-height: 1;
 }
 
 .organizer-modal-cta:hover {
