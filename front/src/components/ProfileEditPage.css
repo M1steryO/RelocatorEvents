@@ -12,7 +12,7 @@
     display: grid;
     grid-template-columns: 32px 1fr 32px;
     align-items: center;
-    margin-bottom: 22px;
+    margin-bottom: 20px;
 }
 
 .profile-edit-back {
@@ -28,21 +28,21 @@
 .profile-edit-title {
     margin: 0;
     text-align: center;
-    font-size: 36px;
-    font-weight: 500;
+    font-size: 20px;
+    font-weight: 600;
     line-height: 1;
     color: #414141;
 }
 
 .profile-edit-avatar-wrap {
     position: relative;
-    width: 220px;
-    margin: 0 auto 20px;
+    width: 115px;
+    margin: 0 auto 14px;
 }
 
 .profile-edit-avatar {
-    width: 220px;
-    height: 220px;
+    width: 115px;
+    height: 115px;
     border-radius: 50%;
     background: #414141;
     color: #faf9f6;
@@ -78,7 +78,7 @@
 .profile-edit-field {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    gap: 8px;
 }
 
 .profile-edit-label-row {
@@ -88,27 +88,30 @@
 }
 
 .profile-edit-label-row label {
-    font-size: 24px;
+    font-size: 14px;
     font-weight: 500;
     color: #414141;
+    line-height: 1.25;
 }
 
 .profile-edit-label-row span {
-    font-size: 16px;
+    font-size: 10px;
+    line-height: 0.36;
     font-weight: 500;
     color: #414141;
 }
 
 .profile-edit-field input {
     width: 100%;
-    height: 56px;
-    border-radius: 15px;
+    height: 48px;
+    border-radius: 8px;
     border: none;
     background: #faf9f6;
     color: #414141;
-    font-size: 20px;
+    font-size: 14px;
     font-weight: 400;
-    padding: 0 22px;
+    line-height: 1.15;
+    padding: 18px;
     box-sizing: border-box;
 }
 
@@ -161,6 +164,11 @@
 }
 
 @media (max-width: 768px) {
+    .profile-edit-container {
+        display: flex;
+        flex-direction: column;
+    }
+
     .profile-edit-header {
         grid-template-columns: 24px 1fr 24px;
     }
@@ -200,24 +208,24 @@
     }
 
     .profile-edit-save {
-        min-width: 128px;
-        height: 40px;
-        border-width: 3px;
+        height: 14px;
+        border-width: 2px;
         font-size: 20px;
         padding: 0 18px;
     }
 
     .profile-edit-footer {
-        margin-top: 52px;
+        margin-top: auto;
+        padding-top: 24px;
         gap: 8px;
     }
 
     .profile-edit-secondary,
     .profile-edit-logout {
-        height: 40px;
-        border-width: 3px;
-        font-size: 18px;
-        padding: 0 14px;
+        height: 38px;
+        border-width: 2px;
+        font-size: 14px;
+        padding: 14px 19px;
     }
 }
 
