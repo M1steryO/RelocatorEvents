@@ -9,7 +9,7 @@ interface LoadingScreenProps {
 }
 
 export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingScreenProps) => {
-    const { user } = useAuth();
+    const { user, isAuthenticated } = useAuth();
     const isTgMiniApp = isTelegramMiniApp();
     const [showLoading, setShowLoading] = useState(true);
     const [isClosing, setIsClosing] = useState(false);
@@ -24,7 +24,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     const fadeInTimeoutRef = useRef<number | null>(null);
     const welcomeSwitchTimeoutRef = useRef<number | null>(null);
     const FIRST_SCREEN_MIN_MS = isTgMiniApp ? 2200 : 900;
-    const hasAuthorizedUser = Boolean(user?.id);
+    const hasAuthorizedUser = isAuthenticated;
 
     const showWelcomePhase = useCallback(() => {
         welcomeShownRef.current = true;
@@ -40,7 +40,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
 
     // Показываем приветствие только когда пользователь уже загружен в AuthProvider.
     useEffect(() => {
-        if (!showLoading || showWelcomeText || isClosing || welcomeShownRef.current || !hasAuthorizedUser) return;
+        if (isLoading || !showLoading || showWelcomeText || isClosing || welcomeShownRef.current || !hasAuthorizedUser) return;
 
         const elapsedSinceStart = Date.now() - startTimeRef.current;
         const remainingFirstScreen = Math.max(0, FIRST_SCREEN_MIN_MS - elapsedSinceStart);
@@ -53,7 +53,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
         }
 
         showWelcomePhase();
-    }, [showLoading, showWelcomeText, isClosing, hasAuthorizedUser, FIRST_SCREEN_MIN_MS, showWelcomePhase]);
+    }, [isLoading, showLoading, showWelcomeText, isClosing, hasAuthorizedUser, FIRST_SCREEN_MIN_MS, showWelcomePhase]);
 
     useEffect(() => {
         return () => {
@@ -122,7 +122,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     // Часть 1 первой; часть 2 — только если пользователь уже есть в AuthProvider
     const shouldShowInitial = !showWelcomeText || isFadingOut;
     const shouldShowWelcome = showWelcomeText;
-    const displayName = user?.name ?? '...';
+    const displayName = user?.name || 'друг';
 
     return (
         <div className={`loading-screen ${isClosing ? 'loading-screen-closing' : ''}`}>

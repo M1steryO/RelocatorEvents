@@ -1,5 +1,8 @@
 .profile-container {
     min-height: calc(100dvh - 77px);
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
     background: var(--color-bg-primary);
     padding: max(20px, env(safe-area-inset-top)) max(20px, env(safe-area-inset-right)) max(96px, calc(20px + env(safe-area-inset-bottom))) max(20px, env(safe-area-inset-left));
     box-sizing: border-box;
