@@ -57,13 +57,13 @@
 
 .profile-edit-avatar-button {
     position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 8px;
-    width: 94px;
-    height: 40px;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 37%;
     border: none;
-    border-radius: 20px;
+    border-radius: 0;
     background: #414141;
     color: #faf9f6;
     display: flex;
@@ -123,16 +123,15 @@
 
 .profile-edit-save {
     margin-top: 20px;
-    min-width: 170px;
-    height: 46px;
+    height: 38px;
     border-radius: 32px;
-    border: 3px solid #458dbd;
+    border: 2px solid #458dbd;
     background: transparent;
     color: #458dbd;
-    font-size: 26px;
+    font-size: 14px;
     font-weight: 500;
-    line-height: 1;
-    padding: 0 22px;
+    line-height: 1.25;
+    padding: 14px 19px;
     width: fit-content;
     cursor: pointer;
 }
@@ -145,23 +144,18 @@
 
 .profile-edit-secondary,
 .profile-edit-logout {
-    height: 46px;
+    height: 38px;
     border-radius: 32px;
     background: transparent;
-    font-size: 24px;
+    font-size: 14px;
     font-weight: 500;
-    line-height: 1;
-    padding: 0 22px;
+    line-height: 1.25;
+    padding: 14px 19px;
     cursor: pointer;
 }
 
-.profile-edit-secondary {
-    border: 3px solid #458dbd;
-    color: #458dbd;
-}
-
 .profile-edit-logout {
-    border: 3px solid #e94c29;
+    border: 2px solid #e94c29;
     color: #e94c29;
 }
 
@@ -190,9 +184,9 @@
     }
 
     .profile-edit-avatar-button {
-        width: 72px;
-        height: 31px;
-        bottom: 8px;
+        width: 100%;
+        height: 37%;
+        bottom: 0;
     }
 
     .profile-edit-label-row label {
@@ -209,12 +203,7 @@
         padding: 0 16px;
     }
 
-    .profile-edit-save {
-        height: 14px;
-        border-width: 2px;
-        font-size: 20px;
-        padding: 0 18px;
-    }
+   
 
     .profile-edit-footer {
         margin-top: auto;
@@ -222,13 +211,6 @@
         gap: 8px;
     }
 
-    .profile-edit-secondary,
-    .profile-edit-logout {
-        height: 38px;
-        border-width: 2px;
-        font-size: 14px;
-        padding: 14px 19px;
-    }
 }
 
 .loading-spinner {
