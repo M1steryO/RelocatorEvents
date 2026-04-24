@@ -29,15 +29,9 @@ const getFriendlyRegistrationError = (error: unknown): { field: 'email' | 'passw
     const message = (error instanceof Error ? error.message : String(error)).toLowerCase();
 
     if (
-        message.includes('status: 409') ||
-        message.includes('409 conflict') ||
         message.includes('already exists') ||
-        message.includes('already exist') ||
         message.includes('already registered') ||
         message.includes('email exists') ||
-        message.includes('email already') ||
-        message.includes('user exists') ||
-        message.includes('user already') ||
         message.includes('duplicate') ||
         message.includes('conflict') ||
         message.includes('409')
