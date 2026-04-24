@@ -48,7 +48,7 @@
     border-radius: 50%;
     background: #414141;
     color: #faf9f6;
-    font-size: 72px;
+    font-size: 42px;
     font-weight: 600;
     display: flex;
     align-items: center;
@@ -152,6 +152,7 @@
     line-height: 1.25;
     padding-inline: 19px;
     cursor: pointer;
+    white-space: nowrap;
 }
 .profile-edit-secondary{
     border:2px solid #458dbd;
@@ -165,8 +166,10 @@
 
 @media (max-width: 768px) {
     .profile-edit-container {
+        min-height: 100dvh;
         display: flex;
         flex-direction: column;
+        padding-bottom: max(20px, calc(20px + env(safe-area-inset-bottom)));
     }
 
 
