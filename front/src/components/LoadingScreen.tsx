@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services/authService';
 import './LoadingScreen.css';
 
 interface LoadingScreenProps {
@@ -14,16 +15,41 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     const [showWelcomeText, setShowWelcomeText] = useState(false);
     const [isFadingOut, setIsFadingOut] = useState(false);
     const [shouldAnimateWelcome, setShouldAnimateWelcome] = useState(false);
+    const [welcomeUserName, setWelcomeUserName] = useState<string | null>(null);
     const welcomeShownRef = useRef(false);
     const part2ShownAtRef = useRef<number | null>(null);
     const startTimeRef = useRef<number>(Date.now());
     const timeoutRef = useRef<number | null>(null);
     const fadeOutTimeoutRef = useRef<number | null>(null);
     const fadeInTimeoutRef = useRef<number | null>(null);
+    const welcomeRequestTimeoutRef = useRef<number | null>(null);
+
+    const resolvedUserName = user?.name || welcomeUserName || '';
+
+    // Fallback for web: if context user is still empty, request user once for welcome text.
+    useEffect(() => {
+        if (!showLoading || showWelcomeText || isClosing || welcomeShownRef.current || resolvedUserName) return;
+
+        welcomeRequestTimeoutRef.current = window.setTimeout(() => {
+            authService.getCurrentUser()
+                .then((data) => {
+                    if (data?.name) {
+                        setWelcomeUserName(data.name);
+                    }
+                })
+                .catch(() => {
+                    // Keep initial loading variant if user cannot be resolved.
+                });
+        }, 900);
+
+        return () => {
+            if (welcomeRequestTimeoutRef.current) clearTimeout(welcomeRequestTimeoutRef.current);
+        };
+    }, [showLoading, showWelcomeText, isClosing, resolvedUserName]);
 
     // Показываем приветствие только когда пользователь уже загружен в AuthProvider.
     useEffect(() => {
-        if (!showLoading || showWelcomeText || isClosing || welcomeShownRef.current || !user?.name) return;
+        if (!showLoading || showWelcomeText || isClosing || welcomeShownRef.current || !resolvedUserName) return;
 
         welcomeShownRef.current = true;
         part2ShownAtRef.current = Date.now();
@@ -34,11 +60,12 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
         });
         if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
         fadeInTimeoutRef.current = window.setTimeout(() => setIsFadingOut(false), 300);
-    }, [showLoading, showWelcomeText, isClosing, user?.name]);
+    }, [showLoading, showWelcomeText, isClosing, resolvedUserName]);
 
     useEffect(() => {
         return () => {
             if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
+            if (welcomeRequestTimeoutRef.current) clearTimeout(welcomeRequestTimeoutRef.current);
         };
     }, []);
 
@@ -61,7 +88,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
         if (!isLoading) {
             // Если пользователь уже известен, сначала обязательно переключаемся
             // на приветствие (part 2), и только потом считаем таймер закрытия.
-            if (user?.name && !showWelcomeText && !welcomeShownRef.current) {
+            if (resolvedUserName && !showWelcomeText && !welcomeShownRef.current) {
                 return;
             }
 
@@ -83,7 +110,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
             clearTimeout(timeoutRef.current);
             timeoutRef.current = null;
         }
-    }, [isLoading, minimumDisplayTime, startClosing, showWelcomeText, user?.name]);
+    }, [isLoading, minimumDisplayTime, startClosing, showWelcomeText, resolvedUserName]);
 
     if (!showLoading) {
         return null;
@@ -92,7 +119,7 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
     // Часть 1 первой; часть 2 — только если пользователь уже есть в AuthProvider
     const shouldShowInitial = !showWelcomeText || isFadingOut;
     const shouldShowWelcome = showWelcomeText;
-    const displayName = user?.name ?? '';
+    const displayName = resolvedUserName;
 
     return (
         <div className={`loading-screen ${isClosing ? 'loading-screen-closing' : ''}`}>
