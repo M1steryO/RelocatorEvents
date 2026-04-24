@@ -45,6 +45,21 @@ const getFriendlyLoginError = (error: unknown): string => {
     return 'Не удалось выполнить вход. Попробуйте еще раз';
 };
 
+const PasswordVisibilityIcon = ({ visible }: { visible: boolean }) => (
+    visible ? (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1.66663 10C2.73329 6.66667 5.86663 4.16667 9.99996 4.16667C14.1333 4.16667 17.2666 6.66667 18.3333 10C17.2666 13.3333 14.1333 15.8333 9.99996 15.8333C5.86663 15.8333 2.73329 13.3333 1.66663 10Z" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="10" cy="10" r="2.5" stroke="#414141" strokeWidth="1.6" />
+            <path d="M3.33337 16.6667L16.6667 3.33333" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+    ) : (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1.66663 10C2.73329 6.66667 5.86663 4.16667 9.99996 4.16667C14.1333 4.16667 17.2666 6.66667 18.3333 10C17.2666 13.3333 14.1333 15.8333 9.99996 15.8333C5.86663 15.8333 2.73329 13.3333 1.66663 10Z" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="10" cy="10" r="2.5" stroke="#414141" strokeWidth="1.6" />
+        </svg>
+    )
+);
+
 export const LoginPage = () => {
     const navigate = useNavigate();
     const { setAccessToken } = useAuth();
@@ -157,7 +172,7 @@ export const LoginPage = () => {
                                 onClick={() => setShowPassword((prev) => !prev)}
                                 aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
                             >
-                                {showPassword ? 'Скрыть' : 'Показать'}
+                                <PasswordVisibilityIcon visible={showPassword} />
                             </button>
                         </div>
                         {passwordError && <span className="error-message">{passwordError}</span>}

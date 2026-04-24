@@ -198,11 +198,19 @@
     transform: translateY(-50%);
     border: none;
     background: transparent;
-    color: var(--color-text-primary);
     cursor: pointer;
-    padding: 4px;
-    font-size: 12px;
-    line-height: 1;
+    padding: 2px;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-text-primary);
+    opacity: 0.9;
+}
+
+.password-visibility-toggle svg {
+    display: block;
 }
 
 .password-visibility-toggle:disabled {

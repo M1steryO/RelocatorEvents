@@ -61,12 +61,28 @@ const getFriendlyRegistrationError = (error: unknown): { field: 'email' | 'passw
     return { field: 'common', message: 'Не удалось завершить регистрацию. Попробуйте еще раз' };
 };
 
+const PasswordVisibilityIcon = ({ visible }: { visible: boolean }) => (
+    visible ? (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1.66663 10C2.73329 6.66667 5.86663 4.16667 9.99996 4.16667C14.1333 4.16667 17.2666 6.66667 18.3333 10C17.2666 13.3333 14.1333 15.8333 9.99996 15.8333C5.86663 15.8333 2.73329 13.3333 1.66663 10Z" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="10" cy="10" r="2.5" stroke="#414141" strokeWidth="1.6" />
+            <path d="M3.33337 16.6667L16.6667 3.33333" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+    ) : (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1.66663 10C2.73329 6.66667 5.86663 4.16667 9.99996 4.16667C14.1333 4.16667 17.2666 6.66667 18.3333 10C17.2666 13.3333 14.1333 15.8333 9.99996 15.8333C5.86663 15.8333 2.73329 13.3333 1.66663 10Z" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="10" cy="10" r="2.5" stroke="#414141" strokeWidth="1.6" />
+        </svg>
+    )
+);
+
 export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const { setAccessToken } = useAuth();
     const navigate = useNavigate();
     const isTelegramMiniApp = detectTelegramMiniApp();
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
+        name: '',
         email: '',
         password: '',
         confirmPassword: '',
@@ -83,6 +99,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const [languageError, setLanguageError] = useState<string>('');
     const [countryError, setCountryError] = useState<string>('');
     const [cityError, setCityError] = useState<string>('');
+    const [nameError, setNameError] = useState<string>('');
     const [emailError, setEmailError] = useState<string>('');
     const [passwordError, setPasswordError] = useState<string>('');
     const [confirmPasswordError, setConfirmPasswordError] = useState<string>('');
@@ -110,6 +127,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
         const isFreshWebRegistration =
             step === 2 &&
             !formData.email.trim() &&
+            !formData.name.trim() &&
             !formData.password &&
             !formData.confirmPassword &&
             !formData.country.trim() &&
@@ -124,6 +142,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
         isTelegramMiniApp,
         step,
         formData.email,
+        formData.name,
         formData.password,
         formData.confirmPassword,
         formData.country,
@@ -243,6 +262,11 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
         // Validate before proceeding
         if (step === 1 && !isTelegramMiniApp) {
             setRegistrationCommonError('');
+            const trimmedName = formData.name.trim();
+            if (!trimmedName) {
+                setNameError('Введите имя');
+                return;
+            }
             const trimmedEmail = formData.email.trim();
             if (!trimmedEmail) {
                 setEmailError('Введите почту');
@@ -265,6 +289,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                 setConfirmPasswordError('Пароль не совпадает');
                 return;
             }
+            setNameError('');
             setEmailError('');
             setPasswordError('');
             setConfirmPasswordError('');
@@ -335,7 +360,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                 password: telegramInitData ? '' : formData.password,
                 password_confirm: telegramInitData ? '' : formData.confirmPassword,
                 info: {
-                    name: telegramNameFromInitData,
+                    name: telegramInitData ? telegramNameFromInitData : formData.name.trim(),
                     telegram_username: telegramUsernameFromInitData,
                     email: emailForRegistration,
                     language: LANGUAGE_CODE_BY_LABEL[formData.language] || (formData.language as 'ru' | 'en' | 'ge'),
@@ -379,9 +404,11 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             case 1:
                 if (isTelegramMiniApp) return true;
                 return (
+                    formData.name.trim().length > 0 &&
                     formData.email.trim().length > 0 &&
                     formData.password.length > 0 &&
                     formData.confirmPassword.length > 0 &&
+                    !nameError &&
                     !emailError &&
                     !passwordError &&
                     !confirmPasswordError
@@ -428,6 +455,24 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                     <div className="registration-step">
                         <div className="step-3-title-row">
                             <h1 className="step-title step-title-inline">Добро пожаловать<br />в Eventify</h1>
+                        </div>
+                        <div className="input-wrapper">
+                            <label className="input-label">Имя</label>
+                            <div className="input-container">
+                                <input
+                                    type="text"
+                                    className={`registration-input ${nameError ? 'error' : ''}`}
+                                    placeholder="Имя"
+                                    value={formData.name}
+                                    onChange={(e) => {
+                                        setFormData((prev) => ({ ...prev, name: e.target.value }));
+                                        if (nameError) setNameError('');
+                                        if (registrationCommonError) setRegistrationCommonError('');
+                                    }}
+                                    autoComplete="name"
+                                />
+                            </div>
+                            {nameError && <span className="error-message">{nameError}</span>}
                         </div>
                         <div className="input-wrapper">
                             <label className="input-label">Почта</label>
@@ -479,7 +524,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                                     onClick={() => setShowPassword((prev) => !prev)}
                                     aria-label={showPassword ? 'Скрыть пароль' : 'Показать пароль'}
                                 >
-                                    {showPassword ? 'Скрыть' : 'Показать'}
+                                    <PasswordVisibilityIcon visible={showPassword} />
                                 </button>
                             </div>
                             {passwordError && <span className="error-message">{passwordError}</span>}
@@ -510,7 +555,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                                     onClick={() => setShowConfirmPassword((prev) => !prev)}
                                     aria-label={showConfirmPassword ? 'Скрыть пароль' : 'Показать пароль'}
                                 >
-                                    {showConfirmPassword ? 'Скрыть' : 'Показать'}
+                                    <PasswordVisibilityIcon visible={showConfirmPassword} />
                                 </button>
                             </div>
                             {confirmPasswordError && <span className="error-message">{confirmPasswordError}</span>}
