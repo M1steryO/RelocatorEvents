@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventsService } from '../services/eventsService';
-import { authService } from '../services/authService';
 import type { Event as ServerEvent, GetListRequest, FiltersData } from '../services/eventsService';
 import { FiltersModal, type FiltersState } from './FiltersModal';
 import { SortModal } from './SortModal';
 import { NotFoundCard } from './NotFoundCard';
 import { useFavourites } from '../contexts/FavouritesContext';
+import { useAuth } from '../contexts/AuthContext';
 import './HomePage.css';
 
 interface DisplayEvent {
@@ -241,6 +241,7 @@ function parseHomeFeedSnapshot(): HomeFeedSnapshot | null {
 export const HomePage = () => {
     const navigate = useNavigate();
     const { isFavourite, toggleFavourite } = useFavourites();
+    const { user } = useAuth();
     const PAGE_LIMIT = 20;
 
     const homeSnapshot = useMemo(() => parseHomeFeedSnapshot(), []);
@@ -410,75 +411,62 @@ export const HomePage = () => {
             return;
         }
 
-        let cancelled = false;
-        const loadUserInterests = async () => {
-            try {
-                const userData = await authService.getCurrentUser();
-                if (cancelled) return;
-                const trimmedCity = (userData.city || '').trim();
-                setUserProfileCity(trimmedCity || null);
-                const interestCodes = (userData.interests || []).filter(Boolean);
-                if (trimmedCity) {
-                    defaultUserCityAppliedRef.current = true;
-                }
+        const trimmedCity = (user?.city || '').trim();
+        const interestCodes = (user?.interests || []).filter(Boolean);
 
-                setAppliedFilters((prev) => {
-                    let changed = false;
-                    let next = prev;
+        setUserProfileCity(trimmedCity || null);
+        if (trimmedCity) {
+            defaultUserCityAppliedRef.current = true;
+        }
 
-                    if (trimmedCity && prev.city !== trimmedCity) {
-                        next = { ...next, city: trimmedCity };
-                        changed = true;
-                    }
+        setAppliedFilters((prev) => {
+            let changed = false;
+            let next = prev;
 
-                    if (interestCodes.length > 0) {
-                        const prevCategories = Array.isArray(prev.category) ? prev.category : [];
-                        const isSameCategories =
-                            prevCategories.length === interestCodes.length &&
-                            prevCategories.every((code, index) => code === interestCodes[index]);
-
-                        if (!isSameCategories) {
-                            next = changed ? next : { ...next };
-                            next.category = interestCodes;
-                            changed = true;
-                        }
-                    }
-
-                    return changed ? next : prev;
-                });
-
-                setUiFilters((prev) => {
-                    const base: FiltersState =
-                        prev ?? {
-                            cities: [],
-                            districts: [],
-                            priceRange: [0, 10000],
-                            dateType: null,
-                            weekdays: false,
-                            exactDate: '',
-                            formats: [],
-                            interests: [],
-                            languages: [],
-                        };
-
-                    return {
-                        ...base,
-                        cities: trimmedCity ? [trimmedCity] : base.cities,
-                        interests: interestCodes.length > 0 ? interestCodes : base.interests,
-                    };
-                });
-            } catch {
-                // неавторизованный пользователь или ошибка — просто не предзаполняем
-            } finally {
-                if (!cancelled) setIsUserInterestsReady(true);
+            if (trimmedCity && prev.city !== trimmedCity) {
+                next = { ...next, city: trimmedCity };
+                changed = true;
             }
-        };
 
-        loadUserInterests();
-        return () => {
-            cancelled = true;
-        };
-    }, [isInitialized]);
+            if (interestCodes.length > 0) {
+                const prevCategories = Array.isArray(prev.category) ? prev.category : [];
+                const isSameCategories =
+                    prevCategories.length === interestCodes.length &&
+                    prevCategories.every((code, index) => code === interestCodes[index]);
+
+                if (!isSameCategories) {
+                    next = changed ? next : { ...next };
+                    next.category = interestCodes;
+                    changed = true;
+                }
+            }
+
+            return changed ? next : prev;
+        });
+
+        setUiFilters((prev) => {
+            const base: FiltersState =
+                prev ?? {
+                    cities: [],
+                    districts: [],
+                    priceRange: [0, 10000],
+                    dateType: null,
+                    weekdays: false,
+                    exactDate: '',
+                    formats: [],
+                    interests: [],
+                    languages: [],
+                };
+
+            return {
+                ...base,
+                cities: trimmedCity ? [trimmedCity] : base.cities,
+                interests: interestCodes.length > 0 ? interestCodes : base.interests,
+            };
+        });
+
+        setIsUserInterestsReady(true);
+    }, [isInitialized, user?.city, user?.interests]);
 
     // Город из профиля: в запрос и в UI фильтра, если он есть в списке cities с ответа списка
     useEffect(() => {

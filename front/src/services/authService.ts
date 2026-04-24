@@ -54,6 +54,29 @@ export interface LoginResponse {
 
 class AuthService {
     private readonly baseUrl: string;
+    private readonly CURRENT_USER_CACHE_TTL_MS = 10000;
+    private currentUserCache: {
+        token: string | null;
+        data: {
+            id: number;
+            name: string;
+            country?: string;
+            city?: string;
+            language?: string;
+            interests?: string[];
+            collections?: string[];
+        };
+        timestamp: number;
+    } | null = null;
+    private currentUserRequest: Promise<{
+        id: number;
+        name: string;
+        country?: string;
+        city?: string;
+        language?: string;
+        interests?: string[];
+        collections?: string[];
+    }> | null = null;
 
     constructor() {
         this.baseUrl = API_BASE_URL;
@@ -64,7 +87,12 @@ class AuthService {
     private accessToken: string | null = null;
 
     setAccessToken(token: string | null) {
+        if (this.accessToken === token) {
+            return;
+        }
         this.accessToken = token;
+        this.currentUserCache = null;
+        this.currentUserRequest = null;
     }
 
     // Helper method to handle network errors
@@ -328,45 +356,73 @@ class AuthService {
         interests?: string[];
         collections?: string[];
     }> {
-        const endpoint = '/v1/user';
-        const response = await this.request<{
-            user: {
-                id: string;
-                info: {
-                    name: string;
-                    username?: string;
-                    telegramInitData?: string;
-                    country?: string;
-                    city?: string;
-                    language?: string;
-                    interests?: Array<string | { code?: string; title?: string }>;
-                    role?: string;
-                };
-                createdAt?: string;
-                updatedAt?: string | null;
-            };
-        }>(endpoint);
-        
-        const rawInterests = response.user.info.interests || [];
-        const normalizedInterests = rawInterests
-            .map((interest) => {
-                if (typeof interest === 'string') {
-                    return interest;
-                }
-                return interest?.code || '';
-            })
-            .filter((code): code is string => Boolean(code));
+        const now = Date.now();
+        if (
+            this.currentUserCache &&
+            this.currentUserCache.token === this.accessToken &&
+            now - this.currentUserCache.timestamp < this.CURRENT_USER_CACHE_TTL_MS
+        ) {
+            return this.currentUserCache.data;
+        }
 
-        // Transform server response to expected format
-        return {
-            id: parseInt(response.user.id, 10),
-            name: response.user.info.name,
-            country: response.user.info.country || undefined,
-            city: response.user.info.city || undefined,
-            language: response.user.info.language || undefined,
-            interests: normalizedInterests,
-            collections: [], // Collections not in response, keeping for compatibility
-        };
+        if (this.currentUserRequest) {
+            return this.currentUserRequest;
+        }
+
+        this.currentUserRequest = (async () => {
+            const endpoint = '/v1/user';
+            const response = await this.request<{
+                user: {
+                    id: string;
+                    info: {
+                        name: string;
+                        username?: string;
+                        telegramInitData?: string;
+                        country?: string;
+                        city?: string;
+                        language?: string;
+                        interests?: Array<string | { code?: string; title?: string }>;
+                        role?: string;
+                    };
+                    createdAt?: string;
+                    updatedAt?: string | null;
+                };
+            }>(endpoint);
+
+            const rawInterests = response.user.info.interests || [];
+            const normalizedInterests = rawInterests
+                .map((interest) => {
+                    if (typeof interest === 'string') {
+                        return interest;
+                    }
+                    return interest?.code || '';
+                })
+                .filter((code): code is string => Boolean(code));
+
+            const userData = {
+                id: parseInt(response.user.id, 10),
+                name: response.user.info.name,
+                country: response.user.info.country || undefined,
+                city: response.user.info.city || undefined,
+                language: response.user.info.language || undefined,
+                interests: normalizedInterests,
+                collections: [],
+            };
+
+            this.currentUserCache = {
+                token: this.accessToken,
+                data: userData,
+                timestamp: Date.now(),
+            };
+
+            return userData;
+        })();
+
+        try {
+            return await this.currentUserRequest;
+        } finally {
+            this.currentUserRequest = null;
+        }
     }
 
 }

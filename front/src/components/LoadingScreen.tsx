@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useState, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { authService } from '../services/authService';
 import './LoadingScreen.css';
 
 interface LoadingScreenProps {
@@ -9,53 +8,39 @@ interface LoadingScreenProps {
 }
 
 export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingScreenProps) => {
-    const { user, setUser } = useAuth();
+    const { user } = useAuth();
     const [showLoading, setShowLoading] = useState(true);
     const [isClosing, setIsClosing] = useState(false);
     const [showWelcomeText, setShowWelcomeText] = useState(false);
     const [isFadingOut, setIsFadingOut] = useState(false);
     const [shouldAnimateWelcome, setShouldAnimateWelcome] = useState(false);
-    const [welcomeUserName, setWelcomeUserName] = useState<string | null>(null);
-    const welcomeRequestDoneRef = useRef(false);
+    const welcomeShownRef = useRef(false);
     const part2ShownAtRef = useRef<number | null>(null);
     const startTimeRef = useRef<number>(Date.now());
     const timeoutRef = useRef<number | null>(null);
     const fadeOutTimeoutRef = useRef<number | null>(null);
-    const welcomeTextTimeoutRef = useRef<number | null>(null);
     const fadeInTimeoutRef = useRef<number | null>(null);
 
-    // При загрузке 1-й части вызываем getCurrentUser(); backend берёт пользователя по refresh-токену в куках
+    // Показываем приветствие только когда пользователь уже загружен в AuthProvider.
     useEffect(() => {
-        if (!showLoading || showWelcomeText || isClosing || welcomeRequestDoneRef.current) return;
-        welcomeTextTimeoutRef.current = window.setTimeout(() => {
-            authService.getCurrentUser()
-                .then((data) => {
-                    welcomeRequestDoneRef.current = true;
-                    setWelcomeUserName(data.name);
-                    setUser({
-                        id: data.id,
-                        name: data.name,
-                        country: data.country,
-                        city: data.city,
-                    });
-                    part2ShownAtRef.current = Date.now();
-                    setIsFadingOut(true);
-                    setShowWelcomeText(true);
-                    requestAnimationFrame(() => {
-                        requestAnimationFrame(() => setShouldAnimateWelcome(true));
-                    });
-                    if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
-                    fadeInTimeoutRef.current = window.setTimeout(() => setIsFadingOut(false), 300);
-                })
-                .catch(() => {
-                    welcomeRequestDoneRef.current = true;
-                });
-        }, 1000);
+        if (!showLoading || showWelcomeText || isClosing || welcomeShownRef.current || !user?.name) return;
+
+        welcomeShownRef.current = true;
+        part2ShownAtRef.current = Date.now();
+        setIsFadingOut(true);
+        setShowWelcomeText(true);
+        requestAnimationFrame(() => {
+            requestAnimationFrame(() => setShouldAnimateWelcome(true));
+        });
+        if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
+        fadeInTimeoutRef.current = window.setTimeout(() => setIsFadingOut(false), 300);
+    }, [showLoading, showWelcomeText, isClosing, user?.name]);
+
+    useEffect(() => {
         return () => {
-            if (welcomeTextTimeoutRef.current) clearTimeout(welcomeTextTimeoutRef.current);
             if (fadeInTimeoutRef.current) clearTimeout(fadeInTimeoutRef.current);
         };
-    }, [showLoading, showWelcomeText, isClosing, setUser]);
+    }, []);
 
     const startClosing = useCallback(() => {
         if (fadeOutTimeoutRef.current) clearTimeout(fadeOutTimeoutRef.current);
@@ -98,10 +83,10 @@ export const LoadingScreen = ({ isLoading, minimumDisplayTime = 3000 }: LoadingS
         return null;
     }
 
-    // Часть 1 первой; часть 2 — только если getCurrentUser() вернул юзера
+    // Часть 1 первой; часть 2 — только если пользователь уже есть в AuthProvider
     const shouldShowInitial = !showWelcomeText || isFadingOut;
     const shouldShowWelcome = showWelcomeText;
-    const displayName = user?.name ?? welcomeUserName ?? '';
+    const displayName = user?.name ?? '';
 
     return (
         <div className={`loading-screen ${isClosing ? 'loading-screen-closing' : ''}`}>

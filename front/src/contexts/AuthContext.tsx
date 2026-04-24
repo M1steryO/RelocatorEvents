@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react';
+import { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import { eventsService } from '../services/eventsService';
@@ -12,6 +12,9 @@ interface User {
   name: string;
   country?: string;
   city?: string;
+  language?: string;
+  interests?: string[];
+  collections?: string[];
 }
 
 interface AuthContextType {
@@ -23,6 +26,7 @@ interface AuthContextType {
   setAccessToken: (accessToken: string) => void;
   logout: () => void;
   setUser: (user: User) => void;
+  refreshUser: () => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -53,32 +57,67 @@ function writeStoredToken(token: string | null) {
 export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [user, setUserState] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(() => readStoredToken());
-  const isLoading = false;
+  const [isLoading, setIsLoading] = useState(true);
+
+  const applyTokenToServices = useCallback((accessToken: string | null) => {
+    authService.setAccessToken(accessToken);
+    eventsService.setAccessToken(accessToken);
+    favouritesService.setAccessToken(accessToken);
+  }, []);
 
   useEffect(() => {
-    const stored = readStoredToken();
-    if (stored) {
-      authService.setAccessToken(stored);
-      eventsService.setAccessToken(stored);
-      favouritesService.setAccessToken(stored);
-    }
-  }, []); // при монтировании прокидываем восстановленный токен в сервисы
+    let cancelled = false;
+
+    const bootstrapUser = async () => {
+      setIsLoading(true);
+      applyTokenToServices(token);
+
+      if (!token) {
+        setUserState(null);
+        if (!cancelled) setIsLoading(false);
+        return;
+      }
+
+      try {
+        const userData = await authService.getCurrentUser();
+        if (cancelled) return;
+        setUserState({
+          id: userData.id,
+          name: userData.name,
+          country: userData.country,
+          city: userData.city,
+          language: userData.language,
+          interests: userData.interests,
+          collections: userData.collections,
+        });
+      } catch {
+        if (cancelled) return;
+        setUserState(null);
+        setToken(null);
+        writeStoredToken(null);
+        applyTokenToServices(null);
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
+    };
+
+    bootstrapUser();
+    return () => {
+      cancelled = true;
+    };
+  }, [token, applyTokenToServices]);
 
   const login = (accessToken: string, newUser: User) => {
     setToken(accessToken);
     writeStoredToken(accessToken);
     setUserState(newUser);
-    authService.setAccessToken(accessToken);
-    eventsService.setAccessToken(accessToken);
-    favouritesService.setAccessToken(accessToken);
+    applyTokenToServices(accessToken);
   };
 
   const setAccessToken = (accessToken: string) => {
     setToken(accessToken);
     writeStoredToken(accessToken);
-    authService.setAccessToken(accessToken);
-    eventsService.setAccessToken(accessToken);
-    favouritesService.setAccessToken(accessToken);
+    applyTokenToServices(accessToken);
   };
 
   const logout = () => {
@@ -86,24 +125,42 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     writeStoredToken(null);
     document.cookie = `${REFRESH_TOKEN_COOKIE_KEY}=; Path=/; Max-Age=0; SameSite=Lax`;
     setUserState(null);
-    authService.setAccessToken(null);
-    eventsService.setAccessToken(null);
-    favouritesService.setAccessToken(null);
+    applyTokenToServices(null);
+    setIsLoading(false);
   };
 
   const setUser = (newUser: User) => {
     setUserState(newUser);
   };
 
+  const refreshUser = useCallback(async () => {
+    if (!token) {
+      setUserState(null);
+      return;
+    }
+
+    const userData = await authService.getCurrentUser();
+    setUserState({
+      id: userData.id,
+      name: userData.name,
+      country: userData.country,
+      city: userData.city,
+      language: userData.language,
+      interests: userData.interests,
+      collections: userData.collections,
+    });
+  }, [token]);
+
   const value: AuthContextType = {
     user,
     token,
-    isAuthenticated: !!user,
+    isAuthenticated: !!token,
     isLoading,
     login,
     setAccessToken,
     logout,
     setUser,
+    refreshUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

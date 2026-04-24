@@ -62,7 +62,7 @@ const getFriendlyRegistrationError = (error: unknown): { field: 'email' | 'passw
 };
 
 export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
-    const { setAccessToken, setUser } = useAuth();
+    const { setAccessToken } = useAuth();
     const navigate = useNavigate();
     const isTelegramMiniApp = detectTelegramMiniApp();
     const [step, setStep] = useState(1);
@@ -354,30 +354,6 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
 
             // Set access token
             setAccessToken(accessToken);
-
-            // Load full user data after registration
-            try {
-                const userData: { id: number; name: string; country?: string; city?: string; interests?: string[]; collections?: string[] } =
-                    await authService.getCurrentUser();
-                if (userData) {
-                    setUser({
-                        id: userData.id,
-                        name: userData.name,
-                        country: userData.country,
-                        city: userData.city,
-                    });
-                }
-            } catch (error) {
-                console.error('Failed to load user data after registration:', error);
-                // Set minimal user data from response (only id is returned)
-                const responseId = (response as any).id;
-                if (responseId) {
-                    setUser({
-                        id: responseId,
-                        name: '',
-                    });
-                }
-            }
 
             // Navigate to profile page
             navigate('/profile');

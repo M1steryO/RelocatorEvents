@@ -47,7 +47,7 @@ const getFriendlyLoginError = (error: unknown): string => {
 
 export const LoginPage = () => {
     const navigate = useNavigate();
-    const { setAccessToken, setUser } = useAuth();
+    const { setAccessToken } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -85,13 +85,6 @@ export const LoginPage = () => {
                 saveRefreshTokenToCookie(response.refresh_token);
             }
             setAccessToken(response.access_token);
-            const userData = await authService.getCurrentUser();
-            setUser({
-                id: userData.id,
-                name: userData.name,
-                country: userData.country,
-                city: userData.city,
-            });
             navigate('/', { replace: true });
         } catch (error) {
             setPasswordError(getFriendlyLoginError(error));
