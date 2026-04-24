@@ -132,6 +132,7 @@ async def parse_georgia(
     VENUE = ".product__contacts_info_title"
     MAP = ".product__contacts_map.map"
     PRICE = ".product__data-selection_price"
+    BUY_LINK = ".product__data-selection_link"
 
     events: List[Event] = []
     seen: set[str] = set()
@@ -241,6 +242,11 @@ async def parse_georgia(
                         if img_el:
                             img_url = await img_el.get_attribute("src")
 
+                        buy_link = None
+                        buy_el = await detail_page.query_selector(BUY_LINK)
+                        if buy_el:
+                            buy_link = await buy_el.get_attribute("href")
+
                         longitude = None
                         latitude = None
                         map_el = await detail_page.query_selector(MAP)
@@ -285,7 +291,7 @@ async def parse_georgia(
                             currency = price_raw[1] if price_raw else None
 
                             e = Event(
-                                link=event_url,
+                                link=buy_link,
                                 title=title.strip(),
                                 description=description.strip() if description else None,
                                 country=country.strip(),

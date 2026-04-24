@@ -55,6 +55,6 @@ JOBS: Tuple[ScrapeJob, ...] = (
     ScrapeJob("Грузия", "yolo.ge", "nightlife", "https://yolo.ge/ru/posters/nightlife"),
     ScrapeJob("Грузия", "yolo.ge", "sports", "https://yolo.ge/ru/posters/sports"),
     ScrapeJob("Грузия", "yolo.ge", "movies", "https://yolo.ge/ru/posters/movies"),
-    ScrapeJob("Грузия", "yolo.ge", "excursions", "https://yolo.ge/ru/impressions/excursions"),
-    ScrapeJob("Грузия", "yolo.ge", "sport", "https://yolo.ge/ru/impressions/sport"),
+    ScrapeJob("Грузия", "yolo.ge", "excursions", "https://yolo.ge/ru/posters/tourism"),
+    ScrapeJob("Грузия", "yolo.ge", "sport", "https://yolo.ge/ru/posters/sports"),
 )

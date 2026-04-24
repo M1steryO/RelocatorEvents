@@ -5,7 +5,6 @@ import (
 	"github.com/confluentinc/confluent-kafka-go/v2/kafka"
 	"log"
 	"strings"
-	"time"
 )
 
 const (
@@ -57,21 +56,33 @@ func (c *Consumer) Start(ctx context.Context) error {
 		if c.stop {
 			break
 		}
-		msg, err := c.consumer.ReadMessage(noTimeout)
-		if err != nil {
-			log.Printf("Error reading message from consumer: %v", err)
-			time.Sleep(1 * time.Minute)
-		}
-		if msg == nil {
+
+		ev := c.consumer.Poll(1000)
+
+		if ev == nil {
 			continue
 		}
-		if err = c.handler.Handle(ctx, msg.Value, msg.TopicPartition, c.consumerNumber); err != nil {
-			log.Printf("Error handling message: %v", err)
-		}
-		if _, err = c.consumer.StoreMessage(msg); err != nil {
-			log.Printf("Error storing message: %v", err)
+
+		switch e := ev.(type) {
+		case *kafka.Message:
+			if err := c.handler.Handle(ctx, e.Value, e.TopicPartition, c.consumerNumber); err != nil {
+				log.Printf("Error handling message: %v", err)
+				continue
+			}
+
+			if _, err := c.consumer.StoreMessage(e); err != nil {
+				log.Printf("Error storing message: %v", err)
+			}
+
+		case kafka.Error:
+			log.Printf("Kafka error: %v", e)
+
+			if e.IsFatal() {
+				return e
+			}
 		}
 	}
+
 	return nil
 }
 
