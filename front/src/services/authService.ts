@@ -231,6 +231,14 @@ class AuthService {
             throw new Error(error.message || 'Internal Server Error');
         }
 
+        if (response.status === 409) {
+            showGlobalNotification('Пользователь с такой почтой уже существует.', 'error');
+            const error = await response.json().catch(() => ({
+                message: 'User already exists',
+            }));
+            throw new Error(error.message || 'User already exists');
+        }
+
         // Handle 401 Unauthorized - token expired
         if (response.status === 401) {
             notifyUnauthorized();
