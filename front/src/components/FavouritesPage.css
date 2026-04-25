@@ -239,6 +239,10 @@
         height: auto;
         min-height: 250px;
     }
+    .favourites-feed.favourites-feed-empty {
+        display: flex;
+        justify-content: center;
+    }
 }
 
 /* Desktop — та же ширина и сетка, что на HomePage */
