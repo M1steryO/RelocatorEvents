@@ -92,3 +92,25 @@
     font-size: 24px;
   }
 }
+
+.app-route-transition {
+  animation: appRouteFadeIn 220ms ease;
+  will-change: opacity, transform;
+}
+
+@keyframes appRouteFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .app-route-transition {
+    animation: none;
+  }
+}

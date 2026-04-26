@@ -8,11 +8,29 @@ export const BottomNavigation = () => {
     const isHome = location.pathname === '/';
     const isFavourites = location.pathname === '/favourites';
 
+    const navigateWithTransition = (path: '/profile' | '/' | '/favourites') => {
+        if (location.pathname === path) {
+            return;
+        }
+
+        const goToPath = () => navigate(path);
+        const transitionDocument = document as Document & {
+            startViewTransition?: (callback: () => void) => unknown;
+        };
+
+        if (typeof transitionDocument.startViewTransition === 'function') {
+            transitionDocument.startViewTransition(goToPath);
+            return;
+        }
+
+        goToPath();
+    };
+
     return (
         <nav className="bottom-navigation">
             <button
                 className={`nav-item ${isProfile ? 'active' : ''}`}
-                onClick={() => navigate('/profile')}
+                onClick={() => navigateWithTransition('/profile')}
                 type="button"
             >
                 {isProfile ? (
@@ -32,7 +50,7 @@ export const BottomNavigation = () => {
             </button>
             <button
                 className={`nav-item ${isHome ? 'active' : ''}`}
-                onClick={() => navigate('/')}
+                onClick={() => navigateWithTransition('/')}
                 type="button"
             >
 
@@ -53,7 +71,7 @@ export const BottomNavigation = () => {
             </button>
             <button
                 className={`nav-item ${isFavourites ? 'active' : ''}`}
-                onClick={() => navigate('/favourites')}
+                onClick={() => navigateWithTransition('/favourites')}
                 type="button"
             >
                 {isFavourites ? (

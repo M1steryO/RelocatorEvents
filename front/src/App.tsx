@@ -94,6 +94,7 @@ function App() {
 
             <LoadingScreen isLoading={isAppLoading} minimumDisplayTime={2000} />
             {!isAppLoading && (
+                <div key={`${location.pathname}${location.search}${location.hash}`} className="app-route-transition">
                 <Routes>
                     <Route 
                         path="/register" 
@@ -183,6 +184,7 @@ function App() {
                     />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>
+                </div>
             )}
         </>
     );
