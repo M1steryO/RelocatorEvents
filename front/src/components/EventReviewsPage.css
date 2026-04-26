@@ -565,3 +565,9 @@
         max-width: 520px;
     }
 }
+
+@media (min-width: 420px) and (max-width: 830px) {
+    .event-reviews-subtitle {
+        max-width: 308px;
+    }
+}
