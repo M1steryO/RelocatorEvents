@@ -95,17 +95,15 @@
 
 .app-route-transition {
   animation: appRouteFadeIn 220ms ease;
-  will-change: opacity, transform;
+  will-change: opacity;
 }
 
 @keyframes appRouteFadeIn {
   from {
     opacity: 0;
-    transform: translateY(6px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
