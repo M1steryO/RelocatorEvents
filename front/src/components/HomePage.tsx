@@ -307,6 +307,25 @@ export const HomePage = () => {
     const latestScrollYRef = useRef(0);
     /** После таба/фильтра/сортировки/поиска не применять scrollY из снимка (эффекты по events.length и таймеры). */
     const invalidateRestoredScrollRef = useRef(false);
+    const restoredScrollYRef = useRef(homeSnapshot?.scrollY ?? 0);
+    const shouldCancelRestoreOnUserScrollRef = useRef(
+        homeSnapshot?.hasRestorableEvents ?? false,
+    );
+    const isProgrammaticRestoreScrollRef = useRef(false);
+
+    const applyRestoredScroll = useCallback((y: number) => {
+        if (invalidateRestoredScrollRef.current) {
+            return;
+        }
+        isProgrammaticRestoreScrollRef.current = true;
+        window.scrollTo({ top: y, left: 0, behavior: 'auto' });
+        // Keep programmatic flag for a short moment to ignore own scroll events.
+        window.requestAnimationFrame(() => {
+            window.requestAnimationFrame(() => {
+                isProgrammaticRestoreScrollRef.current = false;
+            });
+        });
+    }, []);
 
     const scrollFeedToTop = useCallback(() => {
         invalidateRestoredScrollRef.current = true;
@@ -342,7 +361,7 @@ export const HomePage = () => {
             if (cancelled || invalidateRestoredScrollRef.current) {
                 return;
             }
-            window.scrollTo({ top: y, left: 0, behavior: 'auto' });
+            applyRestoredScroll(y);
         };
 
         let raf2 = 0;
@@ -350,9 +369,8 @@ export const HomePage = () => {
             raf2 = window.requestAnimationFrame(apply);
         });
         const t1 = window.setTimeout(apply, 80);
-        const t2 = window.setTimeout(apply, 280);
-        const t3 = window.setTimeout(apply, 520);
-        const t4 = window.setTimeout(apply, 780);
+        const t2 = window.setTimeout(apply, 240);
+        const t3 = window.setTimeout(apply, 420);
 
         return () => {
             cancelled = true;
@@ -363,9 +381,8 @@ export const HomePage = () => {
             window.clearTimeout(t1);
             window.clearTimeout(t2);
             window.clearTimeout(t3);
-            window.clearTimeout(t4);
         };
-    }, [homeSnapshot]);
+    }, [homeSnapshot, applyRestoredScroll]);
 
     // После раскладки карточек — повторить скролл из снимка (только если пользователь не сбросил ленту табом/фильтром и т.д.)
     useEffect(() => {
@@ -383,14 +400,25 @@ export const HomePage = () => {
             if (invalidateRestoredScrollRef.current) {
                 return;
             }
-            window.scrollTo({ top: y, left: 0, behavior: 'auto' });
+            applyRestoredScroll(y);
         });
         return () => window.cancelAnimationFrame(id);
-    }, [events.length, homeSnapshot]);
+    }, [events.length, homeSnapshot, applyRestoredScroll]);
 
     useEffect(() => {
         const onScroll = () => {
             latestScrollYRef.current = window.scrollY;
+            if (
+                shouldCancelRestoreOnUserScrollRef.current &&
+                !isProgrammaticRestoreScrollRef.current &&
+                !invalidateRestoredScrollRef.current &&
+                Math.abs(window.scrollY - restoredScrollYRef.current) > 8
+            ) {
+                // User scrolled manually after restore start:
+                // stop further delayed auto-restores to avoid visible jumps.
+                invalidateRestoredScrollRef.current = true;
+                shouldCancelRestoreOnUserScrollRef.current = false;
+            }
         };
         window.addEventListener('scroll', onScroll, { passive: true });
         return () => window.removeEventListener('scroll', onScroll);
