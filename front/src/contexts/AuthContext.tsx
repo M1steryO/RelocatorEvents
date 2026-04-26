@@ -47,13 +47,44 @@ interface AuthProviderProps {
 
 function readStoredToken(): string | null {
   if (typeof window === 'undefined') return null;
-  return sessionStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+  try {
+    const localToken = localStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+    if (localToken) return localToken;
+  } catch {
+    // Ignore storage access errors (private mode / blocked storage).
+  }
+
+  // Backward compatibility: migrate old token from sessionStorage if present.
+  try {
+    const legacyToken = sessionStorage.getItem(ACCESS_TOKEN_STORAGE_KEY);
+    if (!legacyToken) return null;
+    try {
+      localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, legacyToken);
+    } catch {
+      // Ignore and still return token for current session.
+    }
+    return legacyToken;
+  } catch {
+    return null;
+  }
 }
 
 function writeStoredToken(token: string | null) {
   if (typeof window === 'undefined') return;
-  if (token == null) sessionStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
-  else sessionStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+  try {
+    if (token == null) localStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+    else localStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+  } catch {
+    // Ignore storage access errors.
+  }
+
+  // Cleanup legacy storage to avoid divergence.
+  try {
+    if (token == null) sessionStorage.removeItem(ACCESS_TOKEN_STORAGE_KEY);
+    else sessionStorage.setItem(ACCESS_TOKEN_STORAGE_KEY, token);
+  } catch {
+    // Ignore storage access errors.
+  }
 }
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
@@ -65,6 +96,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     authService.setAccessToken(accessToken);
     eventsService.setAccessToken(accessToken);
     favouritesService.setAccessToken(accessToken);
+  }, []);
+
+  useEffect(() => {
+    const handleStorage = (event: StorageEvent) => {
+      if (event.storageArea !== localStorage) return;
+      if (event.key !== ACCESS_TOKEN_STORAGE_KEY) return;
+
+      const nextToken = event.newValue;
+      setToken((prevToken) => (prevToken === nextToken ? prevToken : nextToken));
+
+      if (!nextToken) {
+        setUserState(null);
+      }
+    };
+
+    window.addEventListener('storage', handleStorage);
+    return () => {
+      window.removeEventListener('storage', handleStorage);
+    };
   }, []);
 
   useEffect(() => {

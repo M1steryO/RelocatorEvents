@@ -13,6 +13,7 @@ import {BottomNavigation} from "./components/BottomNavigation";
 import {ServiceUnavailablePage} from "./components/ServiceUnavailablePage";
 import {LoginPage} from "./components/LoginPage";
 import {ProfileEditPage} from "./components/ProfileEditPage";
+import {sanitizeInternalPath} from "./utils/navigation";
 import {subscribeToServiceUnavailable} from "./utils/serviceUnavailable";
 import {subscribeToUnauthorized} from "./utils/unauthorized";
 import "./App.css";
@@ -23,6 +24,10 @@ function App() {
     const [isServiceUnavailable, setIsServiceUnavailable] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const redirectTo = `${location.pathname}${location.search}${location.hash}`;
+    const redirectState = { redirectTo };
+    const authRedirectTarget =
+        sanitizeInternalPath((location.state as { redirectTo?: unknown } | null)?.redirectTo) || '/';
 
     // После перехода (в т.ч. назад с карточки мероприятия): снять блокировку скролла и «залипшую» подложку из index.html.
     useLayoutEffect(() => {
@@ -63,9 +68,9 @@ function App() {
     useEffect(() => {
         return subscribeToUnauthorized(() => {
             logout();
-            navigate('/register', { replace: true });
+            navigate('/register', { replace: true, state: { redirectTo } });
         });
-    }, [logout, navigate]);
+    }, [logout, navigate, redirectTo]);
 
     if (isServiceUnavailable) {
         return <ServiceUnavailablePage />;
@@ -94,7 +99,7 @@ function App() {
                         path="/register" 
                         element={
                             isAuthenticated ? (
-                                <Navigate to="/" replace />
+                                <Navigate to={authRedirectTarget} replace />
                             ) : (
                                 <RegistrationForm />
                             )
@@ -104,7 +109,7 @@ function App() {
                         path="/login"
                         element={
                             isAuthenticated ? (
-                                <Navigate to="/" replace />
+                                <Navigate to={authRedirectTarget} replace />
                             ) : (
                                 <LoginPage />
                             )
@@ -119,7 +124,7 @@ function App() {
                                     <BottomNavigation />
                                 </>
                             ) : (
-                                <Navigate to="/register" replace />
+                                <Navigate to="/register" replace state={redirectState} />
                             )
                         }
                     />
@@ -129,7 +134,7 @@ function App() {
                             isAuthenticated ? (
                                 <ProfileEditPage />
                             ) : (
-                                <Navigate to="/register" replace />
+                                <Navigate to="/register" replace state={redirectState} />
                             )
                         }
                     />
@@ -142,7 +147,7 @@ function App() {
                                     <BottomNavigation />
                                 </>
                             ) : (
-                                <Navigate to="/register" replace />
+                                <Navigate to="/register" replace state={redirectState} />
                             )
                         } 
                     />
@@ -155,7 +160,7 @@ function App() {
                                     <BottomNavigation />
                                 </>
                             ) : (
-                                <Navigate to="/register" replace />
+                                <Navigate to="/register" replace state={redirectState} />
                             )
                         } 
                     />
@@ -168,13 +173,13 @@ function App() {
                                     <BottomNavigation />
                                 </>
                             ) : (
-                                <Navigate to="/register" replace />
+                                <Navigate to="/register" replace state={redirectState} />
                             )
                         } 
                     />
                     <Route 
                         path="/events/:id/reviews" 
-                        element={isAuthenticated ? <EventReviewsPage /> : <Navigate to="/register" replace />} 
+                        element={isAuthenticated ? <EventReviewsPage /> : <Navigate to="/register" replace state={redirectState} />} 
                     />
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </Routes>

@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/authService';
 import { INTERESTS_LIST } from '../constants/interests';
 import { getTelegramInitData, isTelegramMiniApp as detectTelegramMiniApp } from '../utils/telegramInitData';
+import { sanitizeInternalPath } from '../utils/navigation';
 import './RegistrationForm.css';
 
 interface RegistrationFormProps {
@@ -79,7 +80,10 @@ const PasswordVisibilityIcon = ({ visible }: { visible: boolean }) => (
 export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
     const { setAccessToken } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const isTelegramMiniApp = detectTelegramMiniApp();
+    const redirectTo =
+        sanitizeInternalPath((location.state as { redirectTo?: unknown } | null)?.redirectTo) || '/';
     const [step, setStep] = useState(1);
     const [formData, setFormData] = useState({
         name: '',
@@ -380,8 +384,8 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
             // Set access token
             setAccessToken(accessToken);
 
-            // Navigate to feed page
-            navigate('/');
+            // Navigate back to requested page (or fallback to feed).
+            navigate(redirectTo, { replace: true });
             onSuccess?.();
         } catch (error) {
             const friendlyError = getFriendlyRegistrationError(error);
@@ -573,7 +577,7 @@ export const RegistrationForm = ({ onSuccess }: RegistrationFormProps) => {
                         <button
                             type="button"
                             className="auth-link-button"
-                            onClick={() => navigate('/login')}
+                            onClick={() => navigate('/login', { state: { redirectTo } })}
                         >
                             Уже есть аккаунт? Войти
                         </button>

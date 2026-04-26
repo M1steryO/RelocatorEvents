@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { authService } from '../services/authService';
 import { isTelegramMiniApp as detectTelegramMiniApp } from '../utils/telegramInitData';
+import { sanitizeInternalPath } from '../utils/navigation';
 import './RegistrationForm.css';
 import './LoginPage.css';
 
@@ -62,7 +63,10 @@ const PasswordVisibilityIcon = ({ visible }: { visible: boolean }) => (
 
 export const LoginPage = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const { setAccessToken } = useAuth();
+    const redirectTo =
+        sanitizeInternalPath((location.state as { redirectTo?: unknown } | null)?.redirectTo) || '/';
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [showPassword, setShowPassword] = useState(false);
@@ -100,7 +104,7 @@ export const LoginPage = () => {
                 saveRefreshTokenToCookie(response.refresh_token);
             }
             setAccessToken(response.access_token);
-            navigate('/', { replace: true });
+            navigate(redirectTo, { replace: true });
         } catch (error) {
             setPasswordError(getFriendlyLoginError(error));
         } finally {
@@ -110,9 +114,9 @@ export const LoginPage = () => {
 
     useEffect(() => {
         if (isTelegramMiniApp) {
-            navigate('/register', { replace: true });
+            navigate('/register', { replace: true, state: { redirectTo } });
         }
-    }, [isTelegramMiniApp, navigate]);
+    }, [isTelegramMiniApp, navigate, redirectTo]);
 
     if (isTelegramMiniApp) return null;
 
@@ -124,7 +128,7 @@ export const LoginPage = () => {
                         <button
                             type="button"
                             className="back-button"
-                            onClick={() => navigate('/register')}
+                            onClick={() => navigate('/register', { state: { redirectTo } })}
                             aria-label="Назад"
                         >
                             <svg width="11" height="23" viewBox="0 0 11 23" fill="none" xmlns="http://www.w3.org/2000/svg">
