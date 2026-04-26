@@ -1,13 +1,16 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { showGlobalNotification } from '../contexts/NotificationContext';
 import './ProfileEditPage.css';
 
 export const ProfileEditPage = () => {
+    const MODAL_ANIMATION_MS = 220;
     const navigate = useNavigate();
     const { user, setUser, logout, isLoading } = useAuth();
     const [activeModal, setActiveModal] = useState<'save' | 'logout' | 'reset' | null>(null);
+    const [isModalClosing, setIsModalClosing] = useState(false);
+    const closeModalTimerRef = useRef<number | null>(null);
 
     const initialName = user?.name || '';
     const initialEmail = user?.email || '';
@@ -18,6 +21,14 @@ export const ProfileEditPage = () => {
         setName(initialName);
         setEmail(initialEmail);
     }, [initialName, initialEmail]);
+
+    useEffect(() => {
+        return () => {
+            if (closeModalTimerRef.current) {
+                window.clearTimeout(closeModalTimerRef.current);
+            }
+        };
+    }, []);
 
     if (isLoading) {
         return (
@@ -64,8 +75,37 @@ export const ProfileEditPage = () => {
         navigate('/register', { replace: true });
     };
 
+    const openModal = (modal: 'save' | 'logout' | 'reset') => {
+        if (closeModalTimerRef.current) {
+            window.clearTimeout(closeModalTimerRef.current);
+            closeModalTimerRef.current = null;
+        }
+        setIsModalClosing(false);
+        setActiveModal(modal);
+    };
+
+    const closeModal = (afterClose?: () => void) => {
+        if (!activeModal) {
+            afterClose?.();
+            return;
+        }
+        if (isModalClosing) {
+            return;
+        }
+        setIsModalClosing(true);
+        if (closeModalTimerRef.current) {
+            window.clearTimeout(closeModalTimerRef.current);
+        }
+        closeModalTimerRef.current = window.setTimeout(() => {
+            setActiveModal(null);
+            setIsModalClosing(false);
+            closeModalTimerRef.current = null;
+            afterClose?.();
+        }, MODAL_ANIMATION_MS);
+    };
+
     const handleModalClose = () => {
-        setActiveModal(null);
+        closeModal();
     };
 
     return (
@@ -126,21 +166,21 @@ export const ProfileEditPage = () => {
                 </div>
             </div>
 
-            <button type="button" className="profile-edit-save" onClick={() => setActiveModal('save')}>
+            <button type="button" className="profile-edit-save" onClick={() => openModal('save')}>
                 Сохранить
             </button>
 
             <div className="profile-edit-footer">
-                <button type="button" className="profile-edit-secondary" onClick={() => setActiveModal('reset')}>
+                <button type="button" className="profile-edit-secondary" onClick={() => openModal('reset')}>
                     Сбросить настройки
                 </button>
-                <button type="button" className="profile-edit-logout" onClick={() => setActiveModal('logout')}>
+                <button type="button" className="profile-edit-logout" onClick={() => openModal('logout')}>
                     Выйти
                 </button>
             </div>
 
             {activeModal && (
-                <div className="profile-edit-modal-overlay" onClick={handleModalClose}>
+                <div className={`profile-edit-modal-overlay ${isModalClosing ? 'closing' : ''}`} onClick={handleModalClose}>
                     <div className="profile-edit-modal" onClick={(e) => e.stopPropagation()}>
                         <button
                             type="button"
@@ -164,10 +204,7 @@ export const ProfileEditPage = () => {
                                     <button
                                         type="button"
                                         className="profile-edit-modal-btn profile-edit-modal-btn-filled"
-                                        onClick={() => {
-                                            handleModalClose();
-                                            handleSave();
-                                        }}
+                                        onClick={() => closeModal(handleSave)}
                                     >
                                         Сохранить
                                     </button>
@@ -182,10 +219,7 @@ export const ProfileEditPage = () => {
                                     <button
                                         type="button"
                                         className="profile-edit-modal-btn profile-edit-modal-btn-outline"
-                                        onClick={() => {
-                                            handleModalClose();
-                                            handleLogout();
-                                        }}
+                                        onClick={() => closeModal(handleLogout)}
                                     >
                                         Выйти
                                     </button>
@@ -204,10 +238,7 @@ export const ProfileEditPage = () => {
                                     <button
                                         type="button"
                                         className="profile-edit-modal-btn profile-edit-modal-btn-outline"
-                                        onClick={() => {
-                                            handleModalClose();
-                                            handleReset();
-                                        }}
+                                        onClick={() => closeModal(handleReset)}
                                     >
                                         Сбросить
                                     </button>

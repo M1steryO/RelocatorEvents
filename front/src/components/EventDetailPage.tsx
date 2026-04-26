@@ -108,6 +108,7 @@ const getCurrencySymbol = (currency?: string): string => {
 };
 
 export const EventDetailPage = () => {
+    const MODAL_ANIMATION_MS = 220;
     const navigate = useNavigate();
     const location = useLocation();
     const { id } = useParams();
@@ -124,6 +125,7 @@ export const EventDetailPage = () => {
     const [error, setError] = useState<string | null>(null);
     const [isPosterLoaded, setIsPosterLoaded] = useState(false);
     const [organizerModal, setOrganizerModal] = useState<'buy' | 'register' | null>(null);
+    const [isOrganizerModalClosing, setIsOrganizerModalClosing] = useState(false);
     const [isPosterError, setIsPosterError] = useState(false);
     const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
     const [recommendedEvents, setRecommendedEvents] = useState<Event[]>([]);
@@ -131,6 +133,7 @@ export const EventDetailPage = () => {
     const mapContainerRef = useRef<HTMLDivElement | null>(null);
     const mapInstanceRef = useRef<any>(null);
     const placemarkRef = useRef<any>(null);
+    const organizerModalCloseTimerRef = useRef<number | null>(null);
 
     const eventId = id;
     const lastLoadedEventRef = useRef<string | null>(null);
@@ -247,6 +250,9 @@ export const EventDetailPage = () => {
                 mapInstanceRef.current = null;
                 placemarkRef.current = null;
             }
+            if (organizerModalCloseTimerRef.current) {
+                window.clearTimeout(organizerModalCloseTimerRef.current);
+            }
         };
     }, []);
 
@@ -284,9 +290,17 @@ export const EventDetailPage = () => {
     const handleShare = async () => {
         const eventPath = event?.id ? `/events/${event.id}` : window.location.pathname;
         const shareUrl = `${window.location.origin}${eventPath}`;
+        const eventTitle = event?.title || 'Eventify';
+        const eventAddress = fullAddress || event?.address?.full_address || 'Адрес уточняется';
+        const eventPrice =
+            event && (event.min_price ?? 0) > 0
+                ? `${event.min_price} ${getCurrencySymbol(event.currency)}`
+                : 'Бесплатно';
+        const shareText = `Название: ${eventTitle}\nАдрес: ${eventAddress}\nСтоимость: ${eventPrice}`;
+        const clipboardShareText = `${shareText}\n${shareUrl}`;
         const shareData = {
-            title: event?.title || 'Eventify',
-            text: event?.title || 'Посмотрите это мероприятие в Eventify',
+            title: eventTitle,
+            text: shareText,
             url: shareUrl,
         };
         const telegramShareUrl =
@@ -311,12 +325,35 @@ export const EventDetailPage = () => {
         }
 
         try {
-            await copyText(shareUrl);
-            showGlobalNotification('Ссылка скопирована', 'success');
+            await copyText(clipboardShareText);
+            showGlobalNotification('Информация о мероприятии скопирована', 'success');
         } catch (error) {
             console.error('Failed to copy share URL:', error);
             showGlobalNotification('Не удалось поделиться ссылкой', 'error');
         }
+    };
+
+    const openOrganizerModal = (type: 'buy' | 'register') => {
+        if (organizerModalCloseTimerRef.current) {
+            window.clearTimeout(organizerModalCloseTimerRef.current);
+            organizerModalCloseTimerRef.current = null;
+        }
+        setIsOrganizerModalClosing(false);
+        setOrganizerModal(type);
+    };
+
+    const closeOrganizerModal = () => {
+        if (!organizerModal) return;
+        if (isOrganizerModalClosing) return;
+        setIsOrganizerModalClosing(true);
+        if (organizerModalCloseTimerRef.current) {
+            window.clearTimeout(organizerModalCloseTimerRef.current);
+        }
+        organizerModalCloseTimerRef.current = window.setTimeout(() => {
+            setOrganizerModal(null);
+            setIsOrganizerModalClosing(false);
+            organizerModalCloseTimerRef.current = null;
+        }, MODAL_ANIMATION_MS);
     };
 
     if (isLoading) {
@@ -457,7 +494,7 @@ export const EventDetailPage = () => {
                     <button
                         type="button"
                         className="event-registration-button"
-                        onClick={() => setOrganizerModal((event.min_price ?? 0) <= 0 ? 'register' : 'buy')}
+                        onClick={() => openOrganizerModal((event.min_price ?? 0) <= 0 ? 'register' : 'buy')}
                     >
                         {(event.min_price ?? 0) <= 0 ? 'Зарегистрироваться' : `Купить от ${event.min_price ?? 0} ${getCurrencySymbol(event.currency)}`}
                     </button>
@@ -470,7 +507,7 @@ export const EventDetailPage = () => {
 
             {/* Organizer redirect modal */}
             {organizerModal && (
-                <div className="organizer-modal-overlay" onClick={() => setOrganizerModal(null)}>
+                <div className={`organizer-modal-overlay ${isOrganizerModalClosing ? 'closing' : ''}`} onClick={closeOrganizerModal}>
                     <div className="organizer-modal" onClick={e => e.stopPropagation()}>
                         <div className="organaizer-modal-header">
 
@@ -482,7 +519,7 @@ export const EventDetailPage = () => {
                             <button
                                 type="button"
                                 className="organizer-modal-close"
-                                onClick={() => setOrganizerModal(null)}
+                                onClick={closeOrganizerModal}
                                 aria-label="Закрыть"
                             >
                                 <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 32 32" fill="none">
@@ -501,7 +538,7 @@ export const EventDetailPage = () => {
                                 href={event.link}
                                 target="_blank"
                                 rel="noreferrer"
-                                onClick={() => setOrganizerModal(null)}
+                                onClick={closeOrganizerModal}
                             >
                                 {organizerModal === 'register' ? 'Перейти к регистрации' : 'Перейти к покупке'}
                             </a>
