@@ -141,7 +141,10 @@ export const FavouritesPage = () => {
                             className="event-card"
                             onClick={() =>
                                 navigate(`/events/${event.id}`, {
-                                    state: { from: '/favourites' },
+                                    state: {
+                                        from: '/favourites',
+                                        transition: 'event-forward',
+                                    },
                                 })
                             }
                             style={{ cursor: 'pointer' }}

@@ -94,8 +94,23 @@
 }
 
 .app-route-transition {
-  animation: appRouteFadeIn 220ms ease;
-  will-change: opacity;
+  position: relative;
+  overflow-x: clip;
+  animation-duration: 220ms;
+  animation-timing-function: ease;
+  will-change: opacity, left;
+}
+
+.app-route-fade {
+  animation-name: appRouteFadeIn;
+}
+
+.app-route-slide-forward {
+  animation-name: appRouteSlideForwardIn;
+}
+
+.app-route-slide-back {
+  animation-name: appRouteSlideBackIn;
 }
 
 @keyframes appRouteFadeIn {
@@ -107,8 +122,31 @@
   }
 }
 
+@keyframes appRouteSlideForwardIn {
+  from {
+    opacity: 0;
+    left: 26px;
+  }
+  to {
+    opacity: 1;
+    left: 0;
+  }
+}
+
+@keyframes appRouteSlideBackIn {
+  from {
+    opacity: 0;
+    left: -26px;
+  }
+  to {
+    opacity: 1;
+    left: 0;
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .app-route-transition {
     animation: none;
+    left: 0;
   }
 }

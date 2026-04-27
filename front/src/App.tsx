@@ -24,10 +24,24 @@ function App() {
     const [isServiceUnavailable, setIsServiceUnavailable] = useState(false);
     const navigate = useNavigate();
     const location = useLocation();
+    const locationState =
+        (location.state as { redirectTo?: unknown; transition?: unknown } | null) ?? null;
     const redirectTo = `${location.pathname}${location.search}${location.hash}`;
     const redirectState = { redirectTo };
     const authRedirectTarget =
-        sanitizeInternalPath((location.state as { redirectTo?: unknown } | null)?.redirectTo) || '/';
+        sanitizeInternalPath(locationState?.redirectTo) || '/';
+    const transitionHint =
+        typeof locationState?.transition === 'string' ? locationState.transition : null;
+    const isEventDetailRoute = /^\/events\/[^/]+$/.test(location.pathname);
+    const isFeedRoute = location.pathname === '/' || location.pathname === '/favourites';
+    const routeTransitionClass = [
+        'app-route-transition',
+        isEventDetailRoute && transitionHint === 'event-forward'
+            ? 'app-route-slide-forward'
+            : isFeedRoute && transitionHint === 'event-back'
+                ? 'app-route-slide-back'
+                : 'app-route-fade',
+    ].join(' ');
 
     // После перехода (в т.ч. назад с карточки мероприятия): снять блокировку скролла и «залипшую» подложку из index.html.
     useLayoutEffect(() => {
@@ -94,7 +108,7 @@ function App() {
 
             <LoadingScreen isLoading={isAppLoading} minimumDisplayTime={2000} />
             {!isAppLoading && (
-                <div key={`${location.pathname}${location.search}${location.hash}`} className="app-route-transition">
+                <div key={`${location.pathname}${location.search}${location.hash}`} className={routeTransitionClass}>
                 <Routes>
                     <Route 
                         path="/register" 

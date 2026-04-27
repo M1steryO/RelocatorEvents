@@ -261,7 +261,12 @@ export const EventDetailPage = () => {
         const from = sanitizeInternalPath(
             (location.state as { from?: string } | null)?.from,
         );
-        navigate(from ?? '/');
+        const shouldUseBackSlide = from === '/' || from === '/favourites';
+        navigate(from ?? '/', {
+            state: shouldUseBackSlide
+                ? { transition: 'event-back' }
+                : undefined,
+        });
     };
 
     const copyText = async (text: string) => {

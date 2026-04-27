@@ -819,7 +819,10 @@ export const HomePage = () => {
                             className="event-card"
                             onClick={() =>
                                 navigate(`/events/${event.id}`, {
-                                    state: { from: '/' },
+                                    state: {
+                                        from: '/',
+                                        transition: 'event-forward',
+                                    },
                                 })
                             }
                             style={{ cursor: 'pointer' }}
