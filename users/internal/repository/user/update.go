@@ -2,11 +2,9 @@ package user
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	modelDomain "github.com/M1steryO/RelocatorEvents/users/internal/models/user"
 	"github.com/M1steryO/platform_common/pkg/db"
-	"github.com/jackc/pgx/v4"
 	"strings"
 )
 
@@ -31,35 +29,40 @@ func (s *repo) Update(ctx context.Context, userId int64, user *modelDomain.Updat
 		addSet("email", *user.Email)
 	}
 
-	args = append(args, userId)
-	userIDArgNumber := len(args)
+	if len(setParts) > 0 {
+		args = append(args, userId)
+		userIDArgNumber := len(args)
 
-	query := fmt.Sprintf(`
-		update users
-		set %s
-		where id = $%d
-	`, strings.Join(setParts, ", "), userIDArgNumber)
+		q.Query = fmt.Sprintf(`
+			update users
+			set %s
+			where id = $%d
+		`, strings.Join(setParts, ", "), userIDArgNumber)
 
-	q.Query = query
-
-	_, err := s.db.DB().ExecContext(ctx, q, args...)
-	if err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
-			return modelDomain.ErrUserNotFound
+		tag, err := s.db.DB().ExecContext(ctx, q, args...)
+		if err != nil {
+			return err
 		}
 
-		return err
+		if tag.RowsAffected() == 0 {
+			return modelDomain.ErrUserNotFound
+		}
 	}
 
 	if user.AvatarURL != nil {
-		q.Query = `update user_data set avatar_url = $1 where user_id = $2`
-		_, err = s.db.DB().ExecContext(ctx, q, *user.AvatarURL, userId)
-		if err != nil {
-			if errors.Is(err, pgx.ErrNoRows) {
-				return modelDomain.ErrUserNotFound
-			}
+		q.Query = `
+			update user_data 
+			set avatar_url = $1 
+			where user_id = $2
+		`
 
+		tag, err := s.db.DB().ExecContext(ctx, q, *user.AvatarURL, userId)
+		if err != nil {
 			return err
+		}
+
+		if tag.RowsAffected() == 0 {
+			return modelDomain.ErrUserNotFound
 		}
 	}
 

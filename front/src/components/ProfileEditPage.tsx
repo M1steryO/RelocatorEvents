@@ -5,13 +5,14 @@ import { showGlobalNotification } from '../contexts/NotificationContext';
 import { authService } from '../services/authService';
 import { reviewsService } from '../services/reviewsService';
 import { MEDIA_BASE_URL } from '../config';
+import { isTelegramMiniApp } from '../utils/telegramInitData';
 import './ProfileEditPage.css';
 
 export const ProfileEditPage = () => {
     const MODAL_ANIMATION_MS = 220;
     const navigate = useNavigate();
     const { user, setUser, logout, isLoading } = useAuth();
-    const [activeModal, setActiveModal] = useState<'save' | 'logout' | 'reset' | null>(null);
+    const [activeModal, setActiveModal] = useState<'save' | 'logout' | 'reset' | 'password' | null>(null);
     const [isModalClosing, setIsModalClosing] = useState(false);
     const closeModalTimerRef = useRef<number | null>(null);
 
@@ -24,7 +25,11 @@ export const ProfileEditPage = () => {
     const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
     const [isAvatarUploading, setIsAvatarUploading] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
+    const [oldPassword, setOldPassword] = useState('');
+    const [newPassword, setNewPassword] = useState('');
+    const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const isWebVersion = !isTelegramMiniApp();
 
     useEffect(() => {
         setName(initialName);
@@ -181,7 +186,35 @@ export const ProfileEditPage = () => {
         navigate('/register', { replace: true });
     };
 
-    const openModal = (modal: 'save' | 'logout' | 'reset') => {
+    const handleUpdatePassword = async () => {
+        const trimmedOldPassword = oldPassword.trim();
+        const trimmedNewPassword = newPassword.trim();
+
+        if (!trimmedOldPassword || !trimmedNewPassword) {
+            showGlobalNotification('Заполните старый и новый пароль', 'error');
+            return;
+        }
+        if (trimmedOldPassword === trimmedNewPassword) {
+            showGlobalNotification('Новый пароль должен отличаться от старого', 'error');
+            return;
+        }
+
+        setIsUpdatingPassword(true);
+        try {
+            await authService.updatePassword(user.id, trimmedOldPassword, trimmedNewPassword);
+            showGlobalNotification('Пароль успешно обновлён', 'success');
+            setOldPassword('');
+            setNewPassword('');
+            closeModal();
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Не удалось обновить пароль';
+            showGlobalNotification(message, 'error');
+        } finally {
+            setIsUpdatingPassword(false);
+        }
+    };
+
+    const openModal = (modal: 'save' | 'logout' | 'reset' | 'password') => {
         if (closeModalTimerRef.current) {
             window.clearTimeout(closeModalTimerRef.current);
             closeModalTimerRef.current = null;
@@ -211,6 +244,10 @@ export const ProfileEditPage = () => {
     };
 
     const handleModalClose = () => {
+        if (activeModal === 'password' && !isUpdatingPassword) {
+            setOldPassword('');
+            setNewPassword('');
+        }
         closeModal();
     };
 
@@ -293,6 +330,15 @@ export const ProfileEditPage = () => {
                     />
                 </div>
             </div>
+            {isWebVersion && (
+                <button
+                    type="button"
+                    className="profile-edit-password-trigger"
+                    onClick={() => openModal('password')}
+                >
+                    Изменить пароль
+                </button>
+            )}
 
             <button
                 type="button"
@@ -377,6 +423,46 @@ export const ProfileEditPage = () => {
                                     </button>
                                     <button type="button" className="profile-edit-modal-btn profile-edit-modal-btn-filled" onClick={handleModalClose}>
                                         Не сбрасывать
+                                    </button>
+                                </div>
+                            </>
+                        )}
+
+                        {activeModal === 'password' && (
+                            <>
+                                <p className="profile-edit-modal-title">Смена пароля</p>
+                                <div className="profile-edit-modal-form">
+                                    <input
+                                        type="password"
+                                        value={oldPassword}
+                                        onChange={(e) => setOldPassword(e.target.value)}
+                                        placeholder="Старый пароль"
+                                        autoComplete="current-password"
+                                    />
+                                    <input
+                                        type="password"
+                                        value={newPassword}
+                                        onChange={(e) => setNewPassword(e.target.value)}
+                                        placeholder="Новый пароль"
+                                        autoComplete="new-password"
+                                    />
+                                </div>
+                                <div className="profile-edit-modal-actions">
+                                    <button
+                                        type="button"
+                                        className="profile-edit-modal-btn profile-edit-modal-btn-outline"
+                                        onClick={handleModalClose}
+                                        disabled={isUpdatingPassword}
+                                    >
+                                        Отмена
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="profile-edit-modal-btn profile-edit-modal-btn-filled"
+                                        onClick={() => { void handleUpdatePassword(); }}
+                                        disabled={isUpdatingPassword}
+                                    >
+                                        {isUpdatingPassword ? 'Сохраняем...' : 'Сохранить пароль'}
                                     </button>
                                 </div>
                             </>

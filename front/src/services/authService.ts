@@ -462,6 +462,17 @@ class AuthService {
         this.currentUserCache = null;
     }
 
+    async updatePassword(id: number, oldPassword: string, newPassword: string): Promise<void> {
+        await this.request<unknown>('/v1/user/password', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                id,
+                old_password: oldPassword,
+                new_password: newPassword,
+            }),
+        });
+    }
+
 }
 
 export const authService = new AuthService();

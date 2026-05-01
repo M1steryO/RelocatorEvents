@@ -154,8 +154,25 @@
     cursor: pointer;
 }
 
+.profile-edit-password-trigger {
+    margin-top: 14px;
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    border: none;
+    background: #faf9f6;
+    color: #458dbd;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 1.15;
+    text-align: left;
+    padding: 0 18px;
+    cursor: pointer;
+}
+
 .profile-edit-save:disabled,
-.profile-edit-avatar-button:disabled {
+.profile-edit-avatar-button:disabled,
+.profile-edit-modal-btn:disabled {
     opacity: 0.6;
     cursor: not-allowed;
 }
@@ -250,6 +267,30 @@
     line-height: 1.2;
     letter-spacing: 0.02em;
     text-transform: uppercase;
+}
+
+.profile-edit-modal-form {
+    margin-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.profile-edit-modal-form input {
+    width: 100%;
+    height: 48px;
+    border-radius: 8px;
+    border: none;
+    background: #f1efef;
+    color: #414141;
+    font-size: 14px;
+    line-height: 1.15;
+    padding: 0 14px;
+    box-sizing: border-box;
+}
+
+.profile-edit-modal-form input:focus {
+    outline: 2px solid #458dbd;
 }
 
 .profile-edit-modal-actions {
