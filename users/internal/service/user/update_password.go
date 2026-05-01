@@ -14,7 +14,7 @@ func (s *serv) UpdatePassword(ctx context.Context, userId int64, passwords *dto.
 	if err != nil {
 		return err
 	}
-	
+
 	err = s.txManager.ReadCommitted(ctx, func(ctx context.Context) error {
 		user, err := s.db.Get(ctx, userId)
 		if err != nil {
