@@ -155,7 +155,7 @@
 }
 
 .profile-edit-password-trigger {
-    margin-top: 14px;
+    margin-top: 7px;
     width: 100%;
     height: 48px;
     border-radius: 8px;
@@ -164,7 +164,7 @@
     color: #458dbd;
     font-size: 14px;
     font-weight: 500;
-    line-height: 1.15;
+    line-height: 1.25;
     text-align: left;
     padding: 0 18px;
     cursor: pointer;
