@@ -139,9 +139,23 @@ export const EventDetailPage = () => {
     const lastLoadedEventRef = useRef<string | null>(null);
     const handleOpenReviews = () => {
         if (!eventId) return;
-        navigate(`/events/${eventId}/reviews`, {
-            state: { from: `/events/${eventId}` },
-        });
+        const goToReviews = () =>
+            navigate(`/events/${eventId}/reviews`, {
+                state: {
+                    from: `/events/${eventId}`,
+                    transition: 'reviews-forward',
+                },
+            });
+        const transitionDocument = document as Document & {
+            startViewTransition?: (callback: () => void) => unknown;
+        };
+
+        if (typeof transitionDocument.startViewTransition === 'function') {
+            transitionDocument.startViewTransition(goToReviews);
+            return;
+        }
+
+        goToReviews();
     };
 
     useEffect(() => {

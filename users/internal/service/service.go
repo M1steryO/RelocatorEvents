@@ -11,4 +11,6 @@ type UserService interface {
 	Create(ctx context.Context, user *dto.CreateUser) (int64, error)
 	GetByTelegramId(ctx context.Context, telegramId int64) (*domain.User, error)
 	GetByEmail(ctx context.Context, email string) (*domain.User, error)
+	Update(ctx context.Context, userId int64, user *dto.UpdateUser) error
+	UpdatePassword(ctx context.Context, userId int64, passwords *dto.UpdatePassword) error
 }

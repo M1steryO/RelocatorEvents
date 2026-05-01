@@ -28,14 +28,15 @@ var File_user_v1_service_proto protoreflect.FileDescriptor
 
 const file_user_v1_service_proto_rawDesc = "" +
 	"\n" +
-	"\x15user/v1/service.proto\x12/github.com.M1steryO.RelocatorEvents.user.api.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x16user/v1/messages.proto2\x8c\a\n" +
+	"\x15user/v1/service.proto\x12/github.com.M1steryO.RelocatorEvents.user.api.v1\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x16user/v1/messages.proto2\x9d\b\n" +
 	"\vUserService\x12\xa5\x01\n" +
 	"\x06Create\x12>.github.com.M1steryO.RelocatorEvents.user.api.v1.CreateRequest\x1a?.github.com.M1steryO.RelocatorEvents.user.api.v1.CreateResponse\"\x1a\x82\xd3\xe4\x93\x02\x14:\x01*\"\x0f/user/v1/create\x12\x92\x01\n" +
 	"\x03Get\x12;.github.com.M1steryO.RelocatorEvents.user.api.v1.GetRequest\x1a<.github.com.M1steryO.RelocatorEvents.user.api.v1.GetResponse\"\x10\x82\xd3\xe4\x93\x02\n" +
 	"\x12\b/user/v1\x12\xb0\x01\n" +
 	"\x13GetUserByTelegramId\x12K.github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdRequest\x1aL.github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse\x12\xa1\x01\n" +
 	"\x0eGetUserByEmail\x12F.github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailRequest\x1aG.github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse\x12u\n" +
-	"\x06Update\x12>.github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateRequest\x1a\x16.google.protobuf.Empty\"\x13\x82\xd3\xe4\x93\x02\r:\x01*2\b/user/v1\x12r\n" +
+	"\x06Update\x12>.github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateRequest\x1a\x16.google.protobuf.Empty\"\x13\x82\xd3\xe4\x93\x02\r:\x01*2\b/user/v1\x12\x8e\x01\n" +
+	"\x0eUpdatePassword\x12F.github.com.M1steryO.RelocatorEvents.user.api.v1.UpdatePasswordRequest\x1a\x16.google.protobuf.Empty\"\x1c\x82\xd3\xe4\x93\x02\x16:\x01*2\x11/user/v1/password\x12r\n" +
 	"\x06Delete\x12>.github.com.M1steryO.RelocatorEvents.user.api.v1.DeleteRequest\x1a\x16.google.protobuf.Empty\"\x10\x82\xd3\xe4\x93\x02\n" +
 	"*\b/user/v1BFZDgithub.com/M1steryO/RelocatorEvents/users/pkg/api/proto/user/v1;userb\x06proto3"
 
@@ -45,12 +46,13 @@ var file_user_v1_service_proto_goTypes = []any{
 	(*GetUserByTelegramIdRequest)(nil),  // 2: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdRequest
 	(*GetUserByEmailRequest)(nil),       // 3: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailRequest
 	(*UpdateRequest)(nil),               // 4: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateRequest
-	(*DeleteRequest)(nil),               // 5: github.com.M1steryO.RelocatorEvents.user.api.v1.DeleteRequest
-	(*CreateResponse)(nil),              // 6: github.com.M1steryO.RelocatorEvents.user.api.v1.CreateResponse
-	(*GetResponse)(nil),                 // 7: github.com.M1steryO.RelocatorEvents.user.api.v1.GetResponse
-	(*GetUserByTelegramIdResponse)(nil), // 8: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse
-	(*GetUserByEmailResponse)(nil),      // 9: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse
-	(*emptypb.Empty)(nil),               // 10: google.protobuf.Empty
+	(*UpdatePasswordRequest)(nil),       // 5: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdatePasswordRequest
+	(*DeleteRequest)(nil),               // 6: github.com.M1steryO.RelocatorEvents.user.api.v1.DeleteRequest
+	(*CreateResponse)(nil),              // 7: github.com.M1steryO.RelocatorEvents.user.api.v1.CreateResponse
+	(*GetResponse)(nil),                 // 8: github.com.M1steryO.RelocatorEvents.user.api.v1.GetResponse
+	(*GetUserByTelegramIdResponse)(nil), // 9: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse
+	(*GetUserByEmailResponse)(nil),      // 10: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse
+	(*emptypb.Empty)(nil),               // 11: google.protobuf.Empty
 }
 var file_user_v1_service_proto_depIdxs = []int32{
 	0,  // 0: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Create:input_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.CreateRequest
@@ -58,15 +60,17 @@ var file_user_v1_service_proto_depIdxs = []int32{
 	2,  // 2: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.GetUserByTelegramId:input_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdRequest
 	3,  // 3: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.GetUserByEmail:input_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailRequest
 	4,  // 4: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Update:input_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateRequest
-	5,  // 5: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Delete:input_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.DeleteRequest
-	6,  // 6: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Create:output_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.CreateResponse
-	7,  // 7: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Get:output_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.GetResponse
-	8,  // 8: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.GetUserByTelegramId:output_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse
-	9,  // 9: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.GetUserByEmail:output_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse
-	10, // 10: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Update:output_type -> google.protobuf.Empty
-	10, // 11: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Delete:output_type -> google.protobuf.Empty
-	6,  // [6:12] is the sub-list for method output_type
-	0,  // [0:6] is the sub-list for method input_type
+	5,  // 5: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.UpdatePassword:input_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.UpdatePasswordRequest
+	6,  // 6: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Delete:input_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.DeleteRequest
+	7,  // 7: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Create:output_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.CreateResponse
+	8,  // 8: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Get:output_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.GetResponse
+	9,  // 9: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.GetUserByTelegramId:output_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse
+	10, // 10: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.GetUserByEmail:output_type -> github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse
+	11, // 11: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Update:output_type -> google.protobuf.Empty
+	11, // 12: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.UpdatePassword:output_type -> google.protobuf.Empty
+	11, // 13: github.com.M1steryO.RelocatorEvents.user.api.v1.UserService.Delete:output_type -> google.protobuf.Empty
+	7,  // [7:14] is the sub-list for method output_type
+	0,  // [0:7] is the sub-list for method input_type
 	0,  // [0:0] is the sub-list for extension type_name
 	0,  // [0:0] is the sub-list for extension extendee
 	0,  // [0:0] is the sub-list for field type_name

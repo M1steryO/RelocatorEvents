@@ -26,6 +26,8 @@ type UserInfo struct {
 	Language string `db:"language"`
 
 	Interests []UserInterest `db:"interests"`
+
+	AvatarUrl *string `db:"avatar_url"`
 }
 
 type UserInterest struct {

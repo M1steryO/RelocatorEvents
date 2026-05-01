@@ -113,6 +113,18 @@
   animation-name: appRouteSlideBackIn;
 }
 
+.app-route-reviews-forward {
+  animation-name: appRouteReviewsForwardIn;
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.app-route-reviews-back {
+  animation-name: appRouteReviewsBackIn;
+  animation-duration: 260ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 @keyframes appRouteFadeIn {
   from {
     opacity: 0;
@@ -137,6 +149,28 @@
   from {
     opacity: 0;
     left: -26px;
+  }
+  to {
+    opacity: 1;
+    left: 0;
+  }
+}
+
+@keyframes appRouteReviewsForwardIn {
+  from {
+    opacity: 0;
+    left: 14px;
+  }
+  to {
+    opacity: 1;
+    left: 0;
+  }
+}
+
+@keyframes appRouteReviewsBackIn {
+  from {
+    opacity: 0;
+    left: -14px;
   }
   to {
     opacity: 1;

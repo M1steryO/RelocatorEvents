@@ -148,6 +148,7 @@ type UserInfo struct {
 	City             string                  `protobuf:"bytes,6,opt,name=city,proto3" json:"city,omitempty"`
 	Interests        []*Interest             `protobuf:"bytes,7,rep,name=interests,proto3" json:"interests,omitempty"`
 	Language         string                  `protobuf:"bytes,8,opt,name=language,proto3" json:"language,omitempty"`
+	AvatarUrl        *wrapperspb.StringValue `protobuf:"bytes,9,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -238,6 +239,13 @@ func (x *UserInfo) GetLanguage() string {
 	return ""
 }
 
+func (x *UserInfo) GetAvatarUrl() *wrapperspb.StringValue {
+	if x != nil {
+		return x.AvatarUrl
+	}
+	return nil
+}
+
 type Interest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Code          string                 `protobuf:"bytes,2,opt,name=code,proto3" json:"code,omitempty"`
@@ -294,6 +302,7 @@ type UpdateUserInfo struct {
 	state         protoimpl.MessageState  `protogen:"open.v1"`
 	Name          *wrapperspb.StringValue `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	Email         *wrapperspb.StringValue `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	AvatarUrl     *wrapperspb.StringValue `protobuf:"bytes,3,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -338,6 +347,13 @@ func (x *UpdateUserInfo) GetName() *wrapperspb.StringValue {
 func (x *UpdateUserInfo) GetEmail() *wrapperspb.StringValue {
 	if x != nil {
 		return x.Email
+	}
+	return nil
+}
+
+func (x *UpdateUserInfo) GetAvatarUrl() *wrapperspb.StringValue {
+	if x != nil {
+		return x.AvatarUrl
 	}
 	return nil
 }
@@ -610,6 +626,66 @@ func (x *UpdateRequest) GetInfo() *UpdateUserInfo {
 	return nil
 }
 
+type UpdatePasswordRequest struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
+	OldPassword   string                 `protobuf:"bytes,2,opt,name=old_password,json=oldPassword,proto3" json:"old_password,omitempty"`
+	NewPassword   string                 `protobuf:"bytes,3,opt,name=new_password,json=newPassword,proto3" json:"new_password,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdatePasswordRequest) Reset() {
+	*x = UpdatePasswordRequest{}
+	mi := &file_user_v1_messages_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdatePasswordRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdatePasswordRequest) ProtoMessage() {}
+
+func (x *UpdatePasswordRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_user_v1_messages_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdatePasswordRequest.ProtoReflect.Descriptor instead.
+func (*UpdatePasswordRequest) Descriptor() ([]byte, []int) {
+	return file_user_v1_messages_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *UpdatePasswordRequest) GetId() int64 {
+	if x != nil {
+		return x.Id
+	}
+	return 0
+}
+
+func (x *UpdatePasswordRequest) GetOldPassword() string {
+	if x != nil {
+		return x.OldPassword
+	}
+	return ""
+}
+
+func (x *UpdatePasswordRequest) GetNewPassword() string {
+	if x != nil {
+		return x.NewPassword
+	}
+	return ""
+}
+
 type DeleteRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
@@ -619,7 +695,7 @@ type DeleteRequest struct {
 
 func (x *DeleteRequest) Reset() {
 	*x = DeleteRequest{}
-	mi := &file_user_v1_messages_proto_msgTypes[9]
+	mi := &file_user_v1_messages_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -631,7 +707,7 @@ func (x *DeleteRequest) String() string {
 func (*DeleteRequest) ProtoMessage() {}
 
 func (x *DeleteRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_messages_proto_msgTypes[9]
+	mi := &file_user_v1_messages_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -644,7 +720,7 @@ func (x *DeleteRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_messages_proto_rawDescGZIP(), []int{9}
+	return file_user_v1_messages_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *DeleteRequest) GetId() int64 {
@@ -663,7 +739,7 @@ type GetUserByTelegramIdRequest struct {
 
 func (x *GetUserByTelegramIdRequest) Reset() {
 	*x = GetUserByTelegramIdRequest{}
-	mi := &file_user_v1_messages_proto_msgTypes[10]
+	mi := &file_user_v1_messages_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -675,7 +751,7 @@ func (x *GetUserByTelegramIdRequest) String() string {
 func (*GetUserByTelegramIdRequest) ProtoMessage() {}
 
 func (x *GetUserByTelegramIdRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_messages_proto_msgTypes[10]
+	mi := &file_user_v1_messages_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -688,7 +764,7 @@ func (x *GetUserByTelegramIdRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserByTelegramIdRequest.ProtoReflect.Descriptor instead.
 func (*GetUserByTelegramIdRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_messages_proto_rawDescGZIP(), []int{10}
+	return file_user_v1_messages_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *GetUserByTelegramIdRequest) GetTelegramId() int64 {
@@ -707,7 +783,7 @@ type GetUserByTelegramIdResponse struct {
 
 func (x *GetUserByTelegramIdResponse) Reset() {
 	*x = GetUserByTelegramIdResponse{}
-	mi := &file_user_v1_messages_proto_msgTypes[11]
+	mi := &file_user_v1_messages_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -719,7 +795,7 @@ func (x *GetUserByTelegramIdResponse) String() string {
 func (*GetUserByTelegramIdResponse) ProtoMessage() {}
 
 func (x *GetUserByTelegramIdResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_messages_proto_msgTypes[11]
+	mi := &file_user_v1_messages_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -732,7 +808,7 @@ func (x *GetUserByTelegramIdResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserByTelegramIdResponse.ProtoReflect.Descriptor instead.
 func (*GetUserByTelegramIdResponse) Descriptor() ([]byte, []int) {
-	return file_user_v1_messages_proto_rawDescGZIP(), []int{11}
+	return file_user_v1_messages_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetUserByTelegramIdResponse) GetUser() *User {
@@ -751,7 +827,7 @@ type GetUserByEmailRequest struct {
 
 func (x *GetUserByEmailRequest) Reset() {
 	*x = GetUserByEmailRequest{}
-	mi := &file_user_v1_messages_proto_msgTypes[12]
+	mi := &file_user_v1_messages_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -763,7 +839,7 @@ func (x *GetUserByEmailRequest) String() string {
 func (*GetUserByEmailRequest) ProtoMessage() {}
 
 func (x *GetUserByEmailRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_messages_proto_msgTypes[12]
+	mi := &file_user_v1_messages_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -776,7 +852,7 @@ func (x *GetUserByEmailRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserByEmailRequest.ProtoReflect.Descriptor instead.
 func (*GetUserByEmailRequest) Descriptor() ([]byte, []int) {
-	return file_user_v1_messages_proto_rawDescGZIP(), []int{12}
+	return file_user_v1_messages_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *GetUserByEmailRequest) GetEmail() string {
@@ -796,7 +872,7 @@ type GetUserByEmailResponse struct {
 
 func (x *GetUserByEmailResponse) Reset() {
 	*x = GetUserByEmailResponse{}
-	mi := &file_user_v1_messages_proto_msgTypes[13]
+	mi := &file_user_v1_messages_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -808,7 +884,7 @@ func (x *GetUserByEmailResponse) String() string {
 func (*GetUserByEmailResponse) ProtoMessage() {}
 
 func (x *GetUserByEmailResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_user_v1_messages_proto_msgTypes[13]
+	mi := &file_user_v1_messages_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -821,7 +897,7 @@ func (x *GetUserByEmailResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetUserByEmailResponse.ProtoReflect.Descriptor instead.
 func (*GetUserByEmailResponse) Descriptor() ([]byte, []int) {
-	return file_user_v1_messages_proto_rawDescGZIP(), []int{13}
+	return file_user_v1_messages_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *GetUserByEmailResponse) GetUser() *User {
@@ -849,7 +925,7 @@ const file_user_v1_messages_proto_rawDesc = "" +
 	"\n" +
 	"created_at\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\xe0\x02\n" +
+	"updated_at\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"\x9d\x03\n" +
 	"\bUserInfo\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x122\n" +
 	"\x05email\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x05email\x12<\n" +
@@ -859,13 +935,17 @@ const file_user_v1_messages_proto_rawDesc = "" +
 	"\acountry\x18\x05 \x01(\tR\acountry\x12\x12\n" +
 	"\x04city\x18\x06 \x01(\tR\x04city\x12W\n" +
 	"\tinterests\x18\a \x03(\v29.github.com.M1steryO.RelocatorEvents.user.api.v1.InterestR\tinterests\x12\x1a\n" +
-	"\blanguage\x18\b \x01(\tR\blanguage\"4\n" +
+	"\blanguage\x18\b \x01(\tR\blanguage\x12;\n" +
+	"\n" +
+	"avatar_url\x18\t \x01(\v2\x1c.google.protobuf.StringValueR\tavatarUrl\"4\n" +
 	"\bInterest\x12\x12\n" +
 	"\x04code\x18\x02 \x01(\tR\x04code\x12\x14\n" +
-	"\x05title\x18\x03 \x01(\tR\x05title\"v\n" +
+	"\x05title\x18\x03 \x01(\tR\x05title\"\xb3\x01\n" +
 	"\x0eUpdateUserInfo\x120\n" +
 	"\x04name\x18\x01 \x01(\v2\x1c.google.protobuf.StringValueR\x04name\x122\n" +
-	"\x05email\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x05email\"\xcd\x01\n" +
+	"\x05email\x18\x02 \x01(\v2\x1c.google.protobuf.StringValueR\x05email\x12;\n" +
+	"\n" +
+	"avatar_url\x18\x03 \x01(\v2\x1c.google.protobuf.StringValueR\tavatarUrl\"\xcd\x01\n" +
 	"\rCreateRequest\x12M\n" +
 	"\x04info\x18\x01 \x01(\v29.github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfoR\x04info\x12\x1a\n" +
 	"\bpassword\x18\x02 \x01(\tR\bpassword\x12)\n" +
@@ -882,7 +962,11 @@ const file_user_v1_messages_proto_rawDesc = "" +
 	"\x04user\x18\x01 \x01(\v25.github.com.M1steryO.RelocatorEvents.user.api.v1.UserR\x04user\"t\n" +
 	"\rUpdateRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12S\n" +
-	"\x04info\x18\x02 \x01(\v2?.github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfoR\x04info\"\x1f\n" +
+	"\x04info\x18\x02 \x01(\v2?.github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfoR\x04info\"m\n" +
+	"\x15UpdatePasswordRequest\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12!\n" +
+	"\fold_password\x18\x02 \x01(\tR\voldPassword\x12!\n" +
+	"\fnew_password\x18\x03 \x01(\tR\vnewPassword\"\x1f\n" +
 	"\rDeleteRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\"=\n" +
 	"\x1aGetUserByTelegramIdRequest\x12\x1f\n" +
@@ -912,7 +996,7 @@ func file_user_v1_messages_proto_rawDescGZIP() []byte {
 }
 
 var file_user_v1_messages_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_user_v1_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_user_v1_messages_proto_msgTypes = make([]protoimpl.MessageInfo, 15)
 var file_user_v1_messages_proto_goTypes = []any{
 	(Role)(0),                           // 0: github.com.M1steryO.RelocatorEvents.user.api.v1.Role
 	(*User)(nil),                        // 1: github.com.M1steryO.RelocatorEvents.user.api.v1.User
@@ -924,35 +1008,38 @@ var file_user_v1_messages_proto_goTypes = []any{
 	(*GetRequest)(nil),                  // 7: github.com.M1steryO.RelocatorEvents.user.api.v1.GetRequest
 	(*GetResponse)(nil),                 // 8: github.com.M1steryO.RelocatorEvents.user.api.v1.GetResponse
 	(*UpdateRequest)(nil),               // 9: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateRequest
-	(*DeleteRequest)(nil),               // 10: github.com.M1steryO.RelocatorEvents.user.api.v1.DeleteRequest
-	(*GetUserByTelegramIdRequest)(nil),  // 11: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdRequest
-	(*GetUserByTelegramIdResponse)(nil), // 12: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse
-	(*GetUserByEmailRequest)(nil),       // 13: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailRequest
-	(*GetUserByEmailResponse)(nil),      // 14: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse
-	(*timestamppb.Timestamp)(nil),       // 15: google.protobuf.Timestamp
-	(*wrapperspb.StringValue)(nil),      // 16: google.protobuf.StringValue
-	(*wrapperspb.Int64Value)(nil),       // 17: google.protobuf.Int64Value
+	(*UpdatePasswordRequest)(nil),       // 10: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdatePasswordRequest
+	(*DeleteRequest)(nil),               // 11: github.com.M1steryO.RelocatorEvents.user.api.v1.DeleteRequest
+	(*GetUserByTelegramIdRequest)(nil),  // 12: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdRequest
+	(*GetUserByTelegramIdResponse)(nil), // 13: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse
+	(*GetUserByEmailRequest)(nil),       // 14: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailRequest
+	(*GetUserByEmailResponse)(nil),      // 15: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse
+	(*timestamppb.Timestamp)(nil),       // 16: google.protobuf.Timestamp
+	(*wrapperspb.StringValue)(nil),      // 17: google.protobuf.StringValue
+	(*wrapperspb.Int64Value)(nil),       // 18: google.protobuf.Int64Value
 }
 var file_user_v1_messages_proto_depIdxs = []int32{
 	2,  // 0: github.com.M1steryO.RelocatorEvents.user.api.v1.User.info:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo
-	15, // 1: github.com.M1steryO.RelocatorEvents.user.api.v1.User.created_at:type_name -> google.protobuf.Timestamp
-	15, // 2: github.com.M1steryO.RelocatorEvents.user.api.v1.User.updated_at:type_name -> google.protobuf.Timestamp
-	16, // 3: github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo.email:type_name -> google.protobuf.StringValue
-	17, // 4: github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo.telegram_id:type_name -> google.protobuf.Int64Value
+	16, // 1: github.com.M1steryO.RelocatorEvents.user.api.v1.User.created_at:type_name -> google.protobuf.Timestamp
+	16, // 2: github.com.M1steryO.RelocatorEvents.user.api.v1.User.updated_at:type_name -> google.protobuf.Timestamp
+	17, // 3: github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo.email:type_name -> google.protobuf.StringValue
+	18, // 4: github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo.telegram_id:type_name -> google.protobuf.Int64Value
 	3,  // 5: github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo.interests:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.Interest
-	16, // 6: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfo.name:type_name -> google.protobuf.StringValue
-	16, // 7: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfo.email:type_name -> google.protobuf.StringValue
-	2,  // 8: github.com.M1steryO.RelocatorEvents.user.api.v1.CreateRequest.info:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo
-	1,  // 9: github.com.M1steryO.RelocatorEvents.user.api.v1.GetResponse.user:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.User
-	4,  // 10: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateRequest.info:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfo
-	1,  // 11: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse.user:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.User
-	1,  // 12: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse.user:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.User
-	16, // 13: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse.password:type_name -> google.protobuf.StringValue
-	14, // [14:14] is the sub-list for method output_type
-	14, // [14:14] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	17, // 6: github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo.avatar_url:type_name -> google.protobuf.StringValue
+	17, // 7: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfo.name:type_name -> google.protobuf.StringValue
+	17, // 8: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfo.email:type_name -> google.protobuf.StringValue
+	17, // 9: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfo.avatar_url:type_name -> google.protobuf.StringValue
+	2,  // 10: github.com.M1steryO.RelocatorEvents.user.api.v1.CreateRequest.info:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.UserInfo
+	1,  // 11: github.com.M1steryO.RelocatorEvents.user.api.v1.GetResponse.user:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.User
+	4,  // 12: github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateRequest.info:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.UpdateUserInfo
+	1,  // 13: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByTelegramIdResponse.user:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.User
+	1,  // 14: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse.user:type_name -> github.com.M1steryO.RelocatorEvents.user.api.v1.User
+	17, // 15: github.com.M1steryO.RelocatorEvents.user.api.v1.GetUserByEmailResponse.password:type_name -> google.protobuf.StringValue
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_user_v1_messages_proto_init() }
@@ -966,7 +1053,7 @@ func file_user_v1_messages_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_user_v1_messages_proto_rawDesc), len(file_user_v1_messages_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   14,
+			NumMessages:   15,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

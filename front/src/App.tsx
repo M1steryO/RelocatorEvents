@@ -33,6 +33,7 @@ function App() {
     const transitionHint =
         typeof locationState?.transition === 'string' ? locationState.transition : null;
     const isEventDetailRoute = /^\/events\/[^/]+$/.test(location.pathname);
+    const isEventReviewsRoute = /^\/events\/[^/]+\/reviews$/.test(location.pathname);
     const isFeedRoute = location.pathname === '/' || location.pathname === '/favourites';
     const routeTransitionClass = [
         'app-route-transition',
@@ -40,6 +41,10 @@ function App() {
             ? 'app-route-slide-forward'
             : isFeedRoute && transitionHint === 'event-back'
                 ? 'app-route-slide-back'
+                : isEventReviewsRoute && transitionHint === 'reviews-forward'
+                    ? 'app-route-reviews-forward'
+                    : isEventDetailRoute && transitionHint === 'reviews-back'
+                        ? 'app-route-reviews-back'
                 : 'app-route-fade',
     ].join(' ');
 

@@ -52,6 +52,15 @@ func ToCreateUserDtoInfoFromApi(req *desc.CreateRequest, telegramId *int64) *dto
 	}
 }
 
+func ToUpdateUserDtoInfoFromApi(req *desc.UpdateUserInfo) *dto.UpdateUser {
+
+	return &dto.UpdateUser{
+		Name:      ToStringFromStringValue(req.Name),
+		Email:     ToStringFromStringValue(req.Email),
+		AvatarUrl: ToStringFromStringValue(req.AvatarUrl),
+	}
+}
+
 func ToInterestsApiFromDomain(interests []user.Interest) []*desc.Interest {
 	converted := make([]*desc.Interest, len(interests))
 	for i, interest := range interests {
@@ -92,6 +101,15 @@ func ToUserApiFromDomain(user *user.User) *desc.User {
 			TelegramUsername: user.Info.TelegramUsername,
 
 			Interests: ToInterestsApiFromDomain(user.Info.Interests),
+
+			AvatarUrl: func() *wrapperspb.StringValue {
+				if user.Info.AvatarURL != nil {
+					return &wrapperspb.StringValue{
+						Value: *user.Info.AvatarURL,
+					}
+				}
+				return nil
+			}(),
 		},
 		CreatedAt: timestamppb.New(user.CreatedAt),
 		UpdatedAt: func() *timestamppb.Timestamp {

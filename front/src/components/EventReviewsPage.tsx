@@ -169,12 +169,21 @@ export const EventReviewsPage = () => {
         const from = sanitizeInternalPath(
             (location.state as { from?: string } | null)?.from,
         );
+        const shouldUseReviewsBackTransition = Boolean(
+            from && /^\/events\/[^/]+$/.test(from),
+        );
         if (from) {
-            navigate(from);
+            navigate(from, {
+                state: shouldUseReviewsBackTransition
+                    ? { transition: 'reviews-back' }
+                    : undefined,
+            });
             return;
         }
         if (eventId) {
-            navigate(`/events/${eventId}`);
+            navigate(`/events/${eventId}`, {
+                state: { transition: 'reviews-back' },
+            });
             return;
         }
         navigate('/');

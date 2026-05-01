@@ -34,6 +34,8 @@ message UserInfo {
   repeated Interest interests = 7;
 
   string language = 8;
+
+  google.protobuf.StringValue avatar_url = 9;
 }
 
 message Interest {
@@ -44,7 +46,9 @@ message Interest {
 message UpdateUserInfo {
   google.protobuf.StringValue name = 1;
   google.protobuf.StringValue email = 2;
+  google.protobuf.StringValue avatar_url = 3;
 }
+
 
 message CreateRequest {
   UserInfo info = 1;
@@ -70,6 +74,12 @@ message GetResponse {
 message UpdateRequest {
   int64 id = 1;
   UpdateUserInfo info = 2;
+}
+
+message UpdatePasswordRequest {
+  int64 id = 1;
+  string old_password = 2;
+  string new_password = 3;
 }
 
 message DeleteRequest {

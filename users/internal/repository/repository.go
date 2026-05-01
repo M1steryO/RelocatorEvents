@@ -14,4 +14,6 @@ type UserRepository interface {
 	CreateUserData(ctx context.Context, userId int64, telegramUsername string, userInfo *domain.UserInfo) error
 	Create(ctx context.Context, user *domain.User) (int64, error)
 	CreateUserInterests(ctx context.Context, userId int64, interestsIds []int64) error
+	Update(ctx context.Context, userId int64, user *domain.UpdateUser) error
+	UpdatePassword(ctx context.Context, userId int64, password string) error
 }

@@ -24,4 +24,13 @@ type UserInfo struct {
 	Language string
 
 	Interests []Interest
+
+	AvatarURL *string
+}
+
+type UpdateUser struct {
+	Name      *string
+	Email     *string
+	Password  *string
+	AvatarURL *string
 }

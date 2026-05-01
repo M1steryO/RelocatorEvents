@@ -14,7 +14,7 @@ func (s *repo) Get(ctx context.Context, id int64) (*modelDomain.User, error) {
 	user := modelRepo.User{}
 	q := db.Query{
 		Title: "user_repository.Get",
-		Query: `SELECT id, name,telegram_id,email,tg_username,country, city, language
+		Query: `SELECT id, name,telegram_id,email,tg_username,country, city, language, avatar_url
 				 FROM "users"
 				 JOIN user_data ON users.id = user_data.user_id
 				 

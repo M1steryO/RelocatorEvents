@@ -32,6 +32,13 @@ service UserService {
       body: "*"
     };
   };
+  rpc UpdatePassword(UpdatePasswordRequest) returns (google.protobuf.Empty){
+    option (google.api.http) = {
+      patch: "/user/v1/password"
+      body: "*"
+    };
+  };
+
   rpc Delete(DeleteRequest) returns (google.protobuf.Empty){
     option (google.api.http) = {
       delete: "/user/v1"
