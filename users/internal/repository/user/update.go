@@ -23,10 +23,6 @@ func (s *repo) Update(ctx context.Context, userId int64, user *modelDomain.Updat
 		setParts = append(setParts, fmt.Sprintf("%s = $%d", column, len(args)))
 	}
 
-	if user.Name != nil {
-		addSet("name", *user.Name)
-	}
-
 	if user.Email != nil {
 		addSet("email", *user.Email)
 	}
@@ -52,6 +48,18 @@ func (s *repo) Update(ctx context.Context, userId int64, user *modelDomain.Updat
 		}
 
 		return err
+	}
+
+	if user.Name != nil {
+		q.Query = `update users set name = $1 where id = $2`
+		_, err = s.db.DB().ExecContext(ctx, q, *user.Name, userId)
+		if err != nil {
+			if errors.Is(err, pgx.ErrNoRows) {
+				return modelDomain.ErrUserNotFound
+			}
+
+			return err
+		}
 	}
 
 	return nil
