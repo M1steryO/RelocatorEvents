@@ -4,8 +4,8 @@ github.com/M1steryO/RelocatorEvents/events v0.0.0-20260415185542-f11ff111c4b2 h1
 github.com/M1steryO/RelocatorEvents/events v0.0.0-20260415185542-f11ff111c4b2/go.mod h1:+ZJzuFEwHYNcKqD+2UgjbYmrlCov+oXNBTRmXl+Nf18=
 github.com/M1steryO/RelocatorEvents/media v0.0.0-20260315124812-c61e40827aed h1:TfGzFSwi+l8EuzTd0ylsh0INND08rX0PBuUYE/9OxXQ=
 github.com/M1steryO/RelocatorEvents/media v0.0.0-20260315124812-c61e40827aed/go.mod h1:ndN4MDM7Xvqdzs3v2mvF3q8vORjzLk2TKf2NaoIE6b4=
-github.com/M1steryO/RelocatorEvents/users v0.0.0-20260422193529-7fa0960fe429 h1:v5NgGp7uJ68eFZXnl9THBkpH67iSjhJ+3iU36TZKhYA=
-github.com/M1steryO/RelocatorEvents/users v0.0.0-20260422193529-7fa0960fe429/go.mod h1:CWX5/v/2AdIYrZy4R97iA2T1Ubs5YuB6UrY1gRMV4q8=
+github.com/M1steryO/RelocatorEvents/users v0.0.0-20260501164257-5abe9cf2ed39 h1:C/gHTvIYY2iWAofGLmIi+xsstI6KXDfFYh7DTJ5tkOg=
+github.com/M1steryO/RelocatorEvents/users v0.0.0-20260501164257-5abe9cf2ed39/go.mod h1:CWX5/v/2AdIYrZy4R97iA2T1Ubs5YuB6UrY1gRMV4q8=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2 h1:RJRGxQmBiuthNbuXj7MN7C2NStL45Ckfo89CXkOc+qY=
 github.com/M1steryO/platform_common v0.0.0-20260131174141-b1e792f26ff2/go.mod h1:sY5taDuxCRvhPTf/pFEqShY+rHvH6VG8UM/ATXoB1aI=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
