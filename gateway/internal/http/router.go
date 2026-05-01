@@ -126,6 +126,11 @@ func NewRouter(ctx context.Context, deps Deps) (http.Handler, error) {
 				gw.ServeHTTP(w, r)
 			}))
 
+			r.Handle("/user/password", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				r.URL.Path = "/user/v1/password"
+				gw.ServeHTTP(w, r)
+			}))
+
 			r.Handle("/reviews", http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 				r.URL.Path = "/reviews/v1" + strings.TrimPrefix(r.URL.Path, "/v1/reviews")
 				gw.ServeHTTP(w, r)
