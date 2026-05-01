@@ -451,7 +451,7 @@ class AuthService {
     }
 
     async updateUser(id: number, info: UpdateUserInfoPayload): Promise<void> {
-        await this.request<unknown>('/user/v1', {
+        await this.request<unknown>('/v1/user', {
             method: 'PATCH',
             body: JSON.stringify({
                 id,
