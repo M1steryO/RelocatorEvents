@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { authService } from '../services/authService';
 import { eventsService } from '../services/eventsService';
 import { favouritesService } from '../services/favouritesService';
+import { reviewsService } from '../services/reviewsService';
 import { isTelegramMiniApp } from '../utils/telegramInitData';
 
 const ACCESS_TOKEN_STORAGE_KEY = 'auth_access_token';
@@ -12,6 +13,7 @@ interface User {
   id: number;
   name: string;
   email?: string;
+  avatar_url?: string;
   country?: string;
   city?: string;
   language?: string;
@@ -96,6 +98,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     authService.setAccessToken(accessToken);
     eventsService.setAccessToken(accessToken);
     favouritesService.setAccessToken(accessToken);
+    reviewsService.setAccessToken(accessToken);
   }, []);
 
   useEffect(() => {
@@ -138,6 +141,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
           id: userData.id,
           name: userData.name,
           email: userData.email,
+          avatar_url: userData.avatar_url,
           country: userData.country,
           city: userData.city,
           language: userData.language,
@@ -202,6 +206,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
       id: userData.id,
       name: userData.name,
       email: userData.email,
+      avatar_url: userData.avatar_url,
       country: userData.country,
       city: userData.city,
       language: userData.language,

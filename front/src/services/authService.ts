@@ -52,6 +52,12 @@ export interface LoginResponse {
     refresh_token: string;
 }
 
+export interface UpdateUserInfoPayload {
+    name?: string;
+    email?: string;
+    avatar_url?: string;
+}
+
 class AuthService {
     private readonly baseUrl: string;
     private readonly CURRENT_USER_CACHE_TTL_MS = 10000;
@@ -61,6 +67,7 @@ class AuthService {
             id: number;
             name: string;
             email?: string;
+            avatar_url?: string;
             country?: string;
             city?: string;
             language?: string;
@@ -73,6 +80,7 @@ class AuthService {
         id: number;
         name: string;
         email?: string;
+        avatar_url?: string;
         country?: string;
         city?: string;
         language?: string;
@@ -361,6 +369,7 @@ class AuthService {
         id: number;
         name: string;
         email?: string;
+        avatar_url?: string;
         country?: string;
         city?: string;
         language?: string;
@@ -388,6 +397,8 @@ class AuthService {
                     info: {
                         name: string;
                         email?: string;
+                        avatar_url?: string;
+                        avatarUrl?: string;
                         username?: string;
                         telegramInitData?: string;
                         country?: string;
@@ -415,6 +426,7 @@ class AuthService {
                 id: parseInt(response.user.id, 10),
                 name: response.user.info.name,
                 email: response.user.info.email || undefined,
+                avatar_url: response.user.info.avatar_url || response.user.info.avatarUrl || undefined,
                 country: response.user.info.country || undefined,
                 city: response.user.info.city || undefined,
                 language: response.user.info.language || undefined,
@@ -436,6 +448,18 @@ class AuthService {
         } finally {
             this.currentUserRequest = null;
         }
+    }
+
+    async updateUser(id: number, info: UpdateUserInfoPayload): Promise<void> {
+        await this.request<unknown>('/user/v1', {
+            method: 'PATCH',
+            body: JSON.stringify({
+                id,
+                info,
+            }),
+        });
+
+        this.currentUserCache = null;
     }
 
 }

@@ -2,6 +2,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { showGlobalNotification } from '../contexts/NotificationContext';
+import { authService } from '../services/authService';
+import { reviewsService } from '../services/reviewsService';
+import { MEDIA_BASE_URL } from '../config';
 import './ProfileEditPage.css';
 
 export const ProfileEditPage = () => {
@@ -14,13 +17,28 @@ export const ProfileEditPage = () => {
 
     const initialName = user?.name || '';
     const initialEmail = user?.email || '';
+    const initialAvatarUrl = user?.avatar_url || '';
     const [name, setName] = useState(initialName);
     const [email, setEmail] = useState(initialEmail);
+    const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
+    const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
+    const [isAvatarUploading, setIsAvatarUploading] = useState(false);
+    const [isSaving, setIsSaving] = useState(false);
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     useEffect(() => {
         setName(initialName);
         setEmail(initialEmail);
-    }, [initialName, initialEmail]);
+        setAvatarUrl(initialAvatarUrl);
+    }, [initialName, initialEmail, initialAvatarUrl]);
+
+    useEffect(() => {
+        return () => {
+            if (avatarPreviewUrl?.startsWith('blob:')) {
+                URL.revokeObjectURL(avatarPreviewUrl);
+            }
+        };
+    }, [avatarPreviewUrl]);
 
     useEffect(() => {
         return () => {
@@ -47,7 +65,64 @@ export const ProfileEditPage = () => {
         );
     }
 
-    const handleSave = () => {
+    const resolveAvatarUrl = (objectKey: string): string => {
+        if (/^https?:\/\//i.test(objectKey)) {
+            return objectKey;
+        }
+        const normalizedBase = MEDIA_BASE_URL.replace(/\/$/, '');
+        const normalizedKey = objectKey.replace(/^\//, '');
+        return `${normalizedBase}/${normalizedKey}`;
+    };
+
+    const handleAvatarChange = async (event: React.ChangeEvent<HTMLInputElement>) => {
+        const file = event.target.files?.[0];
+        event.target.value = '';
+        if (!file || !user) {
+            return;
+        }
+        if (!file.type.startsWith('image/')) {
+            showGlobalNotification('Выберите изображение', 'error');
+            return;
+        }
+
+        const previousPreview = avatarPreviewUrl;
+        const localPreview = URL.createObjectURL(file);
+        setAvatarPreviewUrl(localPreview);
+        setIsAvatarUploading(true);
+        try {
+            const objectName = `${Date.now()}-${file.name}`;
+            const presigned = await reviewsService.getReviewPresignedUrl(objectName, 0);
+            const uploadResponse = await fetch(presigned.presigned_url, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': file.type || 'application/octet-stream',
+                },
+                body: file,
+            });
+
+            if (!uploadResponse.ok) {
+                throw new Error(`Upload failed: ${uploadResponse.status}`);
+            }
+
+            const uploadedAvatarUrl = resolveAvatarUrl(presigned.object_key);
+            setAvatarUrl(uploadedAvatarUrl);
+            showGlobalNotification('Фото профиля загружено', 'success');
+            if (previousPreview?.startsWith('blob:')) {
+                URL.revokeObjectURL(previousPreview);
+            }
+        } catch (error) {
+            if (localPreview.startsWith('blob:')) {
+                URL.revokeObjectURL(localPreview);
+            }
+            setAvatarPreviewUrl(previousPreview);
+            console.error('Failed to upload avatar:', error);
+            showGlobalNotification('Не удалось загрузить фото профиля', 'error');
+        } finally {
+            setIsAvatarUploading(false);
+        }
+    };
+
+    const handleSave = async () => {
         const trimmedName = name.trim();
         const trimmedEmail = email.trim();
 
@@ -56,18 +131,49 @@ export const ProfileEditPage = () => {
             return;
         }
 
-        setUser({
-            ...user,
-            name: trimmedName,
-            email: trimmedEmail || undefined,
-        });
-        showGlobalNotification('Изменения сохранены', 'success');
-        navigate('/profile');
+        if (isAvatarUploading) {
+            showGlobalNotification('Дождитесь завершения загрузки фото', 'error');
+            return;
+        }
+
+        const payload: { name?: string; email?: string; avatar_url?: string } = {};
+        if (trimmedName !== initialName) payload.name = trimmedName;
+        if (trimmedEmail !== initialEmail) payload.email = trimmedEmail;
+        if (avatarUrl !== initialAvatarUrl) payload.avatar_url = avatarUrl;
+
+        if (!payload.name && !payload.email && !payload.avatar_url) {
+            showGlobalNotification('Нет изменений для сохранения', 'success');
+            navigate('/profile');
+            return;
+        }
+
+        setIsSaving(true);
+        try {
+            await authService.updateUser(user.id, payload);
+            setUser({
+                ...user,
+                name: payload.name ?? user.name,
+                email: payload.email ?? user.email,
+                avatar_url: payload.avatar_url ?? user.avatar_url,
+            });
+            showGlobalNotification('Изменения сохранены', 'success');
+            navigate('/profile');
+        } catch (error) {
+            const message = error instanceof Error ? error.message : 'Не удалось сохранить изменения';
+            showGlobalNotification(message, 'error');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     const handleReset = () => {
         setName(initialName);
         setEmail(initialEmail);
+        setAvatarUrl(initialAvatarUrl);
+        if (avatarPreviewUrl?.startsWith('blob:')) {
+            URL.revokeObjectURL(avatarPreviewUrl);
+        }
+        setAvatarPreviewUrl(null);
     };
 
     const handleLogout = () => {
@@ -121,9 +227,23 @@ export const ProfileEditPage = () => {
 
             <div className="profile-edit-avatar-wrap">
                 <div className="profile-edit-avatar">
-                    {(user.name || 'П').trim().charAt(0).toUpperCase()}
+                    {avatarPreviewUrl || avatarUrl ? (
+                        <img
+                            src={avatarPreviewUrl || avatarUrl}
+                            alt="Аватар профиля"
+                            className="profile-edit-avatar-image"
+                        />
+                    ) : (
+                        (user.name || 'П').trim().charAt(0).toUpperCase()
+                    )}
                 </div>
-                <button type="button" className="profile-edit-avatar-button" aria-label="Изменить аватар">
+                <button
+                    type="button"
+                    className="profile-edit-avatar-button"
+                    aria-label="Изменить аватар"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isAvatarUploading || isSaving}
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink" width="18" height="18" viewBox="0 0 18 18" fill="none">
                         <rect width="17.1523" height="17.1523" fill="url(#pattern0_1666_6774)" />
                         <defs>
@@ -134,7 +254,15 @@ export const ProfileEditPage = () => {
                         </defs>
                     </svg>
                 </button>
+                <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="profile-edit-avatar-input"
+                    onChange={handleAvatarChange}
+                />
             </div>
+            {isAvatarUploading && <p className="profile-edit-avatar-status">Загружаем фото...</p>}
 
             <div className="profile-edit-form">
                 <div className="profile-edit-field">
@@ -166,7 +294,12 @@ export const ProfileEditPage = () => {
                 </div>
             </div>
 
-            <button type="button" className="profile-edit-save" onClick={() => openModal('save')}>
+            <button
+                type="button"
+                className="profile-edit-save"
+                onClick={() => openModal('save')}
+                disabled={isAvatarUploading || isSaving}
+            >
                 Сохранить
             </button>
 
@@ -204,7 +337,7 @@ export const ProfileEditPage = () => {
                                     <button
                                         type="button"
                                         className="profile-edit-modal-btn profile-edit-modal-btn-filled"
-                                        onClick={() => closeModal(handleSave)}
+                                        onClick={() => closeModal(() => { void handleSave(); })}
                                     >
                                         Сохранить
                                     </button>

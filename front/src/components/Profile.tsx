@@ -41,10 +41,14 @@ export const Profile = () => {
     <div className="profile-container">
       <div className="profile-hero">
         <div className="profile-avatar">
-          {(profile.name || 'П')
-            .trim()
-            .charAt(0)
-            .toUpperCase()}
+          {profile.avatar_url ? (
+            <img src={profile.avatar_url} alt="Аватар профиля" className="profile-avatar-image" />
+          ) : (
+            (profile.name || 'П')
+              .trim()
+              .charAt(0)
+              .toUpperCase()
+          )}
         </div>
         <h1 className="profile-name">{profile.name}</h1>
         <button
