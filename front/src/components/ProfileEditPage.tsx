@@ -49,6 +49,8 @@ export const ProfileEditPage = () => {
     const initialAvatarUrl = user?.avatar_url || '';
     const [name, setName] = useState(initialName);
     const [email, setEmail] = useState(initialEmail);
+    const [isNameEditable, setIsNameEditable] = useState(false);
+    const [isEmailEditable, setIsEmailEditable] = useState(false);
     const [avatarUrl, setAvatarUrl] = useState(initialAvatarUrl);
     const [avatarPreviewUrl, setAvatarPreviewUrl] = useState<string | null>(null);
     const [isAvatarUploading, setIsAvatarUploading] = useState(false);
@@ -59,6 +61,8 @@ export const ProfileEditPage = () => {
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
+    const nameInputRef = useRef<HTMLInputElement | null>(null);
+    const emailInputRef = useRef<HTMLInputElement | null>(null);
     const isWebVersion = !isTelegramMiniApp();
     const normalizedInitialName = initialName.trim();
     const normalizedInitialEmail = initialEmail.trim();
@@ -73,6 +77,8 @@ export const ProfileEditPage = () => {
         setName(initialName);
         setEmail(initialEmail);
         setAvatarUrl(initialAvatarUrl);
+        setIsNameEditable(false);
+        setIsEmailEditable(false);
     }, [initialName, initialEmail, initialAvatarUrl]);
 
     useEffect(() => {
@@ -211,6 +217,8 @@ export const ProfileEditPage = () => {
         setName(initialName);
         setEmail(initialEmail);
         setAvatarUrl(initialAvatarUrl);
+        setIsNameEditable(false);
+        setIsEmailEditable(false);
         if (avatarPreviewUrl?.startsWith('blob:')) {
             URL.revokeObjectURL(avatarPreviewUrl);
         }
@@ -355,28 +363,50 @@ export const ProfileEditPage = () => {
                 <div className="profile-edit-field">
                     <div className="profile-edit-label-row">
                         <label htmlFor="profile-name">Имя</label>
-                        <span>Изменить</span>
+                        <button
+                            type="button"
+                            className="profile-edit-inline-action"
+                            onClick={() => {
+                                setIsNameEditable(true);
+                                requestAnimationFrame(() => nameInputRef.current?.focus());
+                            }}
+                        >
+                            Изменить
+                        </button>
                     </div>
                     <input
+                        ref={nameInputRef}
                         id="profile-name"
                         type="text"
                         value={name}
                         onChange={(e) => setName(e.target.value)}
                         placeholder="Введите имя"
+                        disabled={!isNameEditable}
                     />
                 </div>
 
                 <div className="profile-edit-field">
                     <div className="profile-edit-label-row">
                         <label htmlFor="profile-email">Почта</label>
-                        <span>Изменить</span>
+                        <button
+                            type="button"
+                            className="profile-edit-inline-action"
+                            onClick={() => {
+                                setIsEmailEditable(true);
+                                requestAnimationFrame(() => emailInputRef.current?.focus());
+                            }}
+                        >
+                            Изменить
+                        </button>
                     </div>
                     <input
+                        ref={emailInputRef}
                         id="profile-email"
                         type="email"
                         value={email}
                         onChange={(e) => setEmail(e.target.value)}
                         placeholder="Введите почту"
+                        disabled={!isEmailEditable}
                     />
                 </div>
             </div>
@@ -403,9 +433,11 @@ export const ProfileEditPage = () => {
                 <button type="button" className="profile-edit-secondary" onClick={() => openModal('reset')}>
                     Сбросить настройки
                 </button>
-                <button type="button" className="profile-edit-logout" onClick={() => openModal('logout')}>
-                    Выйти
-                </button>
+                {isWebVersion && (
+                    <button type="button" className="profile-edit-logout" onClick={() => openModal('logout')}>
+                        Выйти
+                    </button>
+                )}
             </div>
 
             {activeModal && (

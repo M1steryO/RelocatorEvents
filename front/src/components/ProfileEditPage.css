@@ -114,11 +114,15 @@
     line-height: 1.25;
 }
 
-.profile-edit-label-row span {
+.profile-edit-inline-action {
     font-size: 10px;
     line-height: 0.36;
     font-weight: 500;
     color: #414141;
+    border: none;
+    background: transparent;
+    padding: 0;
+    cursor: pointer;
 }
 
 .profile-edit-field input {
@@ -137,6 +141,11 @@
 
 .profile-edit-field input:focus {
     outline: 2px solid #458dbd;
+}
+
+.profile-edit-field input:disabled {
+    opacity: 0.75;
+    cursor: not-allowed;
 }
 
 .profile-edit-save {
