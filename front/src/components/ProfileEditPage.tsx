@@ -8,6 +8,34 @@ import { MEDIA_BASE_URL } from '../config';
 import { isTelegramMiniApp } from '../utils/telegramInitData';
 import './ProfileEditPage.css';
 
+const PasswordVisibilityIcon = ({ visible }: { visible: boolean }) => (
+    visible ? (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1.66663 10C2.73329 6.66667 5.86663 4.16667 9.99996 4.16667C14.1333 4.16667 17.2666 6.66667 18.3333 10C17.2666 13.3333 14.1333 15.8333 9.99996 15.8333C5.86663 15.8333 2.73329 13.3333 1.66663 10Z" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="10" cy="10" r="2.5" stroke="#414141" strokeWidth="1.6" />
+            <path d="M3.33337 16.6667L16.6667 3.33333" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" />
+        </svg>
+    ) : (
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M1.66663 10C2.73329 6.66667 5.86663 4.16667 9.99996 4.16667C14.1333 4.16667 17.2666 6.66667 18.3333 10C17.2666 13.3333 14.1333 15.8333 9.99996 15.8333C5.86663 15.8333 2.73329 13.3333 1.66663 10Z" stroke="#414141" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
+            <circle cx="10" cy="10" r="2.5" stroke="#414141" strokeWidth="1.6" />
+        </svg>
+    )
+);
+
+const getPasswordRequirementErrors = (password: string): string[] => {
+    const errors: string[] = [];
+    if (password.length < 8) errors.push('Минимум 8 символов');
+    if (!/[a-z]/.test(password) || !/[A-Z]/.test(password)) {
+        errors.push('Минимум одна заглавная и одна строчная латинская буква');
+    }
+    if (!/\d/.test(password)) errors.push('Минимум одна цифра');
+    if (!/[!?@#$%^&*~\-+=(){}\[\]:;'"<>,./\\|_]/.test(password)) {
+        errors.push('Минимум один спецсимвол');
+    }
+    return errors;
+};
+
 export const ProfileEditPage = () => {
     const MODAL_ANIMATION_MS = 220;
     const navigate = useNavigate();
@@ -27,6 +55,8 @@ export const ProfileEditPage = () => {
     const [isSaving, setIsSaving] = useState(false);
     const [oldPassword, setOldPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const isWebVersion = !isTelegramMiniApp();
@@ -198,6 +228,14 @@ export const ProfileEditPage = () => {
             showGlobalNotification('Новый пароль должен отличаться от старого', 'error');
             return;
         }
+        const passwordErrors = getPasswordRequirementErrors(trimmedNewPassword);
+        if (passwordErrors.length > 0) {
+            showGlobalNotification(
+                `Пароль должен соответствовать критериям: ${passwordErrors.join(', ')}`,
+                'error',
+            );
+            return;
+        }
 
         setIsUpdatingPassword(true);
         try {
@@ -207,6 +245,10 @@ export const ProfileEditPage = () => {
             setNewPassword('');
             closeModal();
         } catch (error) {
+            if (typeof error === 'object' && error !== null && 'status' in error && (error as { status?: number }).status === 400) {
+                showGlobalNotification('Старый пароль неверный', 'error');
+                return;
+            }
             const message = error instanceof Error ? error.message : 'Не удалось обновить пароль';
             showGlobalNotification(message, 'error');
         } finally {
@@ -247,6 +289,8 @@ export const ProfileEditPage = () => {
         if (activeModal === 'password' && !isUpdatingPassword) {
             setOldPassword('');
             setNewPassword('');
+            setShowOldPassword(false);
+            setShowNewPassword(false);
         }
         closeModal();
     };
@@ -432,20 +476,40 @@ export const ProfileEditPage = () => {
                             <>
                                 <p className="profile-edit-modal-title">Смена пароля</p>
                                 <div className="profile-edit-modal-form">
-                                    <input
-                                        type="password"
-                                        value={oldPassword}
-                                        onChange={(e) => setOldPassword(e.target.value)}
-                                        placeholder="Старый пароль"
-                                        autoComplete="current-password"
-                                    />
-                                    <input
-                                        type="password"
-                                        value={newPassword}
-                                        onChange={(e) => setNewPassword(e.target.value)}
-                                        placeholder="Новый пароль"
-                                        autoComplete="new-password"
-                                    />
+                                    <div className="profile-edit-modal-password-input-wrap">
+                                        <input
+                                            type={showOldPassword ? 'text' : 'password'}
+                                            value={oldPassword}
+                                            onChange={(e) => setOldPassword(e.target.value)}
+                                            placeholder="Старый пароль"
+                                            autoComplete="current-password"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="profile-edit-password-visibility-toggle"
+                                            onClick={() => setShowOldPassword((prev) => !prev)}
+                                            aria-label={showOldPassword ? 'Скрыть старый пароль' : 'Показать старый пароль'}
+                                        >
+                                            <PasswordVisibilityIcon visible={showOldPassword} />
+                                        </button>
+                                    </div>
+                                    <div className="profile-edit-modal-password-input-wrap">
+                                        <input
+                                            type={showNewPassword ? 'text' : 'password'}
+                                            value={newPassword}
+                                            onChange={(e) => setNewPassword(e.target.value)}
+                                            placeholder="Новый пароль"
+                                            autoComplete="new-password"
+                                        />
+                                        <button
+                                            type="button"
+                                            className="profile-edit-password-visibility-toggle"
+                                            onClick={() => setShowNewPassword((prev) => !prev)}
+                                            aria-label={showNewPassword ? 'Скрыть новый пароль' : 'Показать новый пароль'}
+                                        >
+                                            <PasswordVisibilityIcon visible={showNewPassword} />
+                                        </button>
+                                    </div>
                                 </div>
                                 <div className="profile-edit-modal-actions">
                                     <button

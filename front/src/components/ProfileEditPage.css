@@ -276,6 +276,11 @@
     gap: 8px;
 }
 
+.profile-edit-modal-password-input-wrap {
+    position: relative;
+    width: 100%;
+}
+
 .profile-edit-modal-form input {
     width: 100%;
     height: 48px;
@@ -285,12 +290,30 @@
     color: #414141;
     font-size: 14px;
     line-height: 1.15;
-    padding: 0 14px;
+    padding: 0 46px 0 14px;
     box-sizing: border-box;
 }
 
 .profile-edit-modal-form input:focus {
     outline: 2px solid #458dbd;
+}
+
+.profile-edit-password-visibility-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    padding: 2px;
+    width: 24px;
+    height: 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #414141;
+    opacity: 0.9;
 }
 
 .profile-edit-modal-actions {

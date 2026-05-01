@@ -25,6 +25,9 @@ func (i *Implementation) UpdatePassword(ctx context.Context, req *desc.UpdatePas
 		if errors.Is(err, domain.ErrUserNotFound) {
 			return nil, status.Errorf(codes.NotFound, "user not found")
 		}
+		if errors.Is(err, domain.ErrIncorrectOldPassword) {
+			return nil, status.Error(codes.FailedPrecondition, "incorrect old password")
+		}
 		return nil, err
 	}
 
