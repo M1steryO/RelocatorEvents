@@ -60,6 +60,14 @@ export const ProfileEditPage = () => {
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const isWebVersion = !isTelegramMiniApp();
+    const normalizedInitialName = initialName.trim();
+    const normalizedInitialEmail = initialEmail.trim();
+    const normalizedCurrentName = name.trim();
+    const normalizedCurrentEmail = email.trim();
+    const hasProfileChanges =
+        normalizedCurrentName !== normalizedInitialName ||
+        normalizedCurrentEmail !== normalizedInitialEmail ||
+        avatarUrl !== initialAvatarUrl;
 
     useEffect(() => {
         setName(initialName);
@@ -158,8 +166,8 @@ export const ProfileEditPage = () => {
     };
 
     const handleSave = async () => {
-        const trimmedName = name.trim();
-        const trimmedEmail = email.trim();
+        const trimmedName = normalizedCurrentName;
+        const trimmedEmail = normalizedCurrentEmail;
 
         if (!trimmedName) {
             showGlobalNotification('Введите имя', 'error');
@@ -177,8 +185,6 @@ export const ProfileEditPage = () => {
         if (avatarUrl !== initialAvatarUrl) payload.avatar_url = avatarUrl;
 
         if (!payload.name && !payload.email && !payload.avatar_url) {
-            showGlobalNotification('Нет изменений для сохранения', 'success');
-            navigate('/profile');
             return;
         }
 
@@ -388,7 +394,7 @@ export const ProfileEditPage = () => {
                 type="button"
                 className="profile-edit-save"
                 onClick={() => openModal('save')}
-                disabled={isAvatarUploading || isSaving}
+                disabled={isAvatarUploading || isSaving || !hasProfileChanges}
             >
                 Сохранить
             </button>
