@@ -11,7 +11,7 @@ import (
 func (s *repo) Delete(ctx context.Context, userId int64) error {
 	q := db.Query{
 		Title: "user_repository.Delete",
-		Query: `delete from users where id = $2`,
+		Query: `delete from users where id = $1`,
 	}
 
 	_, err := s.db.DB().ExecContext(ctx, q, userId)
