@@ -208,7 +208,11 @@ class AuthService {
             );
         }
 
-        return response.json();
+        const text = await response.text();
+        if (!text.trim()) {
+            return undefined as T;
+        }
+        return JSON.parse(text) as T;
     }
 
     async register(data: RegisterData): Promise<{ id: number; accessTokenFromHeader?: string }> {
@@ -480,6 +484,15 @@ class AuthService {
                 new_password: newPassword,
             }),
         });
+    }
+
+    /** Удаление аккаунта (grpc-gateway: поля DeleteRequest в query для DELETE). */
+    async deleteUser(id: number): Promise<void> {
+        const query = new URLSearchParams({ id: String(id) });
+        await this.request<unknown>(`/v1/user?${query.toString()}`, {
+            method: 'DELETE',
+        });
+        this.currentUserCache = null;
     }
 
 }

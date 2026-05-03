@@ -60,6 +60,7 @@ export const ProfileEditPage = () => {
     const [showOldPassword, setShowOldPassword] = useState(false);
     const [showNewPassword, setShowNewPassword] = useState(false);
     const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+    const [isDeletingAccount, setIsDeletingAccount] = useState(false);
     const fileInputRef = useRef<HTMLInputElement | null>(null);
     const nameInputRef = useRef<HTMLInputElement | null>(null);
     const emailInputRef = useRef<HTMLInputElement | null>(null);
@@ -213,16 +214,23 @@ export const ProfileEditPage = () => {
         }
     };
 
-    const handleReset = () => {
-        setName(initialName);
-        setEmail(initialEmail);
-        setAvatarUrl(initialAvatarUrl);
-        setIsNameEditable(false);
-        setIsEmailEditable(false);
-        if (avatarPreviewUrl?.startsWith('blob:')) {
-            URL.revokeObjectURL(avatarPreviewUrl);
+    const handleDeleteAccount = async () => {
+        if (!user || isDeletingAccount) {
+            return;
         }
-        setAvatarPreviewUrl(null);
+        setIsDeletingAccount(true);
+        try {
+            await authService.deleteUser(user.id);
+            showGlobalNotification('Аккаунт удалён', 'success');
+            logout();
+            navigate('/register', { replace: true });
+        } catch (error) {
+            const message =
+                error instanceof Error ? error.message : 'Не удалось удалить аккаунт';
+            showGlobalNotification(message, 'error');
+        } finally {
+            setIsDeletingAccount(false);
+        }
     };
 
     const handleLogout = () => {
@@ -300,6 +308,9 @@ export const ProfileEditPage = () => {
     };
 
     const handleModalClose = () => {
+        if (activeModal === 'reset' && isDeletingAccount) {
+            return;
+        }
         if (activeModal === 'password' && !isUpdatingPassword) {
             setOldPassword('');
             setNewPassword('');
@@ -494,16 +505,24 @@ export const ProfileEditPage = () => {
                         {activeModal === 'reset' && (
                             <>
                                 <p className="profile-edit-modal-title">Вы действительно хотите сбросить настройки профиля?</p>
-                                <p className="profile-edit-modal-subtitle">Аккаунт сбросится и вам придется снова проходить регистрацию</p>
+                                <p className="profile-edit-modal-subtitle">Аккаунт будет удалён, и нужно будет снова пройти регистрацию</p>
                                 <div className="profile-edit-modal-actions">
                                     <button
                                         type="button"
                                         className="profile-edit-modal-btn profile-edit-modal-btn-outline"
-                                        onClick={() => closeModal(handleReset)}
+                                        onClick={() => {
+                                            void handleDeleteAccount();
+                                        }}
+                                        disabled={isDeletingAccount}
                                     >
-                                        Сбросить
+                                        {isDeletingAccount ? 'Удаляем…' : 'Сбросить'}
                                     </button>
-                                    <button type="button" className="profile-edit-modal-btn profile-edit-modal-btn-filled" onClick={handleModalClose}>
+                                    <button
+                                        type="button"
+                                        className="profile-edit-modal-btn profile-edit-modal-btn-filled"
+                                        onClick={handleModalClose}
+                                        disabled={isDeletingAccount}
+                                    >
                                         Не сбрасывать
                                     </button>
                                 </div>

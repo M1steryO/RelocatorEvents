@@ -16,4 +16,5 @@ type UserRepository interface {
 	CreateUserInterests(ctx context.Context, userId int64, interestsIds []int64) error
 	Update(ctx context.Context, userId int64, user *domain.UpdateUser) error
 	UpdatePassword(ctx context.Context, userId int64, password string) error
+	Delete(ctx context.Context, userId int64) error
 }

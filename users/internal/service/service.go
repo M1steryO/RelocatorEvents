@@ -13,4 +13,5 @@ type UserService interface {
 	GetByEmail(ctx context.Context, email string) (*domain.User, error)
 	Update(ctx context.Context, userId int64, user *dto.UpdateUser) error
 	UpdatePassword(ctx context.Context, userId int64, passwords *dto.UpdatePassword) error
+	Delete(ctx context.Context, userId int64) error
 }

@@ -291,7 +291,7 @@ async def parse_georgia(
                             currency = price_raw[1] if price_raw else None
 
                             e = Event(
-                                link=buy_link,
+                                link=buy_link   ,
                                 title=title.strip(),
                                 description=description.strip() if description else None,
                                 country=country.strip(),
