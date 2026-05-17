@@ -50,7 +50,7 @@ func (m *AuthMiddleware) RequireAuth(next http.Handler) http.Handler {
 		}
 
 		if err != nil || resp == nil || resp.UserId == 0 {
-			logger.Info("invalid tokens", "err", err.Error())
+			logger.Info("  invalid tokens", "err", err.Error())
 			w.WriteHeader(http.StatusUnauthorized)
 			return
 		}

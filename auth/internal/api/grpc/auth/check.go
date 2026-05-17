@@ -36,7 +36,7 @@ func (i *Implementation) Check(ctx context.Context, req *desc.CheckRequest) (*de
 			logger.Warn("auth check failed", slog.Any("err", err), slog.String("auth_method", detectAuthMethod(creds)))
 			return nil, sys.NewCommonError(err.Error(), codes.InvalidArgument)
 		}
-		logger.Error("failed to auth check", slog.Any("err", err), slog.String("auth_method", detectAuthMethod(creds)))
+		logger.Error("failed to auth check", slog.String("err", err.Error()), slog.String("auth_method", detectAuthMethod(creds)))
 		return nil, sys.NewCommonError("internal error", codes.Internal)
 	}
 
