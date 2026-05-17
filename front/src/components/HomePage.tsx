@@ -117,7 +117,7 @@ const DEFAULT_HOME_TAB = 'Для вас';
 const COLLECTIONS: CollectionConfig[] = [
     { label: DEFAULT_HOME_TAB },
     { label: 'Вечер для новых друзей', categories: ['nightlife', 'gastronomic'] },
-    { label: 'Знакомство с городом', categories: ['excursion'] },
+    { label: 'Знакомство с городом', categories: ['excursions'] },
     { label: 'Для всей семьи', categories: ['kids'] },
     { label: 'На английском', lang: 'en' },
     { label: 'На родном языке', lang: 'ru' },
