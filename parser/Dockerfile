@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN pip install --no-cache-dir -r requirements.txt
 
 
-RUN python -m playwright install --with-deps
+RUN python -m playwright install --with-deps chromium
 
 
 CMD ["python", "-u", "main.py"]
